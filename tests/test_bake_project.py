@@ -123,4 +123,4 @@ def test_bake_not_open_source(cookies):
     ) as result:
         found_toplevel_files = [f.basename for f in result.project.listdir()]
         assert 'LICENSE' not in found_toplevel_files
-        assert 'License' not in result.project.join('README.md').read()
+        assert 'License' not in result.project.join('README.rst').read()
