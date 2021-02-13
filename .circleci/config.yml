@@ -27,6 +27,7 @@ commands:
             export PATH="${HOME}/.pyenv/bin:${HOME}/.rbenv/bin:${HOME}/.rbenv/shims:${PATH}"
             eval "$(pyenv init -)"
             eval "$(pyenv virtualenv-init -)"
+            eval "$(rbenv init -)"
             # These will be used in post_gen_project.py while testing
             # the cookies, as well as by overcommit
             git config --global user.email "test@test.test"
