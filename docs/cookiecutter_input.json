@@ -7,5 +7,6 @@
     "project_name": "Cookiecutter Ruby",
     "project_short_description": "Ruby Boilerplate contains all the boilerplate you need to create a Ruby project.",
     "project_slug": "cookiecutter-ruby",
-    "project_super_short_description": "Cookiecutter template for a Ruby project."
+    "project_super_short_description": "Cookiecutter template for a Ruby project.",
+    "type_of_github_repo": "private"
 }
