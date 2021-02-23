@@ -56,8 +56,36 @@ jobs:
             equal: [<< pipeline.git.branch >>, "main"]
           steps:
             - run: echo "overcommit only runs on main branch"
+  build:
+    working_directory: ~/cookiecutter-ruby
+    steps:
+      - checkout
+      - restore_cache:
+          key: fix.sh-v1-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
+      - run:
+          name: Initialize packages
+          command: './fix.sh'
+      - save_cache:
+          key: fix.sh-v1-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
+          paths:
+            - "vendor/bundle"
+      - run: make test
+
 workflows:
   version: 2
-  test:
+  weekly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * 6"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - build
+  overcommit:
     jobs:
       - overcommit
+  build:
+    jobs:
+      - build
