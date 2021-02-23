@@ -29,6 +29,8 @@ def bake_in_temp_dir(cookies, *args, **kwargs):
         cookie to be baked and its temporal files will be removed
     """
     result = cookies.bake(*args, **kwargs)
+    assert result is not None
+    assert result.project is not None
     try:
         yield result
     finally:
