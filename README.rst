@@ -5,6 +5,8 @@ Cookiecutter Ruby
 .. image:: https://circleci.com/gh/apiology/cookiecutter-ruby.svg?style=svg
     :target: https://circleci.com/gh/apiology/cookiecutter-ruby
 
+Ruby Boilerplate contains all the boilerplate you need to create a Ruby project.
+
 This is a fork
 --------------
 
