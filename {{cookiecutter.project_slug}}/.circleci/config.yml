@@ -57,7 +57,7 @@ jobs:
           steps:
             - run: echo "overcommit only runs on main branch"
   build:
-    working_directory: ~/cookiecutter-ruby
+    working_directory: ~/{{cookiecutter.project_slug}}
     steps:
       - checkout
       - restore_cache:
