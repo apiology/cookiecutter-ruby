@@ -41,3 +41,4 @@ if __name__ == '__main__':
                                    '{{ cookiecutter.project_short_description }}',
                                    '{{ cookiecutter.github_username }}/'
                                    '{{ cookiecutter.project_slug }}'])
+            subprocess.check_call(['circleci', 'follow'])
