@@ -68,7 +68,8 @@ jobs:
       - save_cache:
           key: fix.sh-v1-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
           paths:
-            - "vendor/bundle"
+            - "/home/circleci/.rbenv"
+            - "/home/circleci/.pyenv"
       - run: make test
 
 workflows:
