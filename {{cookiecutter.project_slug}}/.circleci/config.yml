@@ -58,6 +58,8 @@ jobs:
             - run: echo "overcommit only runs on main branch"
   build:
     working_directory: ~/{{cookiecutter.project_slug}}
+    docker:
+      - image: apiology/circleci-ruby:latest
     steps:
       - checkout
       - restore_cache:
@@ -70,6 +72,14 @@ jobs:
           paths:
             - "/home/circleci/.rbenv"
             - "/home/circleci/.pyenv"
+      - restore_cache:
+          key: {{cookiecutter.project_slug}}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-v1
+      - run: gem install --no-document bundler
+      - run: bundle install --path vendor/bundle --jobs=4
+      - save_cache:
+          key: {{cookiecutter.project_slug}}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-v1
+          paths:
+            - "vendor/bundle"
       - run: make test
 
 workflows:
