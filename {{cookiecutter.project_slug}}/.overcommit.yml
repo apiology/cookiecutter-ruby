@@ -17,6 +17,17 @@
 # Uncomment the following lines to make the configuration take effect.
 
 PreCommit:
+  RuboCop:
+    enabled: true
+    on_warn: fail # Treat all warnings as failures
+    include:
+      - '**/*.gemspec'
+      - '**/*.rake'
+      - '**/*.rb'
+      - '**/*.ru'
+      - '**/Gemfile'
+      - '**/Rakefile'
+      - 'bin/*'
   PythonFlake8:
     enabled: true
   ShellCheck:
