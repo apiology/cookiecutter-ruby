@@ -22,9 +22,15 @@ commands:
             - "/home/circleci/.pyenv"
             - "/home/circleci/.rbenv"
       - run:
+          name: Download new circleci tool
+          command: |
+            curl -fLSs \
+            https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
+      - run:
           name: Test
           command: |
-            export PATH="${HOME}/.pyenv/bin:${HOME}/.rbenv/bin:${HOME}/.rbenv/shims:${PATH}"
+            export PATH="${HOME}/.pyenv/bin:${PATH}"
+            export PATH="${HOME}/.rbenv/bin:${HOME}/.rbenv/shims:${PATH}"
             eval "$(pyenv init -)"
             eval "$(pyenv virtualenv-init -)"
             eval "$(rbenv init -)"
@@ -34,6 +40,7 @@ commands:
             git config --global user.name "Test Test"
             # Coax overcommit into working
             bundle exec overcommit --sign
+            bundle exec overcommit --sign pre-commit
 
             tox <<parameters.tox_arguments>>
           environment:
@@ -48,17 +55,27 @@ jobs:
     steps:
       - unless:
           condition:
-            equal: [ << pipeline.git.branch >>, "main" ]
+            equal: [<< pipeline.git.branch >>, "main"]
           steps:
-             - tox:
-                 tox_arguments: '-e py39'
+            - tox:
+                tox_arguments: '-e py39'
       - when:
           condition:
-            equal: [ << pipeline.git.branch >>, "main" ]
+            equal: [<< pipeline.git.branch >>, "main"]
           steps:
             - tox
 workflows:
   version: 2
+  weekly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * 6"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - test
   test:
     jobs:
       - test
