@@ -36,3 +36,17 @@ Temporary Items
 
 # Installed by fix.sh based on what latest versions are
 /.python-version
+
+# Ruby-related
+/.bundle/
+/.yardoc
+/_yardoc/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+/coverage/.resultset.json
+/coverage/.resultset.json.lock
+/coverage/assets/
+/coverage/index.html
+/pkg
