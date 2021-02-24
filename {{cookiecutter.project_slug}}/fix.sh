@@ -62,6 +62,10 @@ ensure_ruby_version() {
 }
 
 ensure_bundle() {
+  # Not sure why this is needed a second time, but it seems to be?
+  #
+  # https://app.circleci.com/pipelines/github/apiology/source_finder/21/workflows/88db659f-a4f4-4751-abc0-46f5929d8e58/jobs/107
+  set_rbenv_env_variables
   bundle --version >/dev/null 2>&1 || gem install bundler
   bundle install
 }
