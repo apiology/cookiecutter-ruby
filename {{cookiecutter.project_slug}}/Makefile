@@ -1,4 +1,4 @@
-.PHONY: clean test help quality
+.PHONY: clean test help quality localtest spec feature
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
