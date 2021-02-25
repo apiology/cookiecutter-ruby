@@ -20,6 +20,7 @@ PreCommit:
   RuboCop:
     enabled: true
     on_warn: fail # Treat all warnings as failures
+    command: ['bundle', 'exec', 'rubocop']
     include:
       - '**/*.gemspec'
       - '**/*.rake'
