@@ -2,20 +2,37 @@
 version: 2.1
 
 commands:
-  overcommit:
-    description: "Run overcommit"
+  set_up_environment:
+    description: "Install source environment"
     steps:
       - checkout
       - restore_cache:
-          key: fix.sh-v1-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
+          key: gems-v1-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
+      - restore_cache:
+          key: ruby-and-python-v2-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
       - run:
           name: Initialize packages
-          command: './fix.sh'
+          command: |
+            export BUNDLE_PATH=vendor/bundle
+            './fix.sh'
       - save_cache:
-          key: fix.sh-v1-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
+          key: ruby-and-python-v2-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
           paths:
             - "/home/circleci/.rbenv"
             - "/home/circleci/.pyenv"
+      - save_cache:
+          key: gems-v1-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
+          paths:
+            - "vendor/bundle"
+      - run:
+          name: Download new circleci tool
+          command: |
+            curl -fLSs \
+            https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
+  overcommit:
+    description: "Run overcommit"
+    steps:
+      - set_up_environment
       - run:
           name: Download new circleci tool
           command: |
@@ -29,6 +46,7 @@ commands:
             eval "$(pyenv init -)"
             eval "$(pyenv virtualenv-init -)"
             eval "$(rbenv init -)"
+            export BUNDLE_PATH=vendor/bundle
             # Coax overcommit into working
             git config --global user.email "test@test.test"
             git config --global user.name "Test Test"
@@ -44,7 +62,7 @@ commands:
 jobs:
   overcommit:
     docker:
-      - image: circleci/ruby
+      - image: apiology/circleci-ruby:latest
     steps:
       - when:
           condition:
@@ -61,26 +79,11 @@ jobs:
     docker:
       - image: apiology/circleci-ruby:latest
     steps:
-      - checkout
-      - restore_cache:
-          key: fix.sh-v1-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
+      - set_up_environment
       - run:
-          name: Initialize packages
-          command: './fix.sh'
-      - save_cache:
-          key: fix.sh-v1-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
-          paths:
-            - "/home/circleci/.rbenv"
-            - "/home/circleci/.pyenv"
-      - restore_cache:
-          key: {{cookiecutter.project_slug}}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-v1
-      - run: gem install --no-document bundler
-      - run: bundle install --path vendor/bundle --jobs=4
-      - save_cache:
-          key: {{cookiecutter.project_slug}}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-v1
-          paths:
-            - "vendor/bundle"
-      - run: make test
+          command: |
+            export BUNDLE_PATH=vendor/bundle
+            make test
 
 workflows:
   version: 2
