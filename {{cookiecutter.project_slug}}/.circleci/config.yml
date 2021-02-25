@@ -24,6 +24,11 @@ commands:
           key: gems-v1-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
           paths:
             - "vendor/bundle"
+      - run:
+          name: Download new circleci tool
+          command: |
+            curl -fLSs \
+            https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
   overcommit:
     description: "Run overcommit"
     steps:
