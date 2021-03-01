@@ -25,7 +25,7 @@ quality:  ## run precommit quality checks
 	bundle exec overcommit --run
 
 spec: ## Run lower-level tests
-	@bundle exec rake spec
+#	@bundle exec rake spec
 
 feature: ## Run higher-level tests
 	@bundle exec rake feature
