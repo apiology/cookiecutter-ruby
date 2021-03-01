@@ -84,7 +84,7 @@ ensure_ruby_build_requirements() {
 ensure_ruby_versions() {
   # You can find out which feature versions are still supported / have
   # been release here: https://www.python.org/downloads/
-  ruby_versions="$(latest_ruby_version 3.0) $(latest_ruby_version 2.7) $(latest_ruby_version 2.6) $(latest_ruby_version 2.5)"
+  ruby_versions="$(latest_ruby_version 3.0)"
 
   echo "Latest Ruby versions: ${ruby_versions}"
 
