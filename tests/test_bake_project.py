@@ -22,20 +22,15 @@ def inside_dir(dirpath):
 
 
 @contextmanager
-def binmocks_in_path():
+def suppressed_github_and_circleci_creation():
+    """A context manager which sets an env variable to suppress creating
+    GitHub repos and pushing to CircleCI during the hooks.
     """
-    A context manager which adds the binmocks/ directory to the $PATH env variable.
-    """
-    orig_path = os.environ['PATH']
-
-    # https://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory
-    this_dir = os.path.dirname(os.path.realpath(__file__))
-
-    os.environ['PATH'] = f"{this_dir}/binmocks:{orig_path}"
+    os.environ['SKIP_GITHUB_AND_CIRCLECI_CREATION'] = '1'
     try:
         yield
     finally:
-        os.environ['PATH'] = orig_path
+        del os.environ['SKIP_GITHUB_AND_CIRCLECI_CREATION']
 
 
 @contextmanager
@@ -45,7 +40,7 @@ def bake_in_temp_dir(cookies, *args, **kwargs):
     :param cookies: pytest_cookies.Cookies,
         cookie to be baked and its temporal files will be removed
     """
-    with binmocks_in_path():
+    with suppressed_github_and_circleci_creation():
         result = cookies.bake(*args, **kwargs)
         assert result is not None
         assert result.project is not None
@@ -106,10 +101,6 @@ def test_bake_and_run_build(cookies):
                               'The greatest project ever created by name "quote" O\'connor.',
                           }) as result:
         assert result.project.isdir()
-        assert run_inside_dir('git init', str(result.project)) == 0
-        assert run_inside_dir('git add .', str(result.project)) == 0
-        assert run_inside_dir('bundle exec overcommit --sign', str(result.project)) == 0
-        assert run_inside_dir('bundle exec overcommit --sign pre-commit', str(result.project)) == 0
         assert run_inside_dir('make test', str(result.project)) == 0
         assert run_inside_dir('make quality', str(result.project)) == 0
         print("test_bake_and_run_build path", str(result.project))

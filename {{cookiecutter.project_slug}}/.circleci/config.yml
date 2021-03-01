@@ -90,7 +90,13 @@ jobs:
       - set_up_environment
       - run:
           command: |
+            export PATH="${HOME}/.pyenv/bin:${PATH}"
+            export PATH="${HOME}/.rbenv/bin:${HOME}/.rbenv/shims:${PATH}"
+            eval "$(pyenv init -)"
+            eval "$(pyenv virtualenv-init -)"
+            eval "$(rbenv init -)"
             export BUNDLE_PATH=vendor/bundle
+
             make test
 
 workflows:
