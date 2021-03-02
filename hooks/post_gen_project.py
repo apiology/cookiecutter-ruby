@@ -25,11 +25,11 @@ if __name__ == '__main__':
         # multiple times over its lifetime.
         subprocess.check_call(['git', 'init'])
         subprocess.check_call(['git', 'add', '-A'])
-        subprocess.check_call(['git', 'commit', '-m',
-                               'Initial commit from boilerplate'])
         subprocess.check_call(['bundle', 'exec', 'overcommit', '--install'])
         subprocess.check_call(['bundle', 'exec', 'overcommit', '--sign'])
         subprocess.check_call(['bundle', 'exec', 'overcommit', '--sign', 'pre-commit'])
+        subprocess.check_call(['git', 'commit', '-m',
+                               'Initial commit from boilerplate'])
 
     if os.environ.get('SKIP_GITHUB_AND_CIRCLECI_CREATION', '0') != '1':
         if 'none' != '{{ cookiecutter.type_of_github_repo }}':
