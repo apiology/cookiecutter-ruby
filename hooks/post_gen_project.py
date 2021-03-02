@@ -28,6 +28,8 @@ if __name__ == '__main__':
         subprocess.check_call(['bundle', 'exec', 'overcommit', '--install'])
         subprocess.check_call(['bundle', 'exec', 'overcommit', '--sign'])
         subprocess.check_call(['bundle', 'exec', 'overcommit', '--sign', 'pre-commit'])
+        subprocess.check_call(['bundle', 'install'])
+        subprocess.check_call(['bundle', 'exec', 'rubocop', '-a'])
         subprocess.check_call(['git', 'commit', '-m',
                                'Initial commit from boilerplate'])
 
