@@ -96,3 +96,7 @@ cookiecutter-ruby-env/
 
 # IDE settings
 .vscode/
+
+# Installed by fix.sh based on what latest versions are
+/.python-version
+/.ruby-version
