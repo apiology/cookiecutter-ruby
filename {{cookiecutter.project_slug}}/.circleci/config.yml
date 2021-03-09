@@ -35,8 +35,6 @@ commands:
       - checkout
       - restore_cache:
           key: gems-v4-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
-      - restore_cache:
-          key: ruby-and-python-v4-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
       - run:
           name: Initialize packages
           command: |
@@ -50,11 +48,6 @@ commands:
               >&2 echo "Please resolve changes to Gemfile.lock after bundle install to avoid caching difficulties"
               exit 1
             fi
-      - save_cache:
-          key: ruby-and-python-v4-{% raw %}{{ checksum "fix.sh" }}{% endraw %}
-          paths:
-            - "/home/circleci/.rbenv"
-            - "/home/circleci/.pyenv"
       - save_cache:
           key: gems-v4-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
           paths:

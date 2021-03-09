@@ -116,31 +116,3 @@ def test_make_help(cookies):
             )
             assert b"run precommit quality checks" in \
                 output
-
-
-def test_bake_selecting_license(cookies):
-    license_strings = {
-        'MIT license': 'MIT ',
-        'BSD license': 'Redistributions of source code must retain the ' +
-                       'above copyright notice, this',
-        'ISC license': 'ISC License',
-        'Apache Software License 2.0':
-            'Licensed under the Apache License, Version 2.0',
-        'GNU General Public License v3': 'GNU GENERAL PUBLIC LICENSE',
-    }
-    for license, target_string in license_strings.items():
-        with bake_in_temp_dir(
-            cookies,
-            extra_context={'open_source_license': license}
-        ) as result:
-            assert target_string in result.project.join('LICENSE').read()
-
-
-def test_bake_not_open_source(cookies):
-    with bake_in_temp_dir(
-        cookies,
-        extra_context={'open_source_license': 'Not open source'}
-    ) as result:
-        found_toplevel_files = [f.basename for f in result.project.listdir()]
-        assert 'LICENSE' not in found_toplevel_files
-        assert 'License' not in result.project.join('README.md').read()
