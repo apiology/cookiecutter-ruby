@@ -94,7 +94,12 @@ jobs:
     steps:
       - set_up_environment
       - run_with_languages:
-          command: make test
+          label: Run tests
+          command: |
+            make test
+            # https://github.com/bluelabsio/records-mover/blob/master/Makefile#L25
+            git status --porcelain coverage/.last_run.json
+            test -z "$(git status --porcelain coverage/.last_run.json)"
 
 workflows:
   version: 2
