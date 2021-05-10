@@ -18,3 +18,17 @@ To get full realtime output from tests to debug e.g. slowness issues:
 ```sh
 pytest tests/test_bake_project.py --capture=no -k test_bake_and_run_build
 ```
+
+You can debug overall test timings with:
+
+```sh
+time pytest tests/test_bake_project.py --durations=0
+```
+
+It's also useful to replace 'make test' with something that will give
+you real-time stdout/stderr in `test_bake_project.py`.
+
+You can then wrap `time` commands around different things that shell
+out, or do [this type of
+technique](https://stackoverflow.com/a/1557584/2625807) for things
+which aren't a simple shell-out.
