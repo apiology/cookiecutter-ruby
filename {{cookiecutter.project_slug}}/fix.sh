@@ -268,11 +268,19 @@ ensure_overcommit() {
   fi
 }
 
+ensure_rugged_packages_installed() {
+  install_package icu4c libicu-dev # needed by rugged, needed by undercover
+  install_package pkg-config # needed by rugged, needed by undercover
+  install_package cmake # needed by rugged, needed by undercover
+}
+
 ensure_rbenv
 
 ensure_ruby_versions
 
 set_ruby_local_version
+
+ensure_rugged_packages_installed
 
 ensure_bundle
 
