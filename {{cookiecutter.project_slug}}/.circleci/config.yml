@@ -94,7 +94,7 @@ jobs:
     steps:
       - set_up_environment
       - run_with_languages:
-          label: Run tests
+          label: Test
           command: |
             bundle exec rake citest
             # https://github.com/bluelabsio/records-mover/blob/master/Makefile#L25
