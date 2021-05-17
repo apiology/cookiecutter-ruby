@@ -94,6 +94,7 @@ jobs:
     steps:
       - set_up_environment
       - run_with_languages:
+          label: Test
           command: make test
 
 workflows:
