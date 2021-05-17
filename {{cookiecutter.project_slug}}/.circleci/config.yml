@@ -99,6 +99,7 @@ jobs:
             bundle exec rake citest
             # https://github.com/bluelabsio/records-mover/blob/master/Makefile#L25
             git status --porcelain coverage/.last_run.json
+            git diff coverage/.last_run.json
             test -z "$(git status --porcelain coverage/.last_run.json)"
 
 workflows:
