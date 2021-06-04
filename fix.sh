@@ -123,7 +123,7 @@ ensure_bundle() {
   #
   # https://app.circleci.com/pipelines/github/apiology/source_finder/21/workflows/88db659f-a4f4-4751-abc0-46f5929d8e58/jobs/107
   set_rbenv_env_variables
-  bundle --version >/dev/null 2>&1 || gem install bundler
+  bundle --version >/dev/null 2>&1 || gem install --no-document bundler
   bundler_version=$(bundle --version | cut -d ' ' -f3)
   bundler_version_major=$(cut -d. -f1 <<< "${bundler_version}")
   bundler_version_minor=$(cut -d. -f2 <<< "${bundler_version}")
@@ -132,7 +132,7 @@ ensure_bundle() {
   # https://app.asana.com/0/1107901397356088/1199504270687298
   if [ "${bundler_version_major}" == 2 ] && [ "${bundler_version_minor}" -lt 2 ]
   then
-    gem install bundler
+    gem install --no-document bundler
   fi
   make bundle_install
   # https://bundler.io/v2.0/bundle_lock.html#SUPPORTING-OTHER-PLATFORMS
