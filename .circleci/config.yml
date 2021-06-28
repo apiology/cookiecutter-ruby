@@ -35,6 +35,8 @@ commands:
       - checkout
       - restore_cache:
           key: gems-v4-{{ checksum "Gemfile.lock" }}
+      - restore_cache:
+          key: wheels-v1-{{ checksum "requirements_dev.txt" }}
       - run:
           name: Initialize packages
           command: |
@@ -52,6 +54,10 @@ commands:
           key: gems-v4-{{ checksum "Gemfile.lock" }}
           paths:
             - "vendor/bundle"
+      - save_cache:
+          key: wheels-v1-{{ checksum "requirements_dev.txt" }}
+          paths:
+            - "/home/circleci/.cache/pip/wheels"
       - run:
           name: Download new circleci tool
           command: |
@@ -103,7 +109,7 @@ jobs:
             equal: [<< pipeline.git.branch >>, "main"]
           steps:
             - tox:
-                tox_arguments: '-e py39'
+                tox_arguments: '-e py310'
       - when:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
@@ -136,6 +142,7 @@ workflows:
                 - main
     jobs:
       - test
+      - overcommit
   overcommit:
     jobs:
       - overcommit
