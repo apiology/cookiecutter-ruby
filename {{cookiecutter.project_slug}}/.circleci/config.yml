@@ -120,6 +120,7 @@ workflows:
                 - main
     jobs:
       - build
+      - overcommit
   overcommit:
     jobs:
       - overcommit
