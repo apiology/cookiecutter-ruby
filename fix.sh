@@ -2,6 +2,16 @@
 
 set -o pipefail
 
+apt_upgraded=0
+
+update_apt() {
+  if [ "${apt_upgraded}" = 0 ]
+  then
+    sudo apt-get update -y
+    apt_upgraded=1
+  fi
+}
+
 install_rbenv() {
   if [ "$(uname)" == "Darwin" ]
   then
@@ -77,13 +87,15 @@ ensure_dev_library() {
 
 ensure_ruby_build_requirements() {
   ensure_dev_library readline/readline.h readline libreadline-dev
+  ensure_dev_library zlib.h zlib zlib1g-dev
+  ensure_dev_library openssl/ssl.h openssl libssl-dev
 }
 
 # You can find out which feature versions are still supported / have
 # been release here: https://www.ruby-lang.org/en/downloads/
 ensure_ruby_versions() {
   # You can find out which feature versions are still supported / have
-  # been release here: https://www.python.org/downloads/
+  # been release here: https://www.ruby-lang.org/en/downloads/
   ruby_versions="$(latest_ruby_version 3.0)"
 
   echo "Latest Ruby versions: ${ruby_versions}"
@@ -92,12 +104,36 @@ ensure_ruby_versions() {
 
   for ver in $ruby_versions
   do
-    rbenv install -s "${ver}"
+    # These CFLAGS can be retired once 2.6.7 is no longer needed :
+    #
+    # https://github.com/rbenv/ruby-build/issues/1747
+    # https://github.com/rbenv/ruby-build/issues/1489
+    # https://bugs.ruby-lang.org/issues/17777
+    if [ "${ver}" == 2.6.7 ]
+    then
+      CFLAGS="-Wno-error=implicit-function-declaration" rbenv install -s "${ver}"
+    else
+      rbenv install -s "${ver}"
+    fi
   done
 }
 
 ensure_bundle() {
-  bundle --version >/dev/null 2>&1 || gem install bundler
+  # Not sure why this is needed a second time, but it seems to be?
+  #
+  # https://app.circleci.com/pipelines/github/apiology/source_finder/21/workflows/88db659f-a4f4-4751-abc0-46f5929d8e58/jobs/107
+  set_rbenv_env_variables
+  bundle --version >/dev/null 2>&1 || gem install --no-document bundler
+  bundler_version=$(bundle --version | cut -d ' ' -f3)
+  bundler_version_major=$(cut -d. -f1 <<< "${bundler_version}")
+  bundler_version_minor=$(cut -d. -f2 <<< "${bundler_version}")
+  # Version 2.1 of bundler seems to have some issues with nokogiri:
+  #
+  # https://app.asana.com/0/1107901397356088/1199504270687298
+  if [ "${bundler_version_major}" == 2 ] && [ "${bundler_version_minor}" -lt 2 ]
+  then
+    gem install --no-document bundler
+  fi
   make bundle_install
   # https://bundler.io/v2.0/bundle_lock.html#SUPPORTING-OTHER-PLATFORMS
   #
@@ -134,8 +170,9 @@ WARNING: seems you still have not added 'pyenv' to the load path.
 # Load pyenv automatically by adding
 # the following to ~/.bashrc:
 
-export PATH="$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init -)"
+export PYENV_ROOT="${HOME}/.pyenv"
+export PATH="${PYENV_ROOT}/bin:$PATH"
+eval "$(pyenv init --path)"
 eval "$(pyenv virtualenv-init -)"
 EOF
     fi
@@ -149,8 +186,9 @@ set_pyenv_env_variables() {
   #
   # https://app.circleci.com/pipelines/github/apiology/cookiecutter-pypackage/15/workflows/10506069-7662-46bd-b915-2992db3f795b/jobs/15
   set +u
-  export PATH="${HOME}/.pyenv/bin:$PATH"
-  eval "$(pyenv init -)"
+  export PYENV_ROOT="${HOME}/.pyenv"
+  export PATH="${PYENV_ROOT}/bin:$PATH"
+  eval "$(pyenv init --path)"
   eval "$(pyenv virtualenv-init -)"
   set -u
 }
@@ -175,7 +213,7 @@ install_package() {
     HOMEBREW_NO_AUTO_UPDATE=1 brew install "${homebrew_package}"
   elif type apt-get >/dev/null 2>&1
   then
-    sudo apt-get update -y
+    update_apt
     sudo apt-get install -y "${apt_package}"
   else
     >&2 echo "Teach me how to install packages on this plaform"
@@ -188,6 +226,9 @@ ensure_python_build_requirements() {
   ensure_dev_library bzlib.h bzip2 libbz2-dev
   ensure_dev_library openssl/ssl.h openssl libssl-dev
   ensure_dev_library ffi.h libffi libffi-dev
+  ensure_dev_library sqlite3.h sqlite3 libsqlite3-dev
+  ensure_dev_library lzma.h xz liblzma-dev
+  ensure_dev_library readline.h readline libreadline-dev
 }
 
 # You can find out which feature versions are still supported / have
@@ -195,7 +236,7 @@ ensure_python_build_requirements() {
 ensure_python_versions() {
   # You can find out which feature versions are still supported / have
   # been release here: https://www.python.org/downloads/
-  python_versions="$(latest_python_version 3.9) $(latest_python_version 3.8) $(latest_python_version 3.7) $(latest_python_version 3.6)"
+  python_versions="$(latest_python_version 3.10) $(latest_python_version 3.9) $(latest_python_version 3.8) $(latest_python_version 3.7) $(latest_python_version 3.6)"
 
   echo "Latest Python versions: ${python_versions}"
 
@@ -232,7 +273,7 @@ ensure_pyenv_virtualenvs() {
   pyenv local "${virtualenv_name}" ${python_versions} mylibs
 }
 
-ensure_pip() {
+ensure_pip_and_wheel() {
   # Make sure we have a pip with the 20.3 resolver, and after the
   # initial bugfix release
   major_pip_version=$(pip --version | cut -d' ' -f2 | cut -d '.' -f 1)
@@ -240,6 +281,8 @@ ensure_pip() {
   then
     pip install 'pip>=20.3.1'
   fi
+  # wheel is helpful for being able to cache long package builds
+  pip show wheel >/dev/null 2>&1 || pip install wheel
 }
 
 ensure_python_requirements() {
@@ -278,7 +321,7 @@ ensure_python_versions
 
 ensure_pyenv_virtualenvs
 
-ensure_pip
+ensure_pip_and_wheel
 
 ensure_python_requirements
 

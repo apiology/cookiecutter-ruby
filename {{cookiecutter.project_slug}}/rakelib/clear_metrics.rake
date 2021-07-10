@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-desc 'Ensure that any localy ratcheted coverage metrics is cleared back ' \
+desc 'Ensure that any locally ratcheted coverage metrics are cleared back ' \
      'to git baseline'
 task :clear_metrics do |_t|
+  puts Time.now
   ret =
     system('git checkout coverage/.last_run.json')
   raise unless ret

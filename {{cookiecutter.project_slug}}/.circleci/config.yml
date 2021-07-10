@@ -19,7 +19,7 @@ commands:
             export PATH="${HOME}/.pyenv/bin:${PATH}"
             export PATH="${HOME}/.rbenv/bin:${HOME}/.rbenv/shims:${PATH}"
             export PATH="${HOME}/project/node_modules/.bin:${PATH}"
-            eval "$(pyenv init -)"
+            eval "$(pyenv init --path)"
             eval "$(pyenv virtualenv-init -)"
             eval "$(rbenv init -)"
             export BUNDLE_PATH=vendor/bundle
@@ -35,6 +35,8 @@ commands:
       - checkout
       - restore_cache:
           key: gems-v4-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
+      - restore_cache:
+          key: wheels-v1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
       - run:
           name: Initialize packages
           command: |
@@ -52,6 +54,10 @@ commands:
           key: gems-v4-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
           paths:
             - "vendor/bundle"
+      - save_cache:
+          key: wheels-v1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
+          paths:
+            - "/home/circleci/.cache/pip/wheels"
       - run:
           name: Download new circleci tool
           command: |
@@ -94,11 +100,12 @@ jobs:
     steps:
       - set_up_environment
       - run_with_languages:
-          label: Run tests
+          label: Test
           command: |
             bundle exec rake citest
             # https://github.com/bluelabsio/records-mover/blob/master/Makefile#L25
             git status --porcelain coverage/.last_run.json
+            git diff coverage/.last_run.json
             test -z "$(git status --porcelain coverage/.last_run.json)"
 
 workflows:
@@ -113,6 +120,7 @@ workflows:
                 - main
     jobs:
       - build
+      - overcommit
   overcommit:
     jobs:
       - overcommit

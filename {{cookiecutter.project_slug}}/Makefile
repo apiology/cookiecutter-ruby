@@ -29,7 +29,10 @@ Gemfile.lock.installed: Gemfile.lock
 
 bundle_install: Gemfile.lock.installed ## Install Ruby dependencies
 
-clean: ## remove all built artifacts
+clear_metrics: ## remove or reset result artifacts created by tests and quality tools
+	bundle exec rake clear_metrics
+
+clean: clear_metrics ## remove all built artifacts
 
 test: spec ## run tests quickly
 
