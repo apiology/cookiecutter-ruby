@@ -11,6 +11,7 @@ gem 'rspec'
 gem 'rubocop'
 gem 'rubocop-rake'
 gem 'rubocop-rspec'
-gem 'simplecov'
+# ensure version with branch coverage
+gem 'simplecov', ['>=0.18.0']
 gem 'simplecov-lcov'
 gem 'undercover'
