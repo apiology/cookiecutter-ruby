@@ -81,7 +81,7 @@ commands:
 jobs:
   overcommit:
     docker:
-      - image: apiology/circleci:latest
+      - image: apiology/circleci-ruby:latest
     steps:
       - when:
           condition:
@@ -96,7 +96,7 @@ jobs:
   build:
     working_directory: ~/{{cookiecutter.project_slug}}
     docker:
-      - image: apiology/circleci:latest
+      - image: apiology/circleci-ruby:latest
     steps:
       - set_up_environment
       - run_with_languages:
