@@ -38,6 +38,15 @@ Naming/MethodParameterName:
     - x # cartesian coordinates
     - y # cartesian coordinates
 
+# by default (EnforcedStyle=NormalCase) this rule doesn't like
+# things like check_1, check_2, etc and wants check1, check2, etc. I
+# like the former.
+#
+# https://docs.rubocop.org/rubocop/cops_naming.html#namingvariablenumber
+Naming/VariableNumber:
+  Enabled: true
+  EnforcedStyle: snake_case
+
 # http://www.betterspecs.org/#single
 #
 # > in tests that are not isolated (e.g. ones that integrate with a
