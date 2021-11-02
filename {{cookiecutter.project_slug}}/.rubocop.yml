@@ -106,7 +106,7 @@ AllCops:
   TargetRubyVersion: 3.0
   Exclude:
     - 'bin/*'
-    - 'vendor/*'
+    - 'vendor/**/*'
 
 require:
   - rubocop-rake
