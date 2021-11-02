@@ -30,7 +30,7 @@ if __name__ == '__main__':
         subprocess.check_call(['bundle', 'exec', 'overcommit', '--sign', 'pre-commit'])
         subprocess.check_call(['bundle', 'install'])
         subprocess.check_call(['bundle', 'exec', 'rubocop', '-a'])
-        subprocess.check_call(['git', 'commit', '-m',
+        subprocess.check_call(['bundle', 'exec', 'git', 'commit', '-m',
                                'Initial commit from boilerplate'])
 
     if os.environ.get('SKIP_GITHUB_AND_CIRCLECI_CREATION', '0') != '1':
