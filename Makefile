@@ -39,7 +39,7 @@ bundle_install: Gemfile.lock.installed ## Install Ruby dependencies
 clean: ## remove all built artifacts
 
 test: ## run tests quickly
-	pytest
+	pytest --capture=no
 
 overcommit: ## run precommit quality checks
 	bundle exec overcommit --run
