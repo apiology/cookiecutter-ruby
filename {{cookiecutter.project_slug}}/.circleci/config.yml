@@ -107,6 +107,8 @@ jobs:
             git status --porcelain coverage/.last_run.json
             git diff coverage/.last_run.json
             test -z "$(git status --porcelain coverage/.last_run.json)"
+    # This seemed to shave 5ish% of the build time off when added
+    resource_class: large
 
 workflows:
   version: 2
