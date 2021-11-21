@@ -35,6 +35,8 @@ PreCommit:
   ShellCheck:
     enabled: true
     on_warn: fail
+    include:
+      - '.envrc'
   YamlLint:
     enabled: true
     on_warn: fail
