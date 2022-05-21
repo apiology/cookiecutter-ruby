@@ -284,12 +284,7 @@ ensure_python_versions() {
       }
 
       major_minor="$(cut -d. -f1-2 <<<"${ver}")"
-      if [ "${major_minor}" == 3.6 ]
-      then
-        pyenv_install --patch "${ver}" < <(curl -sSL https://github.com/python/cpython/commit/8ea6353.patch\?full_index=1)
-      else
-        pyenv_install "${ver}"
-      fi
+      pyenv_install "${ver}"
     else
       pyenv install -s "${ver}"
     fi
@@ -307,12 +302,12 @@ ensure_pyenv_virtualenvs() {
 }
 
 ensure_pip_and_wheel() {
-  # Make sure we have a pip with the 20.3 resolver, and after the
-  # initial bugfix release
+  # pip 22 seems to be better at finding pandas pre-compiled wheels
+  # for macOS, so let's make sure we're using at least that version
   major_pip_version=$(pip --version | cut -d' ' -f2 | cut -d '.' -f 1)
   if [[ major_pip_version -lt 21 ]]
   then
-    pip install 'pip>=20.3.1'
+    pip install 'pip>=22'
   fi
   # wheel is helpful for being able to cache long package builds
   pip show wheel >/dev/null 2>&1 || pip install wheel
