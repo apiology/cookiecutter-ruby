@@ -41,6 +41,8 @@ clean: clear_metrics ## remove all built artifacts
 
 test: spec ## run tests quickly
 
+typecheck: ## validate types in code and configuration
+
 overcommit: ## run precommit quality checks
 	bundle exec overcommit --run
 
