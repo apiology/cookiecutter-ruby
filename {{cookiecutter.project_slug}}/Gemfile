@@ -9,9 +9,10 @@ gem 'mdl'
 gem 'overcommit', ['>=0.58.0']
 gem 'rake'
 gem 'rspec'
-gem 'rubocop'
+gem 'rubocop', ['~> 1.36']
 gem 'rubocop-rake'
-gem 'rubocop-rspec'
+# ensure version with RSpec/VerifiedDoubleReference
+gem 'rubocop-rspec', ['>=2.10.0']
 # ensure version with branch coverage
 gem 'simplecov', ['>=0.18.0']
 gem 'simplecov-lcov'
