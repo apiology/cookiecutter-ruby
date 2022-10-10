@@ -29,6 +29,7 @@ PreCommit:
       - '**/Gemfile'
       - '**/Rakefile'
       - 'bin/*'
+      - 'script/*'
   PythonFlake8:
     enabled: true
     on_warn: fail
