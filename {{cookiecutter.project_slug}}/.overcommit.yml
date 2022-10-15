@@ -30,6 +30,9 @@ PreCommit:
       - '**/Rakefile'
       - 'bin/*'
       - 'script/*'
+    exclude:
+      - db/migrate/*.rb
+      - db/schema.rb
   PythonFlake8:
     enabled: true
     on_warn: fail
