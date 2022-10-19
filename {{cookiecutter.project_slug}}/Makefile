@@ -70,7 +70,7 @@ report-coverage: test ## Report summary of coverage to stdout, and generate HTML
 report-coverage-to-codecov: report-coverage ## use codecov.io for PR-scoped code coverage reports
 	@curl -Os https://uploader.codecov.io/latest/linux/codecov
 	@chmod +x codecov
-	@./codecov --file coverage/.resultset.json --nonZero
+	@./codecov --file coverage/lcov/{{cookiecutter.project_slug}}.lcov --nonZero
 
 # https://github.com/bluelabsio/records-mover/blob/master/Makefile#L25
 cicoverage: report-coverage-to-codecov ## check code coverage, then report to codecov
