@@ -15,7 +15,17 @@ export PRINT_HELP_PYSCRIPT
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-default: clean-coverage test coverage quality ## run default typechecking, tests and quality
+default: clean-coverage test coverage clean-typecoverage typecheck typecoverage quality ## run default typechecking, tests and quality
+
+typecheck: ## validate types in code and configuration
+
+citypecheck: typecheck ## Run type check from CircleCI
+
+typecoverage: typecheck ## Run type checking and then ratchet coverage in metrics/
+
+clean-typecoverage: ## Clean out type-related coverage previous results to avoid flaky results
+
+citypecoverage: typecoverage ## Run type checking, ratchet coverage, and then complain if ratchet needs to be committed
 
 requirements_dev.txt.installed: requirements_dev.txt
 	pip install -q --disable-pip-version-check -r requirements_dev.txt
@@ -42,8 +52,6 @@ clean: clear_metrics ## remove all built artifacts
 test: spec ## run tests quickly
 
 citest: test ## Run unit tests from CircleCI
-
-typecheck: ## validate types in code and configuration
 
 overcommit: ## run precommit quality checks
 	bundle exec overcommit --run
