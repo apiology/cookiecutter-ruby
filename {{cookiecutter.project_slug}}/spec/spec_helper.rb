@@ -17,8 +17,7 @@ SimpleCov.start do
   enable_coverage(:branch) # Report branch coverage to trigger branch-level undercover warnings
 end
 
-require 'fakeweb'
-FakeWeb.allow_net_connect = false
+require 'webmock/rspec'
 
 RSpec.configure do |config|
   config.order = 'random'

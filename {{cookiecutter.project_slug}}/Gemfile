@@ -2,7 +2,6 @@
 
 source 'https://rubygems.org'
 
-gem 'fakeweb'
 gem 'mdl'
 # 0.58.0 and 0.57.0 don't seem super compatible with signatures, and
 # magit doesn't seem to want to use the bundled version at the moment,
@@ -18,3 +17,4 @@ gem 'rubocop-rspec', ['>=2.10.0']
 gem 'simplecov', ['>=0.18.0']
 gem 'simplecov-lcov'
 gem 'undercover'
+gem 'webmock'
