@@ -122,7 +122,7 @@ Style/TrivialAccessors:
 
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.2
   Exclude:
     - 'bin/*'
     - 'vendor/**/*'
