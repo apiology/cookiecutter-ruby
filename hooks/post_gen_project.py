@@ -13,7 +13,7 @@ def remove_file(filepath):
 if __name__ == '__main__':
     if 'Not open source' == '{{ cookiecutter.open_source_license }}':
         remove_file('LICENSE')
-        remove_file('CONTRIBUTING.md')
+        remove_file('CONTRIBUTING.rst')
 
     subprocess.check_call('./fix.sh')
     if os.environ.get('IN_COOKIECUTTER_PROJECT_UPGRADER', '0') == '1':
