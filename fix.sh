@@ -152,10 +152,9 @@ ensure_bundle() {
   #
   # https://app.asana.com/0/1107901397356088/1199504270687298
 
-  # Version 2.2.22 of bundler comes with a fix to ensure the 'bundle
-  # update --conservative' flag works as expected - important when
-  # doing a 'bundle update' on a about-to-be-published gem after
-  # bumping a gem version.
+  # Version <2.2.22 of bundler isn't compatible with Ruby 3.3:
+  #
+  # https://stackoverflow.com/questions/70800753/rails-calling-didyoumeanspell-checkers-mergeerror-name-spell-checker-h
   need_better_bundler=false
   if [ "${bundler_version_major}" -lt 2 ]
   then
@@ -167,7 +166,7 @@ ensure_bundle() {
       need_better_bundler=true
     elif [ "${bundler_version_minor}" -eq 2 ]
     then
-      if [ "${bundler_version_patch}" -lt 22 ]
+      if [ "${bundler_version_patch}" -lt 23 ]
       then
         need_better_bundler=true
       fi
@@ -175,7 +174,7 @@ ensure_bundle() {
   fi
   if [ "${need_better_bundler}" = true ]
   then
-    gem install --no-document bundler
+    bundle update --bundler
   fi
   make bundle_install
   # https://bundler.io/v2.0/bundle_lock.html#SUPPORTING-OTHER-PLATFORMS

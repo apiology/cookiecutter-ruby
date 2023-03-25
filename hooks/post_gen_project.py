@@ -51,6 +51,10 @@ if __name__ == '__main__':
                                    '.',
                                    '{{ cookiecutter.github_username }}/'
                                    '{{ cookiecutter.project_slug }}'])
+            subprocess.check_call(['gh', 'repo', 'edit',
+                                   '--allow-update-branch',
+                                   '--enable-auto-merge',
+                                   '--delete-branch-on-merge'])
             subprocess.check_call(['git', 'push'])
             subprocess.check_call(['circleci', 'follow'])
             subprocess.check_call(['git', 'branch', '--set-upstream-to=origin/main', 'main'])
