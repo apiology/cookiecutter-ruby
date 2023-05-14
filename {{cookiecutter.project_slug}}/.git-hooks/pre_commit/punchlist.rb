@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'overcommit'
+require 'overcommit/hook/pre_commit/base'
 
 # Overcommit configuration
 module Overcommit
@@ -19,9 +20,9 @@ module Overcommit
         end
 
         def files_glob
-          '{' \
-          "#{applicable_files.join(',')}" \
-          '}'
+          "{" \
+            "#{applicable_files.join(',')}" \
+            "}"
         end
 
         def run
