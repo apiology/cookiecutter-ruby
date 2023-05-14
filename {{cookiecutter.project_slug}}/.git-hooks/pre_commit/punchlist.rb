@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'overcommit'
+require 'overcommit/hook/pre_commit/base'
 
 # Overcommit configuration
 module Overcommit

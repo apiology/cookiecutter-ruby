@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'overcommit'
+require 'overcommit/hook/pre_commit/base'
+
 module Overcommit
   module Hook
     module PreCommit
