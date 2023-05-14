@@ -1,6 +1,7 @@
 ---
 include:
   - "**/*.rb"
+  - ".git-hooks/**/*.rb"
 exclude:
   - spec/**/*
   - test/**/*

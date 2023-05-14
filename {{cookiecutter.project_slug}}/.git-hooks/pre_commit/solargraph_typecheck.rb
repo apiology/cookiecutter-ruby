@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'overcommit'
+require 'overcommit/hook/pre_commit/base'
 
 # @!override Overcommit::Hook::Base#execute
 #   @return [Overcommit::Subprocess::Result]
@@ -24,20 +25,15 @@ module Overcommit
         private
 
         def generate_errors_for_file(file, errors)
-          file_dir = File.dirname(file)
+          result = execute(['bundle', 'exec', 'solargraph', 'typecheck', '--level', 'strict', file])
+          return if result.success?
 
-          # Change into the directory of the file before running solargraph
-          Dir.chdir(file_dir) do
-            result = execute(['bundle', 'exec', 'solargraph', 'typecheck', '--level', 'strict', file])
-            return if result.success?
+          # @type [String]
+          stdout = result.stdout
 
-            # @type [String]
-            stdout = result.stdout
-
-            stdout.split("\n").each do |error|
-              error = parse_error(file, error)
-              errors << error unless error.nil?
-            end
+          stdout.split("\n").each do |error|
+            error = parse_error(file, error)
+            errors << error unless error.nil?
           end
         end
 
