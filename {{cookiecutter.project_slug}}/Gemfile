@@ -16,5 +16,6 @@ gem 'rubocop-rspec', ['>=2.10.0']
 # ensure version with branch coverage
 gem 'simplecov', ['>=0.18.0']
 gem 'simplecov-lcov'
+gem 'solargraph'
 gem 'undercover'
 gem 'webmock'
