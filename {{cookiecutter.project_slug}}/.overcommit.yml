@@ -63,6 +63,9 @@ PreCommit:
     on_warn: fail
     include:
       - '**/*.rb'
+  Punchlist:
+    on_warn: fail
+    command: ['bundle', 'exec', 'punchlist']
 
 PrePush:
   RSpec:
