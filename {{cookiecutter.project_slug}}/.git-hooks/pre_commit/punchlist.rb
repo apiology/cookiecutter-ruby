@@ -19,9 +19,9 @@ module Overcommit
         end
 
         def files_glob
-          '{' \
-          "#{applicable_files.join(',')}" \
-          '}'
+          "{" \
+            "#{applicable_files.join(',')}" \
+            "}"
         end
 
         def run
