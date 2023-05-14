@@ -1,0 +1,9 @@
+{
+  "remarkConfig": {
+    "settings": {
+      "bullet": "*",
+      "listItemIndent": "one"
+    },
+    "plugins": []
+  }
+}
