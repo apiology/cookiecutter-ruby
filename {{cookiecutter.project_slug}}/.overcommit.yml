@@ -66,6 +66,7 @@ PreCommit:
   Punchlist:
     on_warn: fail
     command: ['bundle', 'exec', 'punchlist']
+    enabled: true
 
 PrePush:
   RSpec:
