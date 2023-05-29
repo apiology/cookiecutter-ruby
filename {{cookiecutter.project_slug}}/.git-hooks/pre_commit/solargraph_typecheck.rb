@@ -49,7 +49,7 @@ module Overcommit
           message = error.sub("#{file_path}:#{lineno} - ",
                               "#{file_path}:#{lineno}: ")
           # Emit the errors in the specified format
-          Overcommit::Hook::Message.new(:error, file, lineno, message)
+          Overcommit::Hook::Message.new(:error, file, lineno.to_i, message)
         end
       end
     end

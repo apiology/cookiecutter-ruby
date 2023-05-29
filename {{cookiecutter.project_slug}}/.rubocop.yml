@@ -5,6 +5,10 @@ Layout/LineLength:
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
+Lint/EmptyClass:
+  # some workarounds for circular dependencies require empty classes
+  AllowComments: true
+
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
 
@@ -102,6 +106,11 @@ Style/StringLiterals:
     - single_quotes
     - double_quotes
   ConsistentQuotesInMultiline: true
+
+# Solargraph needs to see a class inherited from Struct to recognize
+# what's going on
+Style/StructInheritance:
+  Enabled: false
 
 # I like trailing commas in arrays and hashes.  They let me insert new
 # elements and see them as one line in a diff, not two.
