@@ -64,9 +64,9 @@ PreCommit:
     include:
       - '**/*.rb'
   Punchlist:
-    on_warn: fail
     command: ['bundle', 'exec', 'punchlist']
     enabled: true
+    problem_on_unmodified_line: warn
 
 PrePush:
   RSpec:

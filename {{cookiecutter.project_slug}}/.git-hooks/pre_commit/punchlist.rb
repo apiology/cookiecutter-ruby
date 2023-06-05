@@ -15,7 +15,7 @@ module Overcommit
           stdout.split("\n").map do |line|
             # @sg-ignore
             file, line_no, _message = line.split(':', 3)
-            Overcommit::Hook::Message.new(:warning, file, line_no.to_i, line)
+            Overcommit::Hook::Message.new(:error, file, line_no.to_i, line)
           end
         end
 
