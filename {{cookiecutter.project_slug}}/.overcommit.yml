@@ -69,8 +69,15 @@ PreCommit:
     problem_on_unmodified_line: warn
 
 PrePush:
-  RSpec:
+  RakeTarget:
     enabled: true
+    command: ['bundle', 'exec', 'rake']
+    include:
+      - 'Rakefile'
+    targets:
+      - 'clear_metrics'
+      - 'spec'
+      - 'undercover'
 
 #PostCheckout:
 #  ALL: # Special hook name that customizes all hooks of this type
