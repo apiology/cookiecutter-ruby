@@ -10,7 +10,7 @@ gem 'overcommit', ['>=0.60.0', '<0.61.0']
 gem 'punchlist'
 gem 'rake'
 gem 'rspec'
-gem 'rubocop', ['~> 1.36']
+gem 'rubocop', ['~> 1.52']
 gem 'rubocop-rake'
 # ensure version with RSpec/VerifiedDoubleReference
 gem 'rubocop-rspec', ['>=2.10.0']
