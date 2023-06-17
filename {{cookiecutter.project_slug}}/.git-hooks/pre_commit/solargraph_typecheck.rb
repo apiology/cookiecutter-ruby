@@ -11,6 +11,7 @@ module Overcommit
     module PreCommit
       # Runs `solargraph typecheck` against any modified Ruby files.
       class SolargraphTypecheck < Base
+        # @return [Array<String>]
         def run
           errors = []
 
@@ -24,8 +25,11 @@ module Overcommit
 
         private
 
+        # @param file [String]
+        # @param errors [Array<String>]
+        # @return [void]
         def generate_errors_for_file(file, errors)
-          result = execute(['bundle', 'exec', 'solargraph', 'typecheck', '--level', 'strict', file])
+          result = execute(['bundle', 'exec', 'solargraph', 'typecheck', '--level', 'strong', file])
           return if result.success?
 
           # @type [String]
@@ -37,6 +41,9 @@ module Overcommit
           end
         end
 
+        # @param file [String]
+        # @param error [String]
+        # @return [Overcommit::Hook::Message, nil]
         def parse_error(file, error)
           # Parse the result for the line number                # @type [MatchData]
           match = error.match(/^(.+?):(\d+)/)
