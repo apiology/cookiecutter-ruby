@@ -2,7 +2,6 @@
 
 from distutils.core import setup
 
-
 setup(
     name='cookiecutter-ruby',
     packages=[],
