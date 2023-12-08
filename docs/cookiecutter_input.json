@@ -1,4 +1,5 @@
 {
+    "_checkout": null,
     "_output_dir": "/Users/broz/src/cookiecutter-ruby/.git/cookiecutter",
     "_repo_dir": "/Users/broz/.cookiecutters/cookiecutter-cookiecutter",
     "_template": "https://github.com/apiology/cookiecutter-cookiecutter",
