@@ -363,6 +363,7 @@ ensure_overcommit() {
   if [ -d .git ]
   then
     bundle exec overcommit --install
+    bundle exec overcommit --sign pre-commit
   else
     >&2 echo 'Not in a git repo; not installing git hooks'
   fi
