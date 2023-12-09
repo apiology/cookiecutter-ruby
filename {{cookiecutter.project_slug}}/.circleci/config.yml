@@ -36,7 +36,7 @@ commands:
       - restore_cache:
           key: gems-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
       - restore_cache:
-          key: wheels-v2-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
+          key: wheels-v1-3.12.1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
       - run:
           name: Initialize packages
           command: |
@@ -55,9 +55,11 @@ commands:
           paths:
             - "vendor/bundle"
       - save_cache:
-          key: wheels-v2-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
+          key: wheels-v1-3.12.1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
           paths:
             - "/home/circleci/.cache/pip/wheels"
+            - "/home/circleci/.pyenv/versions/3.12.1/envs/{{cookiecutter.project_slug}}-3.12.1"
+            - "/home/circleci/.pyenv/versions/{{cookiecutter.project_slug}}-3.12.1"
       - run:
           name: Download new circleci tool
           command: |
