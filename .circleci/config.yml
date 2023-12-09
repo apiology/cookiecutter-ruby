@@ -36,7 +36,7 @@ commands:
       - restore_cache:
           key: gems-v2-{{ checksum "Gemfile.lock" }}
       - restore_cache:
-          key: wheels-v2-{{ checksum "requirements_dev.txt" }}
+          key: wheels-v1-3.12.1-{{ checksum "requirements_dev.txt" }}
       - run:
           name: Initialize packages
           command: |
@@ -55,9 +55,11 @@ commands:
           paths:
             - "vendor/bundle"
       - save_cache:
-          key: wheels-v2-{{ checksum "requirements_dev.txt" }}
+          key: wheels-v1-3.12.1-{{ checksum "requirements_dev.txt" }}
           paths:
             - "/home/circleci/.cache/pip/wheels"
+            - "/home/circleci/.pyenv/versions/3.12.1/envs/cookiecutter-ruby-3.12.1"
+            - "/home/circleci/.pyenv/versions/cookiecutter-ruby-3.12.1"
       - run:
           name: Download new circleci tool
           command: |
