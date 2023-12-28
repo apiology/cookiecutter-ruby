@@ -256,7 +256,7 @@ install_package() {
     HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_UPGRADE=1 brew install "${homebrew_package}"
   elif type apt-get >/dev/null 2>&1
   then
-    if ! time dpkg -s "${apt_package}" >/dev/null
+    if ! dpkg -s "${apt_package}" >/dev/null
     then
       update_apt
       sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${apt_package}"
