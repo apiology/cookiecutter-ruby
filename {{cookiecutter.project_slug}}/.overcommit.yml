@@ -38,7 +38,7 @@ PreCommit:
       - '**/*.sh'
   YamlLint:
     enabled: true
-    flags: ['-c', '.yamllint.yml']
+    flags: ['-c', '.yamllint.yml', '--format=parsable', '--strict']
     on_warn: fail
   CircleCi:
     required_executable: 'circleci'
