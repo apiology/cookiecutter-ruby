@@ -21,7 +21,7 @@ GEM
       tomlrb
     mixlib-shellout (3.2.7)
       chef-utils
-    overcommit (0.60.0)
+    overcommit (0.61.0)
       childprocess (>= 0.6.3, < 5)
       iniparse (~> 1.4)
       rexml (~> 3.2)
@@ -40,7 +40,7 @@ PLATFORMS
 
 DEPENDENCIES
   mdl
-  overcommit (>= 0.60.0, < 0.61.0)
+  overcommit (>= 0.61.0, < 0.62.0)
   punchlist
 
 BUNDLED WITH
