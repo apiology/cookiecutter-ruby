@@ -9,8 +9,10 @@ Lint/EmptyClass:
   # some workarounds for circular dependencies require empty classes
   AllowComments: true
 
+# conflicts with solargraph wanting every parameter documented with
+# actual name and subclassing
 Lint/UnusedMethodArgument:
-  AllowUnusedKeywordArguments: true
+  Enabled: false
 
 # https://stackoverflow.com/questions/40934345/rubocop-25-line-block-size-and-rspec-tests
 Metrics/BlockLength:
@@ -99,6 +101,11 @@ Style/CommentAnnotation:
        W"
     - "XX\
        X"
+
+Style/DocumentationMethod:
+  Enabled: true
+  Include:
+    - 'lib/{{cookiecutter.project_slug}}/*.rb'
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes
