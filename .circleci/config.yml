@@ -102,7 +102,7 @@ commands:
             tox <<parameters.tox_arguments>>
 
 jobs:
-  test:
+  build:
     working_directory: ~/cookiecutter-ruby
     docker:
       - image: apiology/circleci-python:latest
@@ -160,11 +160,11 @@ workflows:
               only:
                 - main
     jobs:
-      - test
+      - build
       - overcommit
   overcommit:
     jobs:
       - overcommit
-  test:
+  build:
     jobs:
-      - test
+      - build
