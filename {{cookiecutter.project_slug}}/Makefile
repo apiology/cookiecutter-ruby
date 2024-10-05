@@ -1,4 +1,4 @@
-.PHONY: clean clean-typecheck localtest test help quality repl spec feature
+.PHONY: clean clean-typecheck feature help localtest quality repl rubocop spec test
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
