@@ -116,7 +116,7 @@ ensure_ruby_versions() {
 
   # You can find out which feature versions are still supported / have
   # been release here: https://www.ruby-lang.org/en/downloads/
-  ruby_versions="$(latest_ruby_version 3.2)"
+  ruby_versions="$(latest_ruby_version 3.3)"
 
   echo "Latest Ruby versions: ${ruby_versions}"
 
