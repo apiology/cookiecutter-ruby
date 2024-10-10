@@ -87,10 +87,11 @@ ensure_dev_library() {
   header_file_name=${1:?header file name}
   homebrew_package=${2:?homebrew package}
   apt_package=${3:-${homebrew_package}}
-  if ! [ -f /usr/include/"${header_file_name}" ] && \
+  if ! [ -f /opt/homebrew/include/"${header_file_name}" ] && \
+      ! [ -f /usr/include/"${header_file_name}" ] && \
       ! [ -f /usr/include/x86_64-linux-gnu/"${header_file_name}" ] && \
       ! [ -f /usr/local/include/"${header_file_name}" ] && \
-      ! [ -f  /usr/local/opt/"${homebrew_package}"/include/"${header_file_name}" ]
+      ! [ -f /usr/local/opt/"${homebrew_package}"/include/"${header_file_name}" ]
   then
     install_package "${homebrew_package}" "${apt_package}"
   fi
