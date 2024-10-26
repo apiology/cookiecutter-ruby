@@ -66,6 +66,11 @@ overcommit: ## run precommit quality checks
 
 quality: overcommit ## run precommit quality checks
 
+rubocop: ## Run rubocop
+	@bundle exec rubocop
+
+test: spec ## run tests quickly
+
 spec: ## Run lower-level tests
 	@bundle exec rake spec
 
