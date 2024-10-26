@@ -87,7 +87,8 @@ ensure_dev_library() {
   header_file_name=${1:?header file name}
   homebrew_package=${2:?homebrew package}
   apt_package=${3:-${homebrew_package}}
-  if ! [ -f /opt/homebrew/include/"${header_file_name}" ] && \
+  if ! [ -f /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"${header_file_name}" ] && \
+      ! [ -f /opt/homebrew/include/"${header_file_name}" ] && \
       ! [ -f /usr/include/"${header_file_name}" ] && \
       ! [ -f /usr/include/x86_64-linux-gnu/"${header_file_name}" ] && \
       ! [ -f /usr/local/include/"${header_file_name}" ] && \
@@ -288,7 +289,7 @@ ensure_python_build_requirements() {
   ensure_dev_library zlib.h zlib zlib1g-dev
   ensure_dev_library bzlib.h bzip2 libbz2-dev
   ensure_dev_library openssl/ssl.h openssl libssl-dev
-  ensure_dev_library ffi.h libffi libffi-dev
+  ensure_dev_library ffi/ffi.h libffi libffi-dev
   ensure_dev_library sqlite3.h sqlite3 libsqlite3-dev
   ensure_dev_library lzma.h xz liblzma-dev
   ensure_dev_library readline/readline.h readline libreadline-dev
