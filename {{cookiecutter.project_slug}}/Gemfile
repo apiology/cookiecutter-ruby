@@ -17,7 +17,7 @@ gem 'simplecov', ['>=0.18.0']
 gem 'simplecov-lcov'
 gem 'solargraph',
     git: 'https://github.com/apiology/solargraph',
-    branch: 'fix_kwarg_typecheck_issue'
+    branch: 'master'
 gem 'undercover'
 gem 'webmock'
 gem 'yard'
