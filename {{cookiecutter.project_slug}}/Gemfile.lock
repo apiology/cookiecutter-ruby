@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/apiology/solargraph
-  revision: 19b24769041fa8aaa2c368f787c757f2b244371b
-  branch: fix_kwarg_typecheck_issue
+  revision: 904b9304770a59fac393c5cc3cad481e5bdf0fd8
+  branch: master
   specs:
     solargraph (0.50.1)
       backport (~> 1.2)
