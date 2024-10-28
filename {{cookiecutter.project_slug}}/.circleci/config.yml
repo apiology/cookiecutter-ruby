@@ -86,16 +86,7 @@ jobs:
     docker:
       - image: apiology/circleci-ruby:latest
     steps:
-      - when:
-          condition:
-            equal: [<< pipeline.git.branch >>, "main"]
-          steps:
-            - overcommit
-      - unless:
-          condition:
-            equal: [<< pipeline.git.branch >>, "main"]
-          steps:
-            - run: echo "overcommit only runs on main branch"
+      - overcommit
   build:
     working_directory: ~/{{cookiecutter.project_slug}}
     docker:
