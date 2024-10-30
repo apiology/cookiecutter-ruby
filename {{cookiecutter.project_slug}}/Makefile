@@ -21,11 +21,12 @@ clean-typecheck: ## Refresh information that type checking depends on
 	bundle install
 	bundle exec solargraph clear
 	rm -fr .yardoc/
-	bundle exec yard gems
-	bundle exec solargraph scan
+	bundle exec yard gems 2>&1
+	bundle exec solargraph scan 2>&1
 	echo all clear
 
 typecheck: ## validate types in code and configuration
+	bundle exec solargraph typecheck --level strong
 
 citypecheck: typecheck ## Run type check from CircleCI
 
