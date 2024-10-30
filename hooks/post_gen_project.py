@@ -11,7 +11,10 @@ def run(*args, **kwargs):
         print('running with kwargs', kwargs, ":", *args)
     else:
         print('running', *args)
-    subprocess.check_call(*args, **kwargs)
+    # keep both streams in the same place so that we can weave
+    # together what happened on report instead of having them
+    # dumped separately
+    subprocess.check_call(*args, stderr=subprocess.STDOUT, **kwargs)
 
 
 def remove_file(filepath):
