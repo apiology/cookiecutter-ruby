@@ -2,6 +2,23 @@
 
 source 'https://rubygems.org'
 
+{% if cookiecutter.use_checkoff %}# ruby-asana gem is pending key bugfixes for checkoff as of
+# 2021-07-29:
+#
+# See
+#  https://github.com/Asana/ruby-asana/issues/109
+#  https://github.com/Asana/ruby-asana/issues/110
+#
+gem 'asana',
+    git: 'https://github.com/apiology/ruby-asana',
+    branch: 'checkoff_fixes'
+#   path: '/Users/broz/src/ruby-asana'
+# Awaiting merge and release of
+# https://github.com/seamusabshere/cache_method/pull/18
+gem 'cache_method',
+    git: 'https://github.com/apiology/cache_method',
+    branch: 'ruby_3_support'
+gem 'checkoff' # , path: '/Users/broz/src/checkoff'{% endif %}
 gem 'mdl'
 gem 'ostruct'
 gem 'overcommit', ['>=0.64.0', '<0.65.0']
