@@ -17,12 +17,14 @@ help:
 
 default: clean-coverage test coverage clean-typecoverage typecheck typecoverage quality ## run default typechecking, tests and quality
 
-clean-typecheck: ## Refresh information that type checking depends on
+build-typecheck:
 	bundle install
-	bundle exec solargraph clear
-	rm -fr .yardoc/
 	bundle exec yard gems 2>&1
 	bundle exec solargraph scan 2>&1
+
+clean-typecheck: ## Refresh information that type checking depends on
+	bundle exec solargraph clear
+	rm -fr .yardoc/
 	echo all clear
 
 typecheck: ## validate types in code and configuration
