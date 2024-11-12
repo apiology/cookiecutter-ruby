@@ -26,6 +26,7 @@ gem 'punchlist', ['>=1.3.1']
 gem 'rake'
 gem 'rspec'
 gem 'rubocop', ['~> 1.52']
+gem 'rubocop-performance'
 gem 'rubocop-rake'
 # ensure version with RSpec/VerifiedDoubleReference
 gem 'rubocop-rspec', ['>=2.10.0']
