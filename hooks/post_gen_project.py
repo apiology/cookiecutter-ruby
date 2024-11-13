@@ -58,7 +58,7 @@ if __name__ == '__main__':
                                    'cookiecutter.type_of_github_repo: '
                                    '{{ cookiecutter.type_of_github_repo }}')
             description = "{{ cookiecutter.project_short_description.replace('\"', '\\\"') }}"
-            # if repo doesn't already exists
+            # if repo doesn't already exist
             if subprocess.call(['gh', 'repo', 'view',
                                 '{{ cookiecutter.github_username }}/'
                                 '{{ cookiecutter.project_slug }}']) != 0:

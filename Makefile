@@ -1,7 +1,5 @@
-.PHONY: clean test help typecheck quality
+.PHONY: build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-build clean-coverage clean-pyc clean-typecheck clean-typecoverage coverage default help overcommit report-coverage report-coverage-to-codecov test typecheck typecoverage update_from_cookiecutter quality
 .DEFAULT_GOAL := default
-
-BAKE_OPTIONS=--no-input
 
 define PRINT_HELP_PYSCRIPT
 import re, sys
@@ -16,15 +14,49 @@ export PRINT_HELP_PYSCRIPT
 
 default: clean-coverage test coverage clean-typecoverage typecheck typecoverage quality ## run default typechecking, tests and quality
 
-typecheck: ## validate types in code and configuration
+# https://app.circleci.com/pipelines/github/apiology/cookiecutter-pypackage/281/workflows/b85985a9-16d0-42c4-93d4-f965a111e090/jobs/366
+typecheck: ## run mypy against project
+	mypy --cobertura-xml-report typecover --html-report typecover hooks tests
+
+build-typecheck: ## Fetch information that type checking depends on
+
+clean-typecheck: ## Refresh information that type checking depends on
 
 citypecheck: typecheck ## Run type check from CircleCI
 
-typecoverage: typecheck ## Run type checking and then ratchet coverage in metrics/
+typecoverage: typecheck ## Run type checking and then ratchet coverage in metrics/mypy_high_water_mark
+	@python setup.py mypy_ratchet
 
-clean-typecoverage: ## Clean out type-related coverage previous results to avoid flaky results
+clean-typecoverage: ## Clean out mypy previous results to avoid flaky results
+	@rm -fr .mypy_cache
 
-citypecoverage: typecoverage ## Run type checking, ratchet coverage, and then complain if ratchet needs to be committed
+ratchet-typecoverage: ## Run type checking, ratchet coverage, and then complain if ratchet needs to be committed
+	@echo "Looking for un-checked-in type coverage metrics..."
+	@git status --porcelain metrics/mypy_high_water_mark
+	@test -z "$$(git status --porcelain metrics/mypy_high_water_mark)"
+
+citypecoverage: ratchet-typecoverage ## Run type checking, ratchet coverage, and then complain if ratchet needs to be committed
+
+clean: clean-build clean-pyc clean-test clean-mypy clean-coverage ## remove all build, test, coverage and Python artifacts
+
+clean-build: ## remove build artifacts
+	rm -fr build/
+	rm -fr dist/
+	rm -fr .eggs/
+	find . -name '*.egg-info' -exec rm -fr {} +
+	find . -name '*.egg' -exec rm -f {} +
+
+clean-pyc: ## remove Python file artifacts
+	find . -name '*.pyc' -exec rm -f {} +
+	find . -name '*.pyo' -exec rm -f {} +
+	find . -name '*~' -exec rm -f {} +
+	find . -name '__pycache__' -exec rm -fr {} +
+
+clean-test: ## remove test and coverage artifacts
+	rm -fr .tox/
+	rm -f .coverage
+	rm -fr htmlcov/
+	rm -fr .pytest_cache
 
 requirements_dev.txt.installed: requirements_dev.txt
 	pip install -q --disable-pip-version-check -r requirements_dev.txt
@@ -43,7 +75,11 @@ Gemfile.lock.installed: Gemfile.lock
 
 bundle_install: Gemfile.lock.installed ## Install Ruby dependencies
 
-clean: ## remove all built artifacts
+lint: ## check style with flake8
+	flake8 hooks tests
+
+test-all: ## run tests on every Python version with tox
+	tox
 
 test: ## run tests quickly
 	pytest --maxfail=0
