@@ -1,7 +1,9 @@
 alabaster==0.7.12
-cookiecutter>=2.5.0
+cookiecutter>=2.6.0
 flake8==7.0.0
 flake8-import-order==0.18.2
+mypy==1.13
+lxml==5.3.0
 pip==23.3.1
 pytest-cookies==0.6.1
 pytest==7.3.1

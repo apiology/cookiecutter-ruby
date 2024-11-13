@@ -374,6 +374,10 @@ ensure_overcommit() {
   fi
 }
 
+ensure_types_built() {
+  make build-typecheck
+}
+
 ensure_ruby_versions
 
 set_ruby_local_version
@@ -391,5 +395,7 @@ ensure_pip_and_wheel
 ensure_python_requirements
 
 ensure_shellcheck
+
+ensure_types_built
 
 ensure_overcommit

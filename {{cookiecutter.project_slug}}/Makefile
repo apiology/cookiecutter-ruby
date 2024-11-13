@@ -1,4 +1,4 @@
-.PHONY: clean test help typecheck quality
+.PHONY: build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default help overcommit report-coverage report-coverage-to-codecov test typecheck typecoverage update_from_cookiecutter quality
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -16,6 +16,10 @@ help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 default: clean-coverage test coverage clean-typecoverage typecheck typecoverage quality ## run default typechecking, tests and quality
+
+build-typecheck: ## Fetch information that type checking depends on
+
+clean-typecheck: ## Refresh information that type checking depends on
 
 typecheck: ## validate types in code and configuration
 

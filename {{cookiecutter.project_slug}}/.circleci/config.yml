@@ -94,11 +94,12 @@ jobs:
     steps:
       - set_up_environment
       - run_with_languages:
-          label: typecheck
+          label: Typecheck
           command: make citypecheck citypecoverage
       - run_with_languages:
-          label: test
-          command: make citest cicoverage
+          label: Test
+          command: |
+            make citest cicoverage
     # This seemed to shave 5ish% of the build time off when added
     resource_class: large
 
