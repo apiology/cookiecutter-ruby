@@ -1,4 +1,4 @@
-.PHONY: clean clean-typecheck feature help localtest quality repl rubocop spec test
+.PHONY: build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default feature help localtest overcommit quality repl report-coverage report-coverage-to-codecov rubocop spec test typecheck typecoverage update_from_cookiecutter
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -17,7 +17,7 @@ help:
 
 default: clean-coverage test coverage clean-typecoverage typecheck typecoverage quality ## run default typechecking, tests and quality
 
-build-typecheck:
+build-typecheck: ## Fetch information that type checking depends on
 	bundle install
 	bundle exec yard gems 2>&1
 	bundle exec solargraph scan 2>&1
