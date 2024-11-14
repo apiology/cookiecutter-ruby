@@ -33,8 +33,14 @@ commands:
     description: "Install source environment"
     steps:
       - checkout
+      - run: |
+{% if cookiecutter.use_checkoff %}          sed -E -e 's/checkoff \([[:digit:]]+.[[:digit:]]+.[[:digit:]]+\)/checkoff (0.1.0)/g' \
+           Gemfile.lock \
+           > Gemfile.lock.deversioned{% else %}
+          # no frequently changing dependencies
+          cp Gemfile.lock Gemfile.lock.deversioned{% endif %}
       - restore_cache:
-          key: gems-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
+          key: gems-v2-{% raw %}{{ checksum "Gemfile.lock.deversioned" }}{% endraw %}
       - restore_cache:
           key: wheels-v1-3.12.1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
       - run:
@@ -51,7 +57,7 @@ commands:
               exit 1
             fi
       - save_cache:
-          key: gems-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
+          key: gems-v2-{% raw %}{{ checksum "Gemfile.lock.deversioned" }}{% endraw %}
           paths:
             - "vendor/bundle"
       - save_cache:
@@ -79,7 +85,73 @@ commands:
             bundle exec overcommit --sign pre-commit
 
             bundle exec overcommit --run
+  update_dependencies:
+    description: "Update dependencies whose build may have triggered this build"
+    parameters:
+      gems:
+        type: string
+        description: "Space-separated list of gems to update"
+    steps:
+      - run_with_languages:
+          label: Update dependencies
+          command: |
+            set -x
+            for package in <<parameters.gems>>
+            do
+              REMOTE_VERSION=$(gem search "${package}" | \
+               grep "${package}" | cut -d\( -f2 | cut -d\) -f1)
+              BUNDLED_VERSION=$(bundle info "${package}" | \
+                 head -1 | cut -d\( -f2 | cut -d\) -f1)
+              if [ ${REMOTE_VERSION:?} == ${BUNDLED_VERSION:?} ]
+              then
+                continue
+              fi
 
+              bundle update --conservative "${package}"
+
+              BUNDLED_VERSION=$(bundle info "${package}" | \
+                 head -1 | cut -d\( -f2 | cut -d\) -f1)
+
+              if [ ${REMOTE_VERSION:?} == ${BUNDLED_VERSION:?} ]
+              then
+                continue
+              fi
+
+              echo "Waiting for ${package} v${REMOTE_VERSION} to be"\
+                   "available..."
+              sleep 20
+              bundle update "${package}"
+
+              BUNDLED_VERSION=$(bundle info "${package}" | \
+                 head -1 | cut -d\( -f2 | cut -d\) -f1)
+
+
+              if [ ${REMOTE_VERSION:?} != ${BUNDLED_VERSION:?} ]
+              then
+                >&2 echo "Manually upgrade to ${package}"\
+                         "v${REMOTE_VERSION}"
+                exit 1
+              fi
+            done
+            if [ -z "$(git status --porcelain Gemfile.lock)" ]
+            then
+              echo "No updates needed"
+              exit 0
+            fi
+            # Push any dependency gem updates
+            git config user.email 'vince@broz.cc'
+            git config user.name 'Vince Broz'
+            git status
+            # bundle exec so that overcommit is used from Gemfile for
+            # git hooks
+            #
+            # https://app.circleci.com/pipelines/github/apiology/"${package}"-rails/806/workflows/40fdf1ef-fa23-421b-a0f1-641ea0ed1641/jobs/1173
+            #
+            bundle exec overcommit --sign pre-commit
+            bundle exec git commit -m "Bump dependency releases" Gemfile.lock || true
+            OVERCOMMIT_DEBUG=1 bundle exec git push --set-upstream origin "${CIRCLE_BRANCH:?}"
+            echo "Avoiding double build after git push"
+            exit 1
 jobs:
   overcommit:
     working_directory: ~/{{cookiecutter.project_slug}}
@@ -93,9 +165,15 @@ jobs:
       - image: apiology/circleci-ruby:latest
     steps:
       - set_up_environment
+{% if cookiecutter.use_checkoff %}      - when:
+          condition:
+            equal: [<< pipeline.git.branch >>, "main"]
+          steps:
+            - update_dependencies:
+                gems: checkoff{% endif %}
       - run_with_languages:
           label: Typecheck
-          command: make citypecheck citypecoverage
+          command: make build-typecheck citypecheck citypecoverage
       - run_with_languages:
           label: Test
           command: |
