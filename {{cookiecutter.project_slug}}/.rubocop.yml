@@ -43,6 +43,7 @@ Naming/MethodParameterName:
     - e # exception
     - x # cartesian coordinates
     - y # cartesian coordinates
+    - n # number of things
 
 # by default (EnforcedStyle=NormalCase) this rule doesn't like
 # things like check_1, check_2, etc and wants check1, check2, etc. I
