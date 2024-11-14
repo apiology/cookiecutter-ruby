@@ -116,7 +116,7 @@ jobs:
       - image: apiology/circleci-python:latest
     steps:
       - restore_cache:
-          key: child-gems-v1-{{ checksum "{% raw %}{{cookiecutter.project_slug}}{% endraw }/Gemfile" }}
+          key: child-gems-v1-{{ checksum "\{\{cookiecutter.project_slug\}\}/Gemfile" }}
       - unless:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
@@ -141,7 +141,7 @@ jobs:
 
                   make citest cicoverage
       - save_cache:
-          key: child-gems-v1-{{ checksum "{% raw %}{{cookiecutter.project_slug}}{% endraw }/Gemfile" }}
+          key: child-gems-v1-{{ checksum "\{\{cookiecutter.project_slug\}\}/Gemfile" }}
           paths:
             - "vendor/bundle"
       - when:
