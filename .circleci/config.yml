@@ -22,7 +22,8 @@ commands:
             eval "$(pyenv init --path)"
             eval "$(pyenv virtualenv-init -)"
             eval "$(rbenv init -)"
-            export BUNDLE_PATH=vendor/bundle
+            # keep this in a single place for both main and child builds for cachability
+            export BUNDLE_PATH="$(pwd)/vendor/bundle"
 
             <<parameters.command>>
           environment:
@@ -114,6 +115,8 @@ jobs:
     docker:
       - image: apiology/circleci-python:latest
     steps:
+      - restore_cache:
+          key: child-gems-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}
       - unless:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
@@ -137,6 +140,10 @@ jobs:
                   bundle exec overcommit --sign pre-commit
 
                   make citest cicoverage
+      - save_cache:
+          key: child-gems-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}
+          paths:
+            - "vendor/bundle"
       - when:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
