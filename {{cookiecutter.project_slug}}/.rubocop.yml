@@ -147,3 +147,4 @@ AllCops:
 require:
   - rubocop-rake
   - rubocop-rspec
+  - rubocop-performance
