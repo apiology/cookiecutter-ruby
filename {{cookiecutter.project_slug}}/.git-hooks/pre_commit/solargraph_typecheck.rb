@@ -15,9 +15,7 @@ module Overcommit
         def run
           errors = []
 
-          applicable_files.each do |file|
-            generate_errors_for_file(file, errors)
-          end
+          generate_errors_for_files(errors, *applicable_files)
 
           # output message to stderr
           errors
@@ -25,27 +23,27 @@ module Overcommit
 
         private
 
-        # @param file [String]
         # @param errors [Array<String>]
+        # @param file [String]
         # @return [void]
-        def generate_errors_for_file(file, errors)
-          result = execute(['bundle', 'exec', 'solargraph', 'typecheck', '--level', 'strong', file])
+        def generate_errors_for_files(errors, *files)
+          result = execute(['bundle', 'exec', 'solargraph', 'typecheck', '--level', 'strong', *files])
           return if result.success?
 
           # @type [String]
           stdout = result.stdout
 
           stdout.split("\n").each do |error|
-            error = parse_error(file, error)
+            error = parse_error(error)
             errors << error unless error.nil?
           end
         end
 
-        # @param file [String]
         # @param error [String]
         # @return [Overcommit::Hook::Message, nil]
-        def parse_error(file, error)
-          # Parse the result for the line number                # @type [MatchData]
+        def parse_error(error)
+          # Parse the result for the line number
+          # @type [MatchData]
           match = error.match(/^(.+?):(\d+)/)
           return nil unless match
 
@@ -56,7 +54,7 @@ module Overcommit
           message = error.sub("#{file_path}:#{lineno} - ",
                               "#{file_path}:#{lineno}: ")
           # Emit the errors in the specified format
-          Overcommit::Hook::Message.new(:error, file, lineno.to_i, message)
+          Overcommit::Hook::Message.new(:error, file_path, lineno.to_i, message)
         end
       end
     end
