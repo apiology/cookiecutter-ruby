@@ -65,6 +65,8 @@ PreCommit:
     problem_on_unmodified_line: warn
     include:
       - '**/*.rb'
+      - '**/*.rake'
+      - 'script/*'
   Punchlist:
     command: ['bundle', 'exec', 'punchlist']
     enabled: true
