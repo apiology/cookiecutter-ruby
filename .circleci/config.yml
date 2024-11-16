@@ -123,7 +123,7 @@ jobs:
             # virtualenv, and only run in default Python version.
             - set_up_environment
             - restore_cache:
-                key: child-gems-v1-{{ checksum "slug/Gemfile" }}
+                key: child-gems-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}
             - run_with_languages:
                 label: Typecheck
                 command: |
@@ -141,7 +141,7 @@ jobs:
 
                   make citest cicoverage
             - save_cache:
-                key: child-gems-v1-{{ checksum "slug/Gemfile" }}
+                key: child-gems-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}
                 paths:
                   - "vendor/bundle"
       - when:
