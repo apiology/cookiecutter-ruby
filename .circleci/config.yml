@@ -115,8 +115,6 @@ jobs:
     docker:
       - image: apiology/circleci-python:latest
     steps:
-      - restore_cache:
-          key: child-gems-v1-{{ checksum "slug/Gemfile" }}
       - unless:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
@@ -124,6 +122,8 @@ jobs:
             # skip tox to speed things by not installing another
             # virtualenv, and only run in default Python version.
             - set_up_environment
+            - restore_cache:
+                key: child-gems-v1-{{ checksum "slug/Gemfile" }}
             - run_with_languages:
                 label: Typecheck
                 command: |
@@ -140,10 +140,10 @@ jobs:
                   bundle exec overcommit --sign pre-commit
 
                   make citest cicoverage
-      - save_cache:
-          key: child-gems-v1-{{ checksum "slug/Gemfile" }}
-          paths:
-            - "vendor/bundle"
+            - save_cache:
+                key: child-gems-v1-{{ checksum "slug/Gemfile" }}
+                paths:
+                  - "vendor/bundle"
       - when:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
