@@ -123,7 +123,7 @@ jobs:
             - run_with_languages:
                 label: Typecheck
                 command: |
-                  make citypecheck citypecoverage
+                  make build-typecheck citypecheck citypecoverage
             - run_with_languages:
                 label: Test
                 command: |
