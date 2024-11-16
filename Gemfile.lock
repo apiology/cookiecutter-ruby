@@ -30,7 +30,7 @@ GEM
       rexml (~> 3.2)
     punchlist (1.3.2)
       source_finder (>= 2)
-    rexml (3.3.8)
+    rexml (3.3.9)
     source_finder (3.2.1)
     tomlrb (2.0.3)
 
