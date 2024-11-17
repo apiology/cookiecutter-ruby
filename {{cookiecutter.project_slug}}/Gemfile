@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-{% if cookiecutter.use_checkoff %}# ruby-asana gem is pending key bugfixes for checkoff as of
+{% if cookiecutter.use_checkoff == 'Yes' %}# ruby-asana gem is pending key bugfixes for checkoff as of
 # 2021-07-29:
 #
 # See
