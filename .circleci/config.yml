@@ -36,9 +36,16 @@ commands:
     steps:
       - checkout
       - restore_cache:
-          key: gems-v2-{{ checksum "Gemfile.lock" }}
+          keys:
+            - gems-v2-{{ checksum "Gemfile.lock" }}
+            - gems-v2-
+            - gems-
       - restore_cache:
-          key: wheels-v1-3.12.1-{{ checksum "requirements_dev.txt" }}
+          keys:
+            - wheels-v1-3.12.1-{{ checksum "requirements_dev.txt" }}
+            - wheels-v1-3.12.1-
+            - wheels-v1-
+            - wheels-
       - run:
           name: Initialize packages
           command: |

@@ -40,9 +40,16 @@ commands:
           # no frequently changing dependencies
           cp Gemfile.lock Gemfile.lock.deversioned{% endif %}
       - restore_cache:
-          key: gems-v2-{% raw %}{{ checksum "Gemfile.lock.deversioned" }}{% endraw %}
+          keys:
+            - gems-v2-{% raw %}{{ checksum "Gemfile.lock.deversioned" }}{% endraw %}
+            - gems-v2-
+            - gems-
       - restore_cache:
-          key: wheels-v1-3.12.1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
+          keys:
+            - wheels-v1-3.12.1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
+            - wheels-v1-3.12.1-
+            - wheels-v1-
+            - wheels-
       - run:
           name: Initialize packages
           command: |
