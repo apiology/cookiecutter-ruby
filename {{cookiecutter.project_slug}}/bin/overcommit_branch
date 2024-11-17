@@ -1,0 +1,106 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'overcommit'
+require 'optparse'
+
+# frozen_string_literal: true
+
+require 'set'
+
+module Overcommit::HookContext
+  # Simulates a pre-commit context representing all commits on the
+  # current feature branch, useful for automated CI scripts in large
+  # projects where not all unchanged files are assumed to pass.
+  class FeatureBranch < Base
+    # @return [Array<String>]
+    def modified_files
+      # use git cli to get the list of files changed on this feature branch
+      # @sg-ignore
+      # @type [Array<String>]
+      @modified_files ||= begin
+        # @sg-ignore
+        # @type [Array<String>]
+        relative_filenames = `git diff --name-only origin/main...HEAD`.split("\n")
+        absolute_filenames = relative_filenames.map { |f| File.expand_path(f) }
+        absolute_filenames.select { |f| File.exist?(f) }
+      end
+    end
+
+    # @param file [String]
+    #
+    # @return [Set]
+    def modified_lines_in_file(file)
+      modified_lines = Set.new
+
+      # use git cli to get the list of lines changed in this file on this feature branch
+      # @sg-ignore
+      # @type [Array<String>]
+      lines = `git diff -U0 origin/main...HEAD -- #{file}`.split("\n")
+
+      lines.each do |line|
+        modified_lines << Regexp.last_match(1).to_i if line =~ /^@@ -\d+,\d+ \+(\d+),/
+      end
+
+      modified_lines
+    end
+
+    def hook_class_name
+      'PreCommit'
+    end
+
+    def hook_type_name
+      'pre_commit'
+    end
+
+    def hook_script_name
+      'pre-commit'
+    end
+
+    def initial_commit?
+      return @initial_commit unless @initial_commit.nil?
+
+      @initial_commit = Overcommit::GitRepo.initial_commit?
+    end
+
+    private
+
+    def count_lines(file)
+      File.foreach(file).count
+    end
+  end
+end
+
+# Returns the configuration for this repository.
+
+# Used for ease of stubbing in tests
+# @param status [Integer] The exit status to return
+# @return [void]
+def halt(status = 0)
+  exit status
+end
+
+# @return [Overcommit::Logger]
+def log
+  # @sg-ignore
+  @log ||= Overcommit::Logger.new(STDOUT)
+end
+
+# @param options [Hash]
+#
+# @return [Overcommit::Configuration]
+def config(options = {})
+  @config ||= Overcommit::ConfigurationLoader.new(log, options).load_repo_config
+end
+
+empty_stdin = File.open(File::NULL) # pre-commit hooks don't take input
+context = Overcommit::HookContext::FeatureBranch.new(config, [], empty_stdin)
+config.apply_environment!(context, ENV)
+
+printer = Overcommit::Printer.new(config, log, context)
+runner  = Overcommit::HookRunner.new(config, log, context, printer)
+
+status = runner.run
+
+halt(status ? 0 : 65)
