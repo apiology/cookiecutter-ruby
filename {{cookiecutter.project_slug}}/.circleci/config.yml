@@ -34,8 +34,8 @@ commands:
     steps:
       - checkout
       - run: |
-{% if cookiecutter.use_checkoff %}          sed -E -e 's/checkoff \([[:digit:]]+.[[:digit:]]+.[[:digit:]]+\)/checkoff (0.1.0)/g' \
-           Gemfile.lock \
+           cat Gemfile.lock \
+{% if cookiecutter.use_checkoff == 'Yes' %}          | sed -E -e 's/checkoff \([[:digit:]]+.[[:digit:]]+.[[:digit:]]+\)/checkoff (0.1.0)/g' \
            > Gemfile.lock.deversioned{% else %}
           # no frequently changing dependencies
           cp Gemfile.lock Gemfile.lock.deversioned{% endif %}
