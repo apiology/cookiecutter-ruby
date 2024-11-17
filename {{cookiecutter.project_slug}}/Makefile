@@ -19,12 +19,13 @@ default: clean-coverage test coverage clean-typecoverage typecheck typecoverage 
 
 build-typecheck: ## Fetch information that type checking depends on
 	bundle install
-	bundle exec yard gems 2>&1
+	bundle exec yard gems 2>&1; bundle exec yard gems --safe 2>&1; bundle exec yard gems 2>&1
 	bundle exec solargraph scan 2>&1
 
 clean-typecheck: ## Refresh information that type checking depends on
 	bundle exec solargraph clear
 	rm -fr .yardoc/
+	rm -fr ../checkoff/.yardoc
 	echo all clear
 
 typecheck: ## validate types in code and configuration
@@ -60,14 +61,19 @@ clear_metrics: ## remove or reset result artifacts created by tests and quality 
 
 clean: clear_metrics ## remove all built artifacts
 
-test: spec ## run tests quickly
+test: ## run tests quickly
+	bundle exec rake test
+
+quality: ## run quality gem quality checks
+	bundle exec rake quality
+
+cane: ## run cane with quality gem high water marks
+	bundle exec rake cane
 
 citest: test ## Run unit tests from CircleCI
 
 overcommit: ## run precommit quality checks
 	bundle exec overcommit --run
-
-quality: overcommit ## run precommit quality checks
 
 rubocop: ## Run rubocop
 	@bundle exec rubocop
@@ -77,13 +83,10 @@ test: spec ## run tests quickly
 spec: ## Run lower-level tests
 	@bundle exec rake spec
 
-feature: ## Run higher-level tests
-	@bundle exec rake feature
-
 localtest: ## run default local actions
 	@bundle exec rake localtest
 
-repl:  ## Load up {{cookiecutter.project_slug}} in pry
+repl:  ## Load up plate-spinner in pry
 	@bundle exec rake repl
 
 clean-coverage:
