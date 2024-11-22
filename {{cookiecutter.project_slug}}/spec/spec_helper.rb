@@ -16,7 +16,7 @@ SimpleCov.start do
 
   # this dir used by CircleCI
   add_filter 'vendor'
-  track_files '{app,lib}/**/*.rb'
+  track_files 'lib/**/*.rb'
   enable_coverage(:branch) # Report branch coverage to trigger branch-level undercover warnings
 end
 
