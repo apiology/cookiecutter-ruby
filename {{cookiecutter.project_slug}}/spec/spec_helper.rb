@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+{% if cookiecutter.use_checkoff == 'Yes' %}
+ENV['REDIS_HOSTNAME'] = 'deactivated-anyway'{% endif %}
 
 require 'simplecov'
 require 'simplecov-lcov'
