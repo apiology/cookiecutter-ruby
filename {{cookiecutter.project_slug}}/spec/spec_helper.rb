@@ -26,6 +26,7 @@ end
 require 'rspec'
 require 'webmock/rspec'
 
+# Capture logs during spec runs
 module LogCaptureHelper
   def capture_logs
     original_logger = Rails.logger
