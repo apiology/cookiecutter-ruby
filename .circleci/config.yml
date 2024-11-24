@@ -131,7 +131,6 @@ jobs:
           steps:
             # skip tox to speed things by not installing another
             # virtualenv, and only run in default Python version.
-            - set_up_environment
             - restore_cache:
                 keys:
                   - child-gems-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}
