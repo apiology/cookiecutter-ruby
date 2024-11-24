@@ -85,8 +85,8 @@ commands:
           command: |
             curl -fLSs \
             https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
-  overcommit:
-    description: "Run overcommit"
+  quality:
+    description: "Quality checks"
     steps:
       - set_up_environment
       - run_with_languages:
@@ -171,12 +171,12 @@ commands:
             echo "Avoiding double build after git push"
             exit 1
 jobs:
-  overcommit:
+  quality:
     working_directory: ~/{{cookiecutter.project_slug}}
     docker:
       - image: apiology/circleci-ruby:latest
     steps:
-      - overcommit
+      - quality
   build:
     working_directory: ~/{{cookiecutter.project_slug}}
     docker:
@@ -191,7 +191,7 @@ jobs:
                 gems: checkoff{% endif %}
       - run_with_languages:
           label: Typecheck
-          command: make build-typecheck citypecheck citypecoverage
+          command: make citypecheck citypecoverage
       - run_with_languages:
           label: Test
           command: |
@@ -211,10 +211,10 @@ workflows:
                 - main
     jobs:
       - build
-      - overcommit
-  overcommit:
+      - quality
+  quality:
     jobs:
-      - overcommit
+      - quality
   build:
     jobs:
       - build
