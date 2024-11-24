@@ -30,6 +30,9 @@ module Overcommit
           result = execute(['bundle', 'exec', 'solargraph', 'typecheck', '--level', 'strong', *files])
           return if result.success?
 
+          stderr = result.stderr.split("\n").reject { _1.include? '[WARN]' }
+          raise result.stderr unless stderr.empty?
+
           # @type [String]
           stdout = result.stdout
 
