@@ -64,9 +64,21 @@ PreCommit:
     enabled: true
     problem_on_unmodified_line: warn
     include:
-      - '**/*.rb'
-      - '**/*.rake'
-      - 'script/*'
+      # process first
+      - "config/annotations*.rb"
+      - "**/*.rb"
+      - "**/.*.rb"
+      - "lib/tasks/*.rake"
+      - ".git-hooks/**/*.rb"
+      - "script/*"
+      - "bin/*"
+      - "bin/overcommit_branch"
+    exclude:
+      - script/.rubocop.yml
+      - vendor/**/*
+      - spec/**/*
+      - ".bundle/**/*"
+      - ".markdownlint_style.rb"
   Punchlist:
     command: ['bundle', 'exec', 'punchlist']
     enabled: true

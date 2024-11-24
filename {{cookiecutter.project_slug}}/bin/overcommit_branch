@@ -66,6 +66,9 @@ module Overcommit::HookContext
 
     private
 
+    # @param file [IO]
+    #
+    # @return [Integer]
     def count_lines(file)
       File.foreach(file).count
     end
@@ -99,6 +102,7 @@ context = Overcommit::HookContext::FeatureBranch.new(config, [], empty_stdin)
 config.apply_environment!(context, ENV)
 
 printer = Overcommit::Printer.new(config, log, context)
+# @sg-ignore
 runner  = Overcommit::HookRunner.new(config, log, context, printer)
 
 status = runner.run
