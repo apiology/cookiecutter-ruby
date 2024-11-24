@@ -99,6 +99,10 @@ commands:
             bundle exec overcommit --sign pre-commit
 
             bundle exec overcommit --run
+      - run_with_languages:
+          label: Run brakeman
+          command: |
+            bundle exec brakeman --no-pager
   update_dependencies:
     description: "Update dependencies whose build may have triggered this build"
     parameters:
