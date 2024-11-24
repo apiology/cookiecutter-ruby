@@ -78,6 +78,7 @@ PreCommit:
       - vendor/**/*
       - spec/**/*
       - ".bundle/**/*"
+      - ".markdownlint_style.rb"
   Punchlist:
     command: ['bundle', 'exec', 'punchlist']
     enabled: true
