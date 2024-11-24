@@ -19,6 +19,7 @@ gem 'cache_method',
     git: 'https://github.com/apiology/cache_method',
     branch: 'ruby_3_support'
 gem 'checkoff' # , path: '/Users/broz/src/checkoff'{% endif %}
+gem 'brakeman'
 gem 'mdl'
 gem 'ostruct'
 gem 'overcommit', ['>=0.64.0', '<0.65.0']
