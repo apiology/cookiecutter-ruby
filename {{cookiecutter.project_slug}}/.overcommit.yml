@@ -85,6 +85,8 @@ PreCommit:
     problem_on_unmodified_line: warn
 
 PrePush:
+  Brakeman:
+    enabled: true
   RakeTarget:
     enabled: true
     command: ['bundle', 'exec', 'rake']
