@@ -18,7 +18,7 @@
 #     # @param key [String]
 #     # @param default [Object]
 #     #
-#     # @return [Object,nil]
+#     # @return [String,Symbol<:none>,nil]
 #     def self.fetch(key, default = :none); end
 #     # @param key [String]
 #     #
