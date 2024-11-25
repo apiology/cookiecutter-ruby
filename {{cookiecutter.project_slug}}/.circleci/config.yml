@@ -96,6 +96,11 @@ commands:
           label: Run brakeman
           command: |
             bundle exec brakeman --no-pager
+      - run_with_languages:
+          label: Ratchet rubocop quality
+          command: |
+            bundle exec rubocop --regenerate-todo --no-exclude-limit --auto-gen-only-exclude --no-auto-gen-timestamp
+            git diff -u --exit-code .rubocop_todo.yml
   update_dependencies:
     description: "Update dependencies whose build may have triggered this build"
     parameters:
