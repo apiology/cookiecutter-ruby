@@ -193,7 +193,7 @@ jobs:
           label: Typecheck
           command: make citypecheck citypecoverage
       - save_cache:
-          key: solargraph-v2-{{ checksum "Gemfile.lock" }}-{{ .Branch }}
+          key: solargraph-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ .Branch }}{% endraw %}
           paths:
             - ".yardoc"
             - "/home/circleci/.cache/solargraph"
