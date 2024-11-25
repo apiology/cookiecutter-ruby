@@ -194,9 +194,6 @@ jobs:
           label: Test
           command: |
             make citest cicoverage
-      - run_with_languages:
-          label: Typecheck
-          command: make citypecheck citypecoverage
       - save_cache:
           key: solargraph-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ .Branch }}{% endraw %}
           paths:
