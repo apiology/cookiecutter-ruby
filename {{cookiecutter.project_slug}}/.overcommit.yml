@@ -35,6 +35,7 @@ PreCommit:
       - '**/Rakefile'
       - 'bin/*'
       - 'exe/*'
+      - 'script/*'
     problem_on_unmodified_line: warn
     exclude:
       - db/migrate/*.rb
