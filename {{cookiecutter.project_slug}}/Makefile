@@ -17,10 +17,9 @@ help:
 
 default: clean-coverage test coverage clean-typecoverage typecheck typecoverage quality ## run default typechecking, tests and quality
 
-build-typecheck: ## Fetch information that type checking depends on
-	bundle install
+build-typecheck: bundle_install ## Fetch information that type checking depends on
 	bundle exec yard gems 2>&1; bundle exec yard gems --safe 2>&1; bundle exec yard gems 2>&1
-	bundle exec solargraph scan 2>&1
+	# bundle exec solargraph scan 2>&1
 
 clean-typecheck: ## Refresh information that type checking depends on
 	bundle exec solargraph clear
