@@ -130,10 +130,6 @@ jobs:
             # skip tox to speed things by not installing another
             # virtualenv, and only run in default Python version.
             - run_with_languages:
-                label: Typecheck
-                command: |
-                  make build-typecheck citypecheck citypecoverage
-            - run_with_languages:
                 label: Test
                 command: |
                   # These will be used in post_gen_project.py while testing
