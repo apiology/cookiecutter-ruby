@@ -100,7 +100,11 @@ commands:
           label: Ratchet rubocop quality
           command: |
             bundle exec rubocop --regenerate-todo --no-exclude-limit --auto-gen-only-exclude --no-auto-gen-timestamp
-            git diff -u --exit-code .rubocop_todo.yml
+            if [ -f .rubocop_todo.yml ]
+            then
+              git diff --exit-code .rubocop.yml
+              git diff --exit-code .rubocop_todo.yml
+            fi
   update_dependencies:
     description: "Update dependencies whose build may have triggered this build"
     parameters:
