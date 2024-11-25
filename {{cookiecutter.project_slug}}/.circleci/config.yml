@@ -33,20 +33,17 @@ commands:
     description: "Install source environment"
     steps:
       - checkout
-      - run: |
-           cat Gemfile.lock \
-{% if cookiecutter.use_checkoff == 'Yes' %}          | sed -E -e 's/checkoff \([[:digit:]]+.[[:digit:]]+.[[:digit:]]+\)/checkoff (0.1.0)/g' \{% endif %}
-           > Gemfile.lock.deversioned
       - restore_cache:
           keys:
-            - yardoc-v1-{% raw %}{{ .Branch }}{% endraw %}
-            - yardoc-v1-
-            - yardoc-
-      - restore_cache:
-          keys:
-            - gems-v2-{% raw %}{{ checksum "Gemfile.lock.deversioned" }}{% endraw %}
+            - gems-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
             - gems-v2-
             - gems-
+      - restore_cache:
+          keys:
+            - solargraph-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ .Branch }}{% endraw %}
+            - solargraph-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - solargraph-v2-
+            - solargraph-
       - restore_cache:
           keys:
             - wheels-v1-3.12.1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
@@ -67,7 +64,7 @@ commands:
               exit 1
             fi
       - save_cache:
-          key: gems-v2-{% raw %}{{ checksum "Gemfile.lock.deversioned" }}{% endraw %}
+          key: gems-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
           paths:
             - "vendor/bundle"
       - save_cache:
@@ -76,10 +73,6 @@ commands:
             - "/home/circleci/.cache/pip/wheels"
             - "/home/circleci/.pyenv/versions/3.12.1/envs/{{cookiecutter.project_slug}}-3.12.1"
             - "/home/circleci/.pyenv/versions/{{cookiecutter.project_slug}}-3.12.1"
-      - save_cache:
-          key: yardoc-v1-{% raw %}{{ .Branch }}{% endraw %}
-          paths:
-            - ".yardoc"
       - run:
           name: Download new circleci tool
           command: |
@@ -196,6 +189,14 @@ jobs:
           label: Test
           command: |
             make citest cicoverage
+      - run_with_languages:
+          label: Typecheck
+          command: make citypecheck citypecoverage
+      - save_cache:
+          key: solargraph-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ .Branch }}{% endraw %}
+          paths:
+            - ".yardoc"
+            - "/home/circleci/.cache/solargraph"
     # This seemed to shave 5ish% of the build time off when added
     resource_class: large
 
