@@ -133,8 +133,8 @@ jobs:
             # virtualenv, and only run in default Python version.
             - restore_cache:
                 keys:
-                  - child-gems-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}
-                  - child-gems-v1-
+                  - child-gems-v2-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}
+                  - child-gems-v2-
                   - child-gems-
             - run_with_languages:
                 label: Test
@@ -149,9 +149,11 @@ jobs:
 
                   make citest cicoverage
             - save_cache:
-                key: child-gems-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}
+                key: child-gems-v2-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}
                 paths:
                   - "vendor/bundle"
+                  - ".yardoc"
+                  - "/home/circleci/.cache/solargraph"
       - when:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
