@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 {% if cookiecutter.use_checkoff == 'Yes' %}
+# @sg-ignore
 ENV['REDIS_HOSTNAME'] = 'deactivated-anyway'{% endif %}
 
 require 'simplecov'
@@ -22,10 +23,10 @@ SimpleCov.start do
   enable_coverage(:branch) # Report branch coverage to trigger branch-level undercover warnings
 end
 
-require 'rspec'
 require 'webmock/rspec'
 
 module LogCaptureHelper
+  # @return [String]
   def capture_logs
     original_logger = Rails.logger
     log_output = StringIO.new
