@@ -1,5 +1,22 @@
 #!/bin/bash -eu
 
+if [ -n "${FIX_SH_TIMING_LOG+x}" ]; then
+    rm -f "${FIX_SH_TIMING_LOG}"
+fi
+
+debug_timing() {
+  if [ -n "${FIX_SH_TIMING_LOG+x}" ]; then
+    # shellcheck disable=SC2034
+    _lastcmd=$(ruby -e "puts (Time.now.to_f * 1000).to_i")
+    last_command='start'
+    # shellcheck disable=SC2154
+    trap '_now=$(ruby -e "puts (Time.now.to_f * 1000).to_i"); duration=$((_now - _lastcmd)); echo ${duration} ms: $last_command >> '"${FIX_SH_TIMING_LOG}"'; last_command="$BASH_COMMAND" >> '"${FIX_SH_TIMING_LOG}"'; _lastcmd=$_now' DEBUG
+  fi
+}
+
+# copy this into any function you want to debug further
+debug_timing
+
 set -o pipefail
 
 apt_upgraded=0
@@ -98,6 +115,24 @@ ensure_dev_library() {
   fi
 }
 
+ensure_binary_library() {
+  library_base_name=${1:?library base name - like libfoo}
+  homebrew_package=${2:?homebrew package}
+  apt_package=${3:-${homebrew_package}}
+  if ! [ -f /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/"${library_base_name}*.dylib" ] && \
+      ! [ -f /opt/homebrew/lib/"${library_base_name}*.dylib" ] && \
+      ! [ -f /usr/lib/"${library_base_name}.so" ] && \
+      ! [ -f /usr/lib/x86_64-linux-gnu/"${library_base_name}.so" ] && \
+      ! [ -f /usr/local/lib/"${library_base_name}.so" ] && \
+      ! [ -f /usr/local/opt/"${homebrew_package}/lib/${library_base_name}*.dylib" ]
+  then
+      if ! compgen -G "/opt/homebrew/Cellar/${homebrew_package}"*/*/"lib/${library_base_name}"*.dylib
+      then
+        install_package "${homebrew_package}" "${apt_package}"
+      fi
+  fi
+}
+
 ensure_ruby_build_requirements() {
   ensure_dev_library readline/readline.h readline libreadline-dev
   ensure_dev_library zlib.h zlib zlib1g-dev
@@ -108,7 +143,12 @@ ensure_ruby_build_requirements() {
 ensure_latest_ruby_build_definitions() {
   ensure_rbenv
 
-  git -C "$(rbenv root)"/plugins/ruby-build pull
+#  last_pulled_unix_epoch="$(stat -f '%m' "$(rbenv root)"/plugins/ruby-build/.git/FETCH_HEAD)"
+#  # if not pulled in last 24 hours
+#  if [ $(( $(date +%s) - last_pulled_unix_epoch )) -gt $(( 24 * 60 * 60 )) ]
+#  then
+      git -C "$(rbenv root)"/plugins/ruby-build pull
+#  fi
 }
 
 # You can find out which feature versions are still supported / have
@@ -128,6 +168,17 @@ ensure_ruby_versions() {
   do
     rbenv install -s "${ver}"
     hash -r  # ensure we are seeing latest bundler etc
+  done
+}
+
+ensure_pg_gem() {
+  # Find pg_config
+  for possible_pg_config_path in /opt/homebrew/opt/libpq/bin/pg_config /opt/homebrew/Cellar/postgresql@16/16.*/bin/pg_config
+  do
+    if [ -f "${possible_pg_config_path}" ]
+    then
+      bundle config set build.pg --with-pg-config="${possible_pg_config_path}"
+    fi
   done
 }
 
@@ -185,10 +236,7 @@ ensure_bundle() {
   #
   # This affects nokogiri, which will try to reinstall itself in
   # Docker builds where it's already installed if this is not run.
-  for platform in arm64-darwin-23 x86_64-darwin-23 x86_64-linux x86_64-linux-musl aarch64-linux arm64-linux
-  do
-    grep "${platform:?}" Gemfile.lock >/dev/null 2>&1 || bundle lock --add-platform "${platform:?}"
-  done
+  bundle lock --add-platform arm64-darwin-23 x86_64-darwin-23 x86_64-linux x86_64-linux-musl aarch64-linux arm64-linux
 }
 
 set_ruby_local_version() {
@@ -247,6 +295,20 @@ ensure_pyenv() {
   if ! type pyenv >/dev/null 2>&1
   then
     set_pyenv_env_variables
+  fi
+}
+
+ensure_package() {
+  homebrew_package=${1:?homebrew package}
+  apt_package=${2:-${homebrew_package}}
+  binary=${3:-${homebrew_package}}
+  if ! [ -f /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/bin/"${binary}" ] && \
+      ! [ -f /opt/homebrew/bin/"${binary}" ] && \
+      ! [ -f /usr/bin/"${binary}" ] && \
+      ! [ -f /usr/local/bin/"${binary}" ] && \
+      ! [ -f /usr/local/opt/"${homebrew_package}"/bin/"${binary}" ]
+  then
+    install_package "${homebrew_package}" "${apt_package}"
   fi
 }
 
@@ -329,9 +391,15 @@ ensure_python_versions() {
 ensure_pyenv_virtualenvs() {
   latest_python_version="$(cut -d' ' -f1 <<< "${python_versions}")"
   virtualenv_name="cookiecutter-ruby-${latest_python_version}"
-  pyenv virtualenv "${latest_python_version}" "${virtualenv_name}" || true
+  if ! [ -d ~/".pyenv/versions/${virtualenv_name}" ]
+  then
+    pyenv virtualenv "${latest_python_version}" "${virtualenv_name}" || true
+  fi
   # You can use this for your global stuff!
-  pyenv virtualenv "${latest_python_version}" mylibs || true
+  if ! [ -d ~/".pyenv/versions/mylibs" ]
+  then
+    pyenv virtualenv "${latest_python_version}" mylibs || true
+  fi
   # shellcheck disable=SC2086
   pyenv local "${virtualenv_name}" ${python_versions} mylibs
 }
