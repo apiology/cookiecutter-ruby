@@ -171,17 +171,6 @@ ensure_ruby_versions() {
   done
 }
 
-ensure_pg_gem() {
-  # Find pg_config
-  for possible_pg_config_path in /opt/homebrew/opt/libpq/bin/pg_config /opt/homebrew/Cellar/postgresql@16/16.*/bin/pg_config
-  do
-    if [ -f "${possible_pg_config_path}" ]
-    then
-      bundle config set build.pg --with-pg-config="${possible_pg_config_path}"
-    fi
-  done
-}
-
 ensure_bundle() {
   # Not sure why this is needed a second time, but it seems to be?
   #
