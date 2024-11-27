@@ -22,7 +22,8 @@ commands:
             eval "$(pyenv init --path)"
             eval "$(pyenv virtualenv-init -)"
             eval "$(rbenv init -)"
-            export BUNDLE_PATH=vendor/bundle
+            # keep this in a single place for both main and child builds for cachability
+            export BUNDLE_PATH="$(pwd)/vendor/bundle"
 
             <<parameters.command>>
           environment:
@@ -35,8 +36,8 @@ commands:
       - checkout
       - restore_cache:
           keys:
-            - gems-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
-            - gems-v2-
+            - gems-v3-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - gems-v3-
             - gems-
       - restore_cache:
           keys:
@@ -53,8 +54,15 @@ commands:
       - run:
           name: Initialize packages
           command: |
-            export BUNDLE_PATH=vendor/bundle
+            # measuring slows down the script - only enable when you
+            # want to debug where this is spending time
+
+            # export FIX_SH_TIMING_LOG=/tmp/fix_sh_timing.log
+
+            export BUNDLE_PATH="$(pwd)/vendor/bundle"
             './fix.sh'
+      - store_artifacts:
+          path: /tmp/fix_sh_timing.log
       - run:
           name: Verify Gemfile.lock
           command: |
@@ -64,9 +72,10 @@ commands:
               exit 1
             fi
       - save_cache:
-          key: gems-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}
+          key: gems-v3-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}
           paths:
             - "vendor/bundle"
+            - ".yardoc"
       - save_cache:
           key: wheels-v1-3.12.1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
           paths:
