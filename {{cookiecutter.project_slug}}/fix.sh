@@ -432,9 +432,9 @@ ensure_overcommit() {
 }
 
 ensure_rugged_packages_installed() {
-  install_package icu4c libicu-dev # needed by rugged, needed by undercover
-  install_package pkg-config # needed by rugged, needed by undercover
-  install_package cmake # needed by rugged, needed by undercover
+  ensure_binary_library libicuio icu4c libicu-dev # needed by rugged, needed by undercover
+  ensure_package pkg-config # needed by rugged, needed by undercover
+  ensure_package cmake # needed by rugged, needed by undercover
 }
 
 ensure_rbenv
