@@ -137,6 +137,12 @@ Style/TrailingCommaInHashLiteral:
 Style/TrivialAccessors:
   ExactNameMatch: true
 
+Lint:
+  Severity: error
+
+Metrics:
+  Severity: error
+
 AllCops:
   NewCops: enable
   TargetRubyVersion: 3.2
@@ -145,6 +151,6 @@ AllCops:
     - 'vendor/**/*'
 
 require:
-  - rubocop-rake
   - rubocop-rspec
   - rubocop-performance
+  - rubocop-rake
