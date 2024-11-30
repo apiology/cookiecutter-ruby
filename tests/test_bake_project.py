@@ -28,11 +28,11 @@ def suppressed_github_and_circleci_creation():
     """A context manager which sets an env variable to suppress creating
     GitHub repos and pushing to CircleCI during the hooks.
     """
-    os.environ['SKIP_GITHUB_AND_CIRCLECI_CREATION'] = '1'
+    os.environ['SKIP_EXTERNAL'] = '1'
     try:
         yield
     finally:
-        del os.environ['SKIP_GITHUB_AND_CIRCLECI_CREATION']
+        del os.environ['SKIP_EXTERNAL']
 
 
 def errmsg(exception):
