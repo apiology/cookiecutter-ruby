@@ -60,13 +60,6 @@ module Overcommit
         'pre_commit'
       end
 
-<<<<<<< HEAD
-    # @param file [IO]
-    #
-    # @return [Integer]
-    def count_lines(file)
-      File.foreach(file).count
-=======
       def hook_script_name
         'pre-commit'
       end
@@ -85,7 +78,6 @@ module Overcommit
       def count_lines(file)
         File.foreach(file).count
       end
->>>>>>> cookiecutter-template
     end
   end
 end
