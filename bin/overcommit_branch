@@ -4,75 +4,83 @@
 
 require 'overcommit'
 require 'optparse'
+# @!parse
+#   require 'set'
 
 # frozen_string_literal: true
 
-require 'set'
-
-module Overcommit::HookContext
-  # Simulates a pre-commit context representing all commits on the
-  # current feature branch, useful for automated CI scripts in large
-  # projects where not all unchanged files are assumed to pass.
-  class FeatureBranch < Base
-    # @return [Array<String>]
-    def modified_files
-      # use git cli to get the list of files changed on this feature branch
-      # @sg-ignore
-      # @type [Array<String>]
-      @modified_files ||= begin
+module Overcommit
+  module HookContext
+    # Simulates a pre-commit context representing all commits on the
+    # current feature branch, useful for automated CI scripts in large
+    # projects where not all unchanged files are assumed to pass.
+    class FeatureBranch < Base
+      # @return [Array<String>]
+      def modified_files
+        # use git cli to get the list of files changed on this feature branch
         # @sg-ignore
         # @type [Array<String>]
-        relative_filenames = `git diff --name-only origin/main...HEAD`.split("\n")
-        absolute_filenames = relative_filenames.map { |f| File.expand_path(f) }
-        absolute_filenames.select { |f| File.exist?(f) }
-      end
-    end
-
-    # @param file [String]
-    #
-    # @return [Set]
-    def modified_lines_in_file(file)
-      modified_lines = Set.new
-
-      # use git cli to get the list of lines changed in this file on this feature branch
-      # @sg-ignore
-      # @type [Array<String>]
-      lines = `git diff -U0 origin/main...HEAD -- #{file}`.split("\n")
-
-      lines.each do |line|
-        modified_lines << Regexp.last_match(1).to_i if line =~ /^@@ -\d+,\d+ \+(\d+),/
+        @modified_files ||= begin
+          # @sg-ignore
+          # @type [Array<String>]
+          relative_filenames = `git diff --name-only origin/main...HEAD`.split("\n")
+          absolute_filenames = relative_filenames.map { |f| File.expand_path(f) }
+          absolute_filenames.select { |f| File.exist?(f) }
+        end
       end
 
-      modified_lines
-    end
+      # @param file [String]
+      #
+      # @return [Set]
+      def modified_lines_in_file(file)
+        # use git cli to get the list of lines changed in this file on this feature branch
+        # @sg-ignore
+        # @type [Array<String>]
+        lines = `git diff -U0 origin/main...HEAD -- #{file}`.split("\n")
 
-    def hook_class_name
-      'PreCommit'
-    end
+        modified_lines = Set.new
 
-    def hook_type_name
-      'pre_commit'
-    end
+        lines.each do |line|
+          next unless line =~ /^@@ -\d+,\d+ \+(\d+),(\d+)/
 
-    def hook_script_name
-      'pre-commit'
-    end
+          first_line = Regexp.last_match(1).to_i
+          last_line = first_line + Regexp.last_match(2).to_i - 1
+          this_file_lines = (first_line..last_line)
+          modified_lines.merge(this_file_lines)
+        end
 
-    def initial_commit?
-      return @initial_commit unless @initial_commit.nil?
+        modified_lines.to_set
+      end
 
-      @initial_commit = Overcommit::GitRepo.initial_commit?
-    end
+      def hook_class_name
+        'PreCommit'
+      end
 
-    private
+      def hook_type_name
+        'pre_commit'
+      end
 
-    def count_lines(file)
-      File.foreach(file).count
+      def hook_script_name
+        'pre-commit'
+      end
+
+      def initial_commit?
+        return @initial_commit unless @initial_commit.nil?
+
+        @initial_commit = Overcommit::GitRepo.initial_commit?
+      end
+
+      private
+
+      # @param file [IO]
+      #
+      # @return [Integer]
+      def count_lines(file)
+        File.foreach(file).count
+      end
     end
   end
 end
-
-# Returns the configuration for this repository.
 
 # Used for ease of stubbing in tests
 # @param status [Integer] The exit status to return
@@ -84,7 +92,7 @@ end
 # @return [Overcommit::Logger]
 def log
   # @sg-ignore
-  @log ||= Overcommit::Logger.new(STDOUT)
+  @log ||= Overcommit::Logger.new($stdout)
 end
 
 # @param options [Hash]
@@ -99,6 +107,7 @@ context = Overcommit::HookContext::FeatureBranch.new(config, [], empty_stdin)
 config.apply_environment!(context, ENV)
 
 printer = Overcommit::Printer.new(config, log, context)
+# @sg-ignore
 runner  = Overcommit::HookRunner.new(config, log, context, printer)
 
 status = runner.run
