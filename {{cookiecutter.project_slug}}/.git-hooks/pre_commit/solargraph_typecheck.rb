@@ -23,6 +23,17 @@ module Overcommit
 
         private
 
+        # @param stderr [String]
+        #
+        # @return [Array<String>]
+        def remove_harmless_glitches(stderr)
+          stderr.split("\n").reject do |line|
+            line.include?('[WARN]') ||
+              line.include?('warning: parser/current is loading') ||
+              line.include?('Please see https://github.com/whitequark')
+          end
+        end
+
         # @param errors [Array<String>]
         # @param file [String]
         # @return [void]
@@ -30,7 +41,7 @@ module Overcommit
           result = execute(['bundle', 'exec', 'solargraph', 'typecheck', '--level', 'strong', *files])
           return if result.success?
 
-          stderr = result.stderr.split("\n").reject { _1.include? '[WARN]' }
+          stderr = remove_harmless_glitches(result.stderr)
           raise result.stderr unless stderr.empty?
 
           # @type [String]
