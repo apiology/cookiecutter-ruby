@@ -40,7 +40,14 @@ module Overcommit::HookContext
       lines = `git diff -U0 origin/main...HEAD -- #{file}`.split("\n")
 
       lines.each do |line|
-        modified_lines << Regexp.last_match(1).to_i if line =~ /^@@ -\d+,\d+ \+(\d+),/
+        if line =~ /^@@ -\d+,\d+ \+(\d+),(\d+)/
+          first_line = Regexp.last_match(1).to_i
+          last_line = first_line + Regexp.last_match(2).to_i - 1
+          # add each line # to modified_lines
+          (first_line..last_line).each do |line_number|
+            modified_lines << line_number
+          end
+        end
       end
 
       modified_lines
@@ -66,6 +73,9 @@ module Overcommit::HookContext
 
     private
 
+    # @param file [IO]
+    #
+    # @return [Integer]
     def count_lines(file)
       File.foreach(file).count
     end
@@ -99,6 +109,7 @@ context = Overcommit::HookContext::FeatureBranch.new(config, [], empty_stdin)
 config.apply_environment!(context, ENV)
 
 printer = Overcommit::Printer.new(config, log, context)
+# @sg-ignore
 runner  = Overcommit::HookRunner.new(config, log, context, printer)
 
 status = runner.run

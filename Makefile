@@ -82,9 +82,10 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 test: ## run tests quickly
-	pytest --maxfail=0
+	pytest --maxfail=0 tests/test_bake_project.py --capture=no -v
 
-citest: test ## Run unit tests from CircleCI
+citest:  ## Run unit tests from CircleCI
+	pytest --maxfail=0 tests/test_bake_project.py -v
 
 overcommit: ## run precommit quality checks
 	bundle exec overcommit --run
