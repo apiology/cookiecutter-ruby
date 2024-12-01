@@ -82,10 +82,10 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 test: ## run tests quickly
-	pytest --maxfail=0 tests/test_bake_project.py --capture=no -v
+	pytest --maxfail=1 tests/test_bake_project.py --capture=no -v
 
 citest:  ## Run unit tests from CircleCI
-	pytest --maxfail=0 tests/test_bake_project.py -v
+	pytest --maxfail=1 tests/test_bake_project.py -v
 
 overcommit: ## run precommit quality checks
 	bundle exec overcommit --run
@@ -109,7 +109,7 @@ clean-coverage: ## Clean out previous output of test coverage to avoid flaky res
 
 coverage: test report-coverage ## check code coverage
 
-report-coverage: test ## Report summary of coverage to stdout, and generate HTML, XML coverage report
+report-coverage: citest ## Report summary of coverage to stdout, and generate HTML, XML coverage report
 
 report-coverage-to-codecov: report-coverage ## use codecov.io for PR-scoped code coverage reports
 
