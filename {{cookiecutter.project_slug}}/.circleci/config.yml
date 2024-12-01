@@ -106,6 +106,10 @@ commands:
           command: |
             bundle exec brakeman --no-pager
       - run_with_languages:
+          label: Run Rubocop
+          command: |
+            bundle exec rubocop
+      - run_with_languages:
           label: Ratchet rubocop quality
           command: |
             bundle exec rubocop --regenerate-todo --no-exclude-limit --auto-gen-only-exclude --no-auto-gen-timestamp
