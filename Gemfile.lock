@@ -23,7 +23,6 @@ GEM
       tomlrb
     mixlib-shellout (3.2.8)
       chef-utils
-    ostruct (0.6.0)
     overcommit (0.64.0)
       childprocess (>= 0.6.3, < 6)
       iniparse (~> 1.4)
@@ -47,7 +46,6 @@ PLATFORMS
 
 DEPENDENCIES
   mdl
-  ostruct
   overcommit (>= 0.64.0, < 0.65.0)
   punchlist (>= 1.3.1)
 
