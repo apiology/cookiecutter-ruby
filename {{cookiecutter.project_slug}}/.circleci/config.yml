@@ -112,6 +112,7 @@ commands:
       - run_with_languages:
           label: Ratchet rubocop quality
           command: |
+            set -x
             bundle exec rubocop --regenerate-todo --no-exclude-limit --auto-gen-only-exclude --no-auto-gen-timestamp
             if [ -f .rubocop_todo.yml ]
             then
