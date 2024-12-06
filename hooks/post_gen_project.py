@@ -47,13 +47,10 @@ if __name__ == '__main__':
     #
     # (commit here if you brought in any files above)
     #
-    # update frequently security-flagged gems
-    run(['bundle', 'update', '--conservative',
-         'rexml'])
     run(['git', 'add', '-A'])
     run(['make', 'build-typecheck'])  # update from bundle updates
     run(['bundle', 'exec', 'git', 'commit', '--allow-empty', '-m',
-         'reformat, security updates'])
+         'reformat'])
 
     if os.environ.get('SKIP_EXTERNAL', '0') != '1':
         if 'none' != '{{ cookiecutter.type_of_github_repo }}':
