@@ -4,8 +4,7 @@
 
 require 'overcommit'
 require 'optparse'
-# @!parse
-#   require 'set'
+require 'set'
 
 # frozen_string_literal: true
 
