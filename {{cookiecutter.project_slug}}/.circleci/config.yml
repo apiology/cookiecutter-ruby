@@ -227,7 +227,7 @@ jobs:
           label: Typecheck
           command: make citypecheck citypecoverage
       - save_cache:
-          key: solargraph-v2-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }}
+          key: solargraph-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}{% raw %}{{ checksum ".ruby-version" }}{% endraw %}
           paths:
             - "/home/circleci/.cache/solargraph"
       - run_with_languages:
