@@ -57,6 +57,11 @@ commands:
             - pyenv-v2-{{ checksum "requirements_dev.txt" }}
             - pyenv-v2-
             - pyenv-
+      - restore_cache:
+          keys:
+            - child-gems-v5-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-
+            - child-gems-v5-
+            - child-gems-
       - run:
           name: Initialize packages
           command: |
@@ -156,11 +161,6 @@ jobs:
           steps:
             # skip tox to speed things by not installing another
             # virtualenv, and only run in default Python version.
-            - restore_cache:
-                keys:
-                  - child-gems-v4-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-
-                  - child-gems-v4-
-                  - child-gems-
             - run_with_languages:
                 label: Test
                 command: |
@@ -181,12 +181,10 @@ jobs:
             - store_artifacts:
                 path: /tmp/child_fix_sh_timing.log
             - save_cache:
-                key: child-gems-v4-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "/tmp/.ruby-version" }} # yamllint disable-line rule:line-length
+                key: child-gems-v5-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "/tmp/.ruby-version" }} # yamllint disable-line rule:line-length
                 paths:
                   - "vendor/bundle"
-                  - ".yardoc"
                   - "/home/circleci/.cache/solargraph"
-                  - "/home/circleci/.rbenv/versions"
       - when:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
