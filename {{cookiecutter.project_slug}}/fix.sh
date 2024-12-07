@@ -474,16 +474,16 @@ ensure_rugged_packages_installed() {
     echo "Current directory"
     pwd
     echo "Vendor dir"
-    ls -l vendor
+    ls -l vendor || true
     echo "List of vendor/bundle/gems:"
-    ls vendor/bundle/gems
+    ls vendor/bundle/gems || true
     echo "Did not find rugged gem installed; installing packages needed for rugged"
     echo "Installed gems:"
     gem list
     echo "Gem environment:"
     gem environment
     echo "Bundle list:"
-    bundle list
+    bundle list || true
     ensure_binary_library libicuio icu4c libicu-dev # needed by rugged, needed by undercover
     ensure_package pkg-config # needed by rugged, needed by undercover
     ensure_package cmake # needed by rugged, needed by undercover
