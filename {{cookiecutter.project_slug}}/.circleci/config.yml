@@ -47,8 +47,8 @@ commands:
             - solargraph-
       - restore_cache:
           keys:
-            - wheels-v1-3.12.1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
-            - wheels-v1-3.12.1-
+            - wheels-v1-3.12.7-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
+            - wheels-v1-3.12.7-
             - wheels-v1-
             - wheels-
       - run:
@@ -77,11 +77,11 @@ commands:
             - "vendor/bundle"
             - ".yardoc"
       - save_cache:
-          key: wheels-v1-3.12.1-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
+          key: wheels-v1-3.12.7-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}
           paths:
             - "/home/circleci/.cache/pip/wheels"
-            - "/home/circleci/.pyenv/versions/3.12.1/envs/{{cookiecutter.project_slug}}-3.12.1"
-            - "/home/circleci/.pyenv/versions/{{cookiecutter.project_slug}}-3.12.1"
+            - "/home/circleci/.pyenv/versions/3.12.7/envs/{{cookiecutter.project_slug}}-3.12.7"
+            - "/home/circleci/.pyenv/versions/{{cookiecutter.project_slug}}-3.12.7"
       - run:
           name: Download new circleci tool
           command: |
