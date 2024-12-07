@@ -200,25 +200,22 @@ ensure_bundle() {
   bundler_version_major=$(cut -d. -f1 <<< "${bundler_version}")
   bundler_version_minor=$(cut -d. -f2 <<< "${bundler_version}")
   bundler_version_patch=$(cut -d. -f3 <<< "${bundler_version}")
-  # Version 2.1 of bundler seems to have some issues with nokogiri:
   #
-  # https://app.asana.com/0/1107901397356088/1199504270687298
-
-  # Version <2.2.22 of bundler isn't compatible with Ruby 3.3:
+  # Version 2.5.5 fixed an issue in 2.2.22 with the 'bump' gem:
   #
-  # https://stackoverflow.com/questions/70800753/rails-calling-didyoumeanspell-checkers-mergeerror-name-spell-checker-h
+  # https://app.circleci.com/pipelines/github/apiology/checkoff/1281/workflows/f667f909-c3fc-4ae2-8593-dde2b588a7a7/jobs/2491
   need_better_bundler=false
   if [ "${bundler_version_major}" -lt 2 ]
   then
     need_better_bundler=true
   elif [ "${bundler_version_major}" -eq 2 ]
   then
-    if [ "${bundler_version_minor}" -lt 2 ]
+    if [ "${bundler_version_minor}" -lt 5 ]
     then
       need_better_bundler=true
-    elif [ "${bundler_version_minor}" -eq 2 ]
+    elif [ "${bundler_version_minor}" -eq 5 ]
     then
-      if [ "${bundler_version_patch}" -lt 23 ]
+      if [ "${bundler_version_patch}" -lt 5 ]
       then
         need_better_bundler=true
       fi
@@ -226,9 +223,12 @@ ensure_bundle() {
   fi
   if [ "${need_better_bundler}" = true ]
   then
+    >&2 echo "Original bundler version: ${bundler_version}"
     # need to do this first before 'bundle update --bundler' will work
     make bundle_install
     bundle update --bundler
+    gem install bundler:2.5.5
+    >&2 echo "Updated bundler version: $(bundle --version)"
     # ensure next step installs fresh bundle
     rm -f Gemfile.lock.installed
   fi
@@ -468,9 +468,26 @@ ensure_overcommit() {
 }
 
 ensure_rugged_packages_installed() {
-  ensure_binary_library libicuio icu4c libicu-dev # needed by rugged, needed by undercover
-  ensure_package pkg-config # needed by rugged, needed by undercover
-  ensure_package cmake # needed by rugged, needed by undercover
+  # only needed if we don't already have rugged installed
+  if ! ls vendor/bundle/ruby/*/gems/rugged-* &>/dev/null
+  then
+    echo "Current directory"
+    pwd
+    echo "Vendor dir"
+    ls -l vendor
+    echo "List of vendor/bundle/gems:"
+    ls vendor/bundle/gems
+    echo "Did not find rugged gem installed; installing packages needed for rugged"
+    echo "Installed gems:"
+    gem list
+    echo "Gem environment:"
+    gem environment
+    echo "Bundle list:"
+    bundle list
+    ensure_binary_library libicuio icu4c libicu-dev # needed by rugged, needed by undercover
+    ensure_package pkg-config # needed by rugged, needed by undercover
+    ensure_package cmake # needed by rugged, needed by undercover
+  fi
 }
 
 ensure_rbenv

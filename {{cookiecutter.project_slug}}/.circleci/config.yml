@@ -48,8 +48,8 @@ commands:
             done
       - restore_cache:
           keys:
-            - rbenv-v3-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
-            - rbenv-v3-
+            - rbenv-v4-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - rbenv-v4-
             - rbenv-
       - restore_cache:
           keys:
@@ -87,9 +87,10 @@ commands:
               exit 1
             fi
       - save_cache:
-          key: rbenv-v3-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}
+          key: rbenv-v4-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}
           paths:
             - "Gemfile.lock.installed"
+            - "types.installed"
             - "vendor/bundle"
             - "/home/circleci/.rbenv"
             - ".yardoc"
@@ -121,7 +122,7 @@ commands:
       - run_with_languages:
           label: Run brakeman
           command: |
-            bundle exec brakeman --no-pager
+            bundle exec brakeman --no-pager --force
       - run_with_languages:
           label: Run Rubocop
           command: |
@@ -225,15 +226,14 @@ jobs:
       - run_with_languages:
           label: Typecheck
           command: make citypecheck citypecoverage
+      - save_cache:
+          key: solargraph-v2-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }}
+          paths:
+            - "/home/circleci/.cache/solargraph"
       - run_with_languages:
           label: Test
           command: |
             make citest cicoverage
-      - save_cache:
-          key: solargraph-v2-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ .Branch }}{% endraw %}
-          paths:
-            - ".yardoc"
-            - "/home/circleci/.cache/solargraph"
     # This seemed to shave 5ish% of the build time off when added
     resource_class: large
 
