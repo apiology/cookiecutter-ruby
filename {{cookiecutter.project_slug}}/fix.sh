@@ -190,6 +190,7 @@ ensure_ruby_versions() {
   done
 
   ruby -e 'require "openssl"' # ensure we have a working OpenSSL
+  echo "OpenSSL verified"
 }
 
 ensure_bundle() {
