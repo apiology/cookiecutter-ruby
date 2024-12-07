@@ -188,6 +188,9 @@ ensure_ruby_versions() {
       echo "Found Ruby version $ver already installed"
     fi
   done
+
+  ruby -e 'require "openssl"' # ensure we have a working OpenSSL
+  echo "OpenSSL verified"
 }
 
 ensure_bundle() {
