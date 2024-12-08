@@ -28,9 +28,6 @@ group :development do
   gem "solargraph",
       git: "https://github.com/apiology/solargraph",
       branch: "master"
-  gem "solargraph-rails",
-      git: "https://github.com/apiology/solargraph-rails",
-      branch: "main"
   gem "yard"
 end
 
