@@ -163,9 +163,15 @@ contains() {
   fi
 }
 
+ensure_ruby_runtime_requirements() {
+  ensure_binary_library libssl libssl
+}
+
 # You can find out which feature versions are still supported / have
 # been release here: https://www.ruby-lang.org/en/downloads/
 ensure_ruby_versions() {
+  ensure_ruby_runtime_requirements
+
   ensure_latest_ruby_build_definitions
 
   # You can find out which feature versions are still supported / have
