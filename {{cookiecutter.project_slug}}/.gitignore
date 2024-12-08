@@ -41,6 +41,7 @@ Temporary Items
 # Used by Makefile to track what we have and haven't installed
 Gemfile.lock.installed
 requirements_dev.txt.installed
+types.installed
 
 # Used by CircleCI as a place to store installed gems
 /vendor
