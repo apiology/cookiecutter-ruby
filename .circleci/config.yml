@@ -49,8 +49,8 @@ commands:
             done
       - restore_cache:
           keys:
-            - rbenv-v4-{{ checksum "Gemfile.lock" }}-
-            - rbenv-v4-
+            - rbenv-v5-{{ checksum "Gemfile.lock" }}-
+            - rbenv-v5-
             - rbenv-
       - restore_cache:
           keys:
@@ -59,8 +59,8 @@ commands:
             - pyenv-
       - restore_cache:
           keys:
-            - child-rbenv-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-
-            - child-rbenv-v1-
+            - child-rbenv-v2-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-
+            - child-rbenv-v2-
             - child-rbenv-
       - run:
           name: Initialize packages
@@ -87,11 +87,9 @@ commands:
               exit 1
             fi
       - save_cache:
-          key: rbenv-v4-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }}
+          key: rbenv-v5-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }}
           paths:
             - "Gemfile.lock.installed"
-            - "vendor/bundle"
-            - "/home/circleci/.rbenv"
             - ".yardoc"
       - save_cache:
           key: pyenv-v2-{{ checksum "requirements_dev.txt" }}
@@ -181,10 +179,11 @@ jobs:
             - store_artifacts:
                 path: /tmp/child_fix_sh_timing.log
             - save_cache:
-                key: child-rbenv-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }} # yamllint disable-line rule:line-length
+                key: child-rbenv-v2-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }} # yamllint disable-line rule:line-length
                 paths:
                   - "vendor/bundle"
                   - "/home/circleci/.cache/solargraph"
+                  - "/home/circleci/.rbenv"
       - when:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
