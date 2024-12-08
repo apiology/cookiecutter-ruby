@@ -501,11 +501,6 @@ ensure_ruby_versions
 
 set_ruby_local_version
 
-set_rbenv_env_variables
-
-ruby -e 'require "openssl"' # ensure we have a working OpenSSL
-echo "OpenSSL verified"
-
 ensure_rugged_packages_installed
 
 ensure_bundle
