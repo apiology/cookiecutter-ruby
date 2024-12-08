@@ -183,7 +183,7 @@ jobs:
             - store_artifacts:
                 path: /tmp/child_fix_sh_timing.log
             - save_cache:
-                key: child-rbenv-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "/tmp/.ruby-version" }} # yamllint disable-line rule:line-length
+                key: child-rbenv-v1-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }} # yamllint disable-line rule:line-length
                 paths:
                   - "vendor/bundle"
                   - "/home/circleci/.cache/solargraph"
