@@ -54,7 +54,7 @@ commands:
             - rbenv-
       - restore_cache:
           keys:
-            - pyenv-v2-{{ checksum "requirements_dev.txt" }}
+            - pyenv-v2-{{ checksum "requirements_dev.txt" }}-
             - pyenv-v2-
             - pyenv-
       - restore_cache:
@@ -91,8 +91,9 @@ commands:
           paths:
             - "Gemfile.lock.installed"
             - ".yardoc"
+            - "/home/circleci/.cache/solargraph"
       - save_cache:
-          key: pyenv-v2-{{ checksum "requirements_dev.txt" }}
+          key: pyenv-v2-{{ checksum "requirements_dev.txt" }}-{{ checksum ".python-version" }}
           paths:
             - "requirements_dev.txt.installed"
             - "/home/circleci/.cache/pip/wheels"
