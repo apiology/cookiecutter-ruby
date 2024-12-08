@@ -2,15 +2,16 @@
 
 if [ -n "${FIX_SH_TIMING_LOG+x}" ]; then
     rm -f "${FIX_SH_TIMING_LOG}"
+    if ! type gdate >/dev/null 2>&1; then sudo ln -sf /bin/date /bin/gdate; fi
 fi
 
 debug_timing() {
   if [ -n "${FIX_SH_TIMING_LOG+x}" ]; then
     # shellcheck disable=SC2034
-    _lastcmd=$(ruby -e "puts (Time.now.to_f * 1000).to_i")
+    _lastcmd=$(gdate +%s%3N)
     last_command='start'
     # shellcheck disable=SC2154
-    trap '_now=$(ruby -e "puts (Time.now.to_f * 1000).to_i"); duration=$((_now - _lastcmd)); echo ${duration} ms: $last_command >> '"${FIX_SH_TIMING_LOG}"'; last_command="$BASH_COMMAND" >> '"${FIX_SH_TIMING_LOG}"'; _lastcmd=$_now' DEBUG
+    trap '_now=$(gdate +%s%3N); duration=$((_now - _lastcmd)); echo ${duration} ms: $last_command >> '"${FIX_SH_TIMING_LOG}"'; last_command="$BASH_COMMAND" >> '"${FIX_SH_TIMING_LOG}"'; _lastcmd=$_now' DEBUG
   fi
 }
 
@@ -126,7 +127,7 @@ ensure_binary_library() {
       ! [ -f /usr/local/lib/"${library_base_name}.so" ] && \
       ! [ -f /usr/local/opt/"${homebrew_package}/lib/${library_base_name}*.dylib" ]
   then
-      if ! compgen -G "/opt/homebrew/Cellar/${homebrew_package}"*/*/"lib/${library_base_name}"*.dylib
+      if ! compgen -G "/opt/homebrew/Cellar/${homebrew_package}"*/*/"lib/${library_base_name}"*.dylib >/dev/null 2>&1
       then
         install_package "${homebrew_package}" "${apt_package}"
       fi
@@ -147,8 +148,19 @@ ensure_latest_ruby_build_definitions() {
 #  # if not pulled in last 24 hours
 #  if [ $(( $(date +%s) - last_pulled_unix_epoch )) -gt $(( 24 * 60 * 60 )) ]
 #  then
-      git -C "$(rbenv root)"/plugins/ruby-build pull
+      git -C "$HOME"/.rbenv/plugins/ruby-build pull
 #  fi
+}
+
+# https://stackoverflow.com/questions/2829613/how-do-you-tell-if-a-string-contains-another-string-in-posix-sh
+contains() {
+  string="$1"
+  substring="$2"
+  if [ "${string#*"$substring"}" != "$string" ]; then
+    return 0    # $substring is in $string
+  else
+    return 1    # $substring is not in $string
+  fi
 }
 
 # You can find out which feature versions are still supported / have
@@ -160,14 +172,21 @@ ensure_ruby_versions() {
   # been release here: https://www.ruby-lang.org/en/downloads/
   ruby_versions="$(latest_ruby_version 3.3)"
 
-  echo "Latest Ruby versions: ${ruby_versions}"
+  installed_ruby_versions="$(rbenv versions --bare --skip-aliases)"
 
-  ensure_ruby_build_requirements
+  echo "Latest Ruby versions: ${ruby_versions}"
 
   for ver in $ruby_versions
   do
-    rbenv install -s "${ver}"
-    hash -r  # ensure we are seeing latest bundler etc
+    if ! contains "${installed_ruby_versions}"$'\n' "${ver}"$'\n'; then
+      echo "Installing Ruby version $ver - existing versions: $installed_ruby_versions"
+      ensure_ruby_build_requirements
+
+      rbenv install -s "${ver}"
+      hash -r  # ensure we are seeing latest bundler etc
+    else
+      echo "Found Ruby version $ver already installed"
+    fi
   done
 }
 
@@ -176,8 +195,8 @@ ensure_bundle() {
   #
   # https://app.circleci.com/pipelines/github/apiology/source_finder/21/workflows/88db659f-a4f4-4751-abc0-46f5929d8e58/jobs/107
   set_rbenv_env_variables
-  bundle --version >/dev/null 2>&1 || gem install --no-document bundler
-  bundler_version=$(bundle --version | cut -d ' ' -f3)
+  type bundle >/dev/null 2>&1 || gem install --no-document bundler
+  bundler_version=$(ruby -e 'require "rubygems"; puts Gem::BundlerVersionFinder.bundler_version' 2>/dev/null || bundle --version | cut -d' ' -f3 )
   bundler_version_major=$(cut -d. -f1 <<< "${bundler_version}")
   bundler_version_minor=$(cut -d. -f2 <<< "${bundler_version}")
   bundler_version_patch=$(cut -d. -f3 <<< "${bundler_version}")
@@ -213,7 +232,6 @@ ensure_bundle() {
     # ensure next step installs fresh bundle
     rm -f Gemfile.lock.installed
   fi
-  make bundle_install
   # https://bundler.io/v2.0/bundle_lock.html#SUPPORTING-OTHER-PLATFORMS
   #
   # "If you want your bundle to support platforms other than the one
@@ -225,7 +243,15 @@ ensure_bundle() {
   #
   # This affects nokogiri, which will try to reinstall itself in
   # Docker builds where it's already installed if this is not run.
-  bundle lock --add-platform arm64-darwin-23 x86_64-darwin-23 x86_64-linux x86_64-linux-musl aarch64-linux arm64-linux
+  PLATFORMS="ruby arm64-darwin-23 x86_64-darwin-23 x86_64-linux x86_64-linux-musl aarch64-linux arm64-linux"
+  for platform in ${PLATFORMS}
+  do
+    if ! grep -q "^  ${platform}$" Gemfile.lock
+    then
+      bundle lock --add-platform "${platform}"
+    fi
+  done
+  make bundle_install
 }
 
 set_ruby_local_version() {
@@ -355,24 +381,32 @@ ensure_python_versions() {
 
   echo "Latest Python versions: ${python_versions}"
 
-  ensure_python_build_requirements
+  installed_python_versions="$(pyenv versions --skip-envs --skip-aliases --bare)"
 
   for ver in $python_versions
   do
-    if [ "$(uname)" == Darwin ]
-    then
-      if [ -z "${HOMEBREW_OPENSSL_PREFIX:-}" ]
-      then
-        HOMEBREW_OPENSSL_PREFIX="$(brew --prefix openssl)"
-      fi
-      pyenv_install() {
-        CFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include -I${HOMEBREW_OPENSSL_PREFIX}/include" LDFLAGS="-L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib -L${HOMEBREW_OPENSSL_PREFIX}/lib" pyenv install --skip-existing "$@"
-      }
+    if ! contains "${installed_python_versions}"$'\n' "${ver}"$'\n'; then
+      echo "Installing Python version $ver - existing versions: $installed_python_versions"
+      ensure_python_build_requirements
 
-      major_minor="$(cut -d. -f1-2 <<<"${ver}")"
-      pyenv_install "${ver}"
+      if [ "$(uname)" == Darwin ]
+      then
+        if [ -z "${HOMEBREW_OPENSSL_PREFIX:-}" ]
+        then
+          HOMEBREW_OPENSSL_PREFIX="$(brew --prefix openssl)"
+        fi
+        pyenv_install() {
+          CFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include -I${HOMEBREW_OPENSSL_PREFIX}/include" LDFLAGS="-L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib -L${HOMEBREW_OPENSSL_PREFIX}/lib" pyenv install --skip-existing "$@"
+        }
+
+        major_minor="$(cut -d. -f1-2 <<<"${ver}")"
+        pyenv_install "${ver}"
+      else
+        pyenv install -s "${ver}"
+      fi
+      hash -r
     else
-      pyenv install -s "${ver}"
+      echo "Found Python version $ver already installed"
     fi
   done
 }
@@ -394,15 +428,19 @@ ensure_pyenv_virtualenvs() {
 }
 
 ensure_pip_and_wheel() {
-  # pip 22 seems to be better at finding pandas pre-compiled wheels
-  # for macOS, so let's make sure we're using at least that version
-  major_pip_version=$(pip --version | cut -d' ' -f2 | cut -d '.' -f 1)
-  if [[ major_pip_version -lt 21 ]]
+  # https://cve.mitre.org/cgi-bin/cvename.cgi?name=2023-5752
+  pip_version=$(python -c "import pip; print(pip.__version__)" | cut -d' ' -f2)
+  major_pip_version=$(cut -d '.' -f 1 <<< "${pip_version}")
+  minor_pip_version=$(cut -d '.' -f 2 <<< "${pip_version}")
+  if [[ major_pip_version -lt 23 ]]
   then
-    pip install 'pip>=22'
+      pip install 'pip>=23.3'
+  elif [[ major_pip_version -eq 23 ]] && [[ minor_pip_version -lt 3 ]]
+  then
+      pip install 'pip>=23.3'
   fi
   # wheel is helpful for being able to cache long package builds
-  pip show wheel >/dev/null 2>&1 || pip install wheel
+  type wheel >/dev/null 2>&1 || pip install wheel
 }
 
 ensure_python_requirements() {
