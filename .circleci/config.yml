@@ -75,8 +75,6 @@ commands:
             GEM_HOME="${BUNDLE_PATH}"
             export GEM_HOME
 
-            ls -ld /home/circleci/.rbenv/versions/3.3.6/lib/ruby/3.3.0/x86_64-linux/openssl.so
-
             './fix.sh'
       - store_artifacts:
           path: /tmp/fix_sh_timing.log
