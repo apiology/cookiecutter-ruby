@@ -195,8 +195,20 @@ ensure_bundle() {
   #
   # https://app.circleci.com/pipelines/github/apiology/source_finder/21/workflows/88db659f-a4f4-4751-abc0-46f5929d8e58/jobs/107
   set_rbenv_env_variables
-  type bundle >/dev/null 2>&1 || gem install --no-document bundler
-  bundler_version=$(ruby -e 'require "rubygems"; puts Gem::BundlerVersionFinder.bundler_version' 2>/dev/null || bundle --version | cut -d' ' -f3 )
+
+  bundler_version=$(ruby -e 'require "rubygems/bundler_version_finder"; puts Gem::BundlerVersionFinder.bundler_version')
+  # if bundler_version is empty
+  if [ -z "${bundler_version}" ]
+  then
+      bundler_version=$(bundle --version | cut -d ' ' -f 3)
+  fi
+  # if bundler_version is still empty
+  if [ -z "${bundler_version}" ]
+  then
+      gem install bundler
+      bundler_version=$(bundle --version | cut -d ' ' -f 3)
+  fi
+  echo "Bundler version: ${bundler_version}"
   bundler_version_major=$(cut -d. -f1 <<< "${bundler_version}")
   bundler_version_minor=$(cut -d. -f2 <<< "${bundler_version}")
   bundler_version_patch=$(cut -d. -f3 <<< "${bundler_version}")
@@ -226,6 +238,7 @@ ensure_bundle() {
   fi
   if [ "${need_better_bundler}" = true ]
   then
+    >&2 echo "Original bundler version: ${bundler_version}"
     # need to do this first before 'bundle update --bundler' will work
     make bundle_install
     bundle update --bundler
