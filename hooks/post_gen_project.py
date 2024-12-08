@@ -43,7 +43,7 @@ if __name__ == '__main__':
     # (any file addition/modification from the outside world goes here)
     #
     run('./fix.sh')
-    run(['bundle', 'exec', 'rubocop', '-A'])
+    run(['bundle', 'exec', 'rubocop', '-A', '--disable-uncorrectable'])
     #
     # (commit here if you brought in any files above)
     #
