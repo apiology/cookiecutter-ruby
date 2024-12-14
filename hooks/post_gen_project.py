@@ -49,10 +49,9 @@ if __name__ == '__main__':
     #
     # (commit here if you brought in any files above)
     #
-    run(['bin/tapioca', 'init'])
     run(['make', 'build-typecheck'])  # update from bundle updates
     run(['git', 'add', '-A'])
-    run(['bin/bundle', 'exec', 'git', 'commit', '--allow-empty', '-m',
+    run(['bundle', 'exec', 'git', 'commit', '--allow-empty', '-m',
          'reformat'])
 
     if os.environ.get('SKIP_EXTERNAL', '0') != '1':
