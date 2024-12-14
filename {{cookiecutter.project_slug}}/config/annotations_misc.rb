@@ -1,4 +1,6 @@
+# typed: strict
 # frozen_string_literal: true
+
 #
 # https://gist.github.com/castwide/28b349566a223dfb439a337aea29713e
 #
@@ -18,7 +20,7 @@
 #     # @param key [String]
 #     # @param default [Object]
 #     #
-#     # @return [String,Symbol<:none>,nil]
+#     # @return [String,:none,nil]
 #     def self.fetch(key, default = :none); end
 #     # @param key [String]
 #     #
@@ -31,5 +33,36 @@
 #       #
 #       # @return [void]
 #       def require(*groups); end
+#     end
+#   end
+#   module OpenSSL
+#     module SSL
+#       # @type [Integer]
+#       VERIFY_PEER = 1
+#       # @type [Integer]
+#       VERIFY_NONE = 0
+#     end
+#   end
+#   class Time
+#     class << self
+#       # @param time [String]
+#       # @param now [nil,Time]
+#       # @return [Time]
+#       def parse(time, now=nil); end
+#     end
+#     # https://ruby-doc.org/3.2.2/exts/date/Time.html#method-i-to_date#
+#     # @return [Date]
+#     def to_date; end
+#   end
+#   class Date
+#     class << self
+#       # @param date [String]
+#       # @param comp [Boolean]
+#       # @param state [Object]
+#       # @return [Date]
+#       def parse(date='-4712-01-01', comp=true, state=Date::ITALY); end
+#       # @param start [Integer]
+#       # @return [Date]
+#       def today(start=Date::ITALY); end
 #     end
 #   end

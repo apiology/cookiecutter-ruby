@@ -55,6 +55,7 @@ PreCommit:
     on_warn: fail
     exclude:
       - '.rubocop_todo.yml' # generated
+      - 'sorbet/**/*' # generated
   CircleCi:
     required_executable: 'circleci'
     flags: ['config', 'validate']
@@ -80,14 +81,20 @@ PreCommit:
       - spec/**/*
       - ".bundle/**/*"
       - ".markdownlint_style.rb"
+  Sorbet:
+    enabled: true
+    problem_on_unmodified_line: warn
   Punchlist:
     command: ['bundle', 'exec', 'punchlist']
     enabled: true
     problem_on_unmodified_line: warn
+    exclude:
+      - 'sorbet/**/*'
 
 PrePush:
   Brakeman:
     enabled: true
+    flags: ['--exit-on-warn', '--quiet', '--summary', '--force']
   RakeTarget:
     enabled: true
     command: ['bundle', 'exec', 'rake']
