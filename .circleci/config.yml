@@ -49,9 +49,9 @@ commands:
             done
       - restore_cache:
           keys:
-            - rbenv-v5-{{ checksum "Gemfile.lock" }}-
-            - rbenv-v5-
-            - rbenv-
+            - solargraph-v3-{{ checksum "Gemfile.lock" }}-
+            - solargraph-v3-
+            - solargraph-
       - restore_cache:
           keys:
             - pyenv-v2-{{ checksum "requirements_dev.txt" }}-
@@ -59,8 +59,9 @@ commands:
             - pyenv-
       - restore_cache:
           keys:
-            - child-rbenv-v2-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-
-            - child-rbenv-v2-
+            - child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}- # yamllint disable-line rule:line-length
+            - child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-
+            - child-rbenv-v3-
             - child-rbenv-
       - run:
           name: Initialize packages
@@ -87,9 +88,8 @@ commands:
               exit 1
             fi
       - save_cache:
-          key: rbenv-v5-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }}
+          key: solargraph-v3-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }}
           paths:
-            - "Gemfile.lock.installed"
             - ".yardoc"
             - "/home/circleci/.cache/solargraph"
       - save_cache:
@@ -180,9 +180,10 @@ jobs:
             - store_artifacts:
                 path: /tmp/child_fix_sh_timing.log
             - save_cache:
-                key: child-rbenv-v2-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }} # yamllint disable-line rule:line-length
+                key: child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }} # yamllint disable-line rule:line-length
                 paths:
                   - "vendor/bundle"
+                  - "Gemfile.lock.installed"
                   - "/home/circleci/.cache/solargraph"
                   - "/home/circleci/.rbenv"
       - when:
