@@ -6,7 +6,7 @@ mypy==1.13
 lxml==5.3.0
 pip==23.3.1
 pytest-cookies==0.6.1
-pytest==7.3.1
+pytest==8.3.4
 tox==4.6.0
 watchdog==3.0.0
 yamllint==1.35.1
