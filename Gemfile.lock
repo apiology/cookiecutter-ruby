@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    chef-utils (18.5.0)
+    chef-utils (18.6.2)
       concurrent-ruby
     childprocess (5.1.0)
       logger (~> 1.5)
@@ -11,7 +11,7 @@ GEM
       rexml (>= 3.3.9)
     kramdown-parser-gfm (1.1.0)
       kramdown (~> 2.0)
-    logger (1.6.2)
+    logger (1.6.3)
     mdl (0.13.0)
       kramdown (~> 2.3)
       kramdown-parser-gfm (~> 1.1)
