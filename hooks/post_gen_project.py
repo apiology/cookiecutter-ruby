@@ -40,7 +40,7 @@ if __name__ == '__main__':
              '--no-verify',
              '-m', 'Initial commit from boilerplate'])
     if 'Yes' != '{{ cookiecutter.use_checkoff }}':
-        run(['rm', 'config/annotations_asana'])
+        run(['rm', 'config/annotations_asana.rb'])
     #
     # (any file addition/modification from the outside world goes here)
     #
