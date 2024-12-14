@@ -39,17 +39,20 @@ if __name__ == '__main__':
         run(['git', 'commit', '--allow-empty',
              '--no-verify',
              '-m', 'Initial commit from boilerplate'])
+    if 'Yes' != '{{ cookiecutter.use_checkoff }}':
+        run(['rm', 'config/annotations_asana'])
     #
     # (any file addition/modification from the outside world goes here)
     #
     run('./fix.sh')
-    run(['bundle', 'exec', 'rubocop', '-A', '--disable-uncorrectable'])
+    run(['bin/rubocop', '-A', '--disable-uncorrectable'])
     #
     # (commit here if you brought in any files above)
     #
-    run(['git', 'add', '-A'])
+    run(['bin/tapioca', 'init'])
     run(['make', 'build-typecheck'])  # update from bundle updates
-    run(['bundle', 'exec', 'git', 'commit', '--allow-empty', '-m',
+    run(['git', 'add', '-A'])
+    run(['bin/bundle', 'exec', 'git', 'commit', '--allow-empty', '-m',
          'reformat'])
 
     if os.environ.get('SKIP_EXTERNAL', '0') != '1':
