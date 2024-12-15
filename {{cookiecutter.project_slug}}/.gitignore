@@ -42,6 +42,10 @@ Temporary Items
 Gemfile.lock.installed
 requirements_dev.txt.installed
 types.installed
+tapioca.installed
+
+# generated from local source
+config/defs.rbi
 
 # Used by CircleCI as a place to store installed gems
 /vendor
