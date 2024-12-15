@@ -109,7 +109,7 @@ feature: ## Run higher-level tests
 localtest: ## run default local actions
 	@bundle exec rake localtest
 
-repl:  ## Load up {{cookiecutter.project_slug}} in pry
+repl: bundle_install ## Load up plate-spinner in pry
 	@bundle exec rake repl
 
 clean-coverage:
