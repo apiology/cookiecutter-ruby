@@ -1,0 +1,35 @@
+# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+
+# Ignore git directory.
+/.git/
+/.gitignore
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all environment files (except templates).
+/.env*
+!/.env*.erb
+
+# used for local dev only
+/config/env.1p
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore Docker-related files
+/.dockerignore
+/Dockerfile*
+
+# Ignore test coverage
+coverage
+
+# Ignore documentation
+doc
+vendor/bundle/ruby/*/doc
+
+# Ignore .gem file cache
+vendor/bundle/ruby/*/cache
