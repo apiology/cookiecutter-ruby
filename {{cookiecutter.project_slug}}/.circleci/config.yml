@@ -26,7 +26,7 @@ commands:
             # keep this in a single place for both main and child builds for cachability
             BUNDLE_PATH="$(pwd)/vendor/bundle"
             export BUNDLE_PATH
-            GEM_HOME="${BUNDLE_PATH}"
+            GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
             export GEM_HOME
 
             <<parameters.command>>
@@ -48,8 +48,8 @@ commands:
             done
       - restore_cache:
           keys:
-            - rbenv-v4-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
-            - rbenv-v4-
+            - rbenv-v5-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - rbenv-v5-
             - rbenv-
       - restore_cache:
           keys:
@@ -66,28 +66,12 @@ commands:
 
             BUNDLE_PATH="$(pwd)/vendor/bundle"
             export BUNDLE_PATH
-            GEM_HOME="${BUNDLE_PATH}"
+            GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
             export GEM_HOME
 
             './fix.sh'
       - store_artifacts:
           path: /tmp/fix_sh_timing.log
-      - run:
-          name: Verify Gemfile.lock
-          command: |
-            if ! git diff --exit-code Gemfile.lock
-            then
-              >&2 echo "Please resolve changes to Gemfile.lock after bundle install to avoid caching difficulties"
-              exit 1
-            fi
-      - save_cache:
-          key: rbenv-v4-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}
-          paths:
-            - "Gemfile.lock.installed"
-            - "vendor/bundle"
-            - "/home/circleci/.rbenv"
-            - ".yardoc"
-            - "/home/circleci/.cache/solargraph"
       - save_cache:
           key: pyenv-v2-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}-{% raw %}{{ checksum ".python-version" }}{% endraw %}
           paths:
@@ -129,6 +113,23 @@ jobs:
       - run_with_languages:
           label: Typecheck
           command: make citypecheck citypecoverage
+      - save_cache:
+          key: rbenv-v5-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}
+          paths:
+            - "Gemfile.lock.installed"
+            - "types.installed"
+            - "vendor/bundle"
+            - "/home/circleci/.rbenv"
+            - ".yardoc"
+            - "/home/circleci/.cache/solargraph"
+      - run:
+          name: Verify deltas
+          command: |
+            if ! git diff --exit-code .
+            then
+              >&2 echo "Please resolve changes to avoid caching difficulties"
+              exit 1
+            fi
       - run_with_languages:
           label: Test
           command: |
