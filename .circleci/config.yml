@@ -49,11 +49,6 @@ commands:
             done
       - restore_cache:
           keys:
-            - rbenv-v5-{{ checksum "Gemfile.lock" }}-
-            - rbenv-v5-
-            - rbenv-
-      - restore_cache:
-          keys:
             - pyenv-v2-{{ checksum "requirements_dev.txt" }}-
             - pyenv-v2-
             - pyenv-
@@ -178,15 +173,6 @@ jobs:
             equal: [<< pipeline.git.branch >>, "main"]
           steps:
             - tox
-      - save_cache:
-          key: rbenv-v5-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }}
-          paths:
-            - "Gemfile.lock.installed"
-            - "types.installed"
-            - "vendor/bundle"
-            - "/home/circleci/.rbenv"
-            - ".yardoc"
-            - "/home/circleci/.cache/solargraph"
       - run:
           name: Verify deltas
           command: |
