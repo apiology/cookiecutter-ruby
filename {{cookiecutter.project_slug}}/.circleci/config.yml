@@ -26,7 +26,7 @@ commands:
             # keep this in a single place for both main and child builds for cachability
             BUNDLE_PATH="$(pwd)/vendor/bundle"
             export BUNDLE_PATH
-            GEM_HOME="${BUNDLE_PATH}"
+            GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
             export GEM_HOME
 
             <<parameters.command>>
@@ -66,20 +66,12 @@ commands:
 
             BUNDLE_PATH="$(pwd)/vendor/bundle"
             export BUNDLE_PATH
-            GEM_HOME="${BUNDLE_PATH}"
+            GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
             export GEM_HOME
 
             './fix.sh'
       - store_artifacts:
           path: /tmp/fix_sh_timing.log
-      - run:
-          name: Verify Gemfile.lock
-          command: |
-            if ! git diff --exit-code Gemfile.lock
-            then
-              >&2 echo "Please resolve changes to Gemfile.lock after bundle install to avoid caching difficulties"
-              exit 1
-            fi
       - save_cache:
           key: pyenv-v2-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}-{% raw %}{{ checksum ".python-version" }}{% endraw %}
           paths:
@@ -215,6 +207,14 @@ jobs:
             - "/home/circleci/.rbenv"
             - ".yardoc"
             - "/home/circleci/.cache/solargraph"
+      - run:
+          name: Verify deltas
+          command: |
+            if ! git diff --exit-code .
+            then
+              >&2 echo "Please resolve changes to avoid caching difficulties"
+              exit 1
+            fi
       - run_with_languages:
           label: Test
           command: |
