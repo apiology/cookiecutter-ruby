@@ -108,13 +108,7 @@ commands:
       - run_with_languages:
           label: Ratchet rubocop quality
           command: |
-            set -x
-            bundle exec rubocop --regenerate-todo --no-exclude-limit --auto-gen-only-exclude --no-auto-gen-timestamp
-            if [ -f .rubocop_todo.yml ]
-            then
-              git diff --exit-code .rubocop.yml
-              git diff --exit-code .rubocop_todo.yml
-            fi
+            make rubocop-ratchet
   update_dependencies:
     description: "Update dependencies whose build may have triggered this build"
     parameters:
