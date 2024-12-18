@@ -1,4 +1,4 @@
-.PHONY: build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default feature help localtest overcommit quality repl report-coverage report-coverage-to-codecov rubocop spec test typecheck typecoverage update_from_cookiecutter
+.PHONY: build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default feature help localtest overcommit quality repl report-coverage report-coverage-to-codecov rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -15,7 +15,7 @@ export PRINT_HELP_PYSCRIPT
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-default: clean-typecoverage typecheck typecoverage clean-coverage test coverage quality ## run default typechecking, tests and quality
+default: clean-typecoverage typecheck typecoverage clean-coverage test coverage quality rubocop-ratchet ## run default typechecking, tests and quality
 
 config/defs.rbi: .yardoc/complete ## Generate RBS files
 	rm -f config/defs.rbi
@@ -97,6 +97,14 @@ quality: overcommit ## run precommit quality checks
 
 rubocop: ## Run rubocop
 	@bundle exec rubocop
+
+rubocop-ratchet: rubocop ## Run rubocop and then ratchet numbers of errors in todo file
+	@bundle exec rubocop --regenerate-todo --no-exclude-limit --auto-gen-only-exclude --no-auto-gen-timestamp
+	@if [ -f .rubocop_todo.yml ]; \
+	  then \
+	    git diff --exit-code .rubocop.yml; \
+	    git diff --exit-code .rubocop_todo.yml; \
+	fi
 
 test: spec ## run tests quickly
 
