@@ -49,15 +49,15 @@ commands:
             done
       - restore_cache:
           keys:
-            - pyenv-v2-{{ checksum "requirements_dev.txt" }}-
-            - pyenv-v2-
-            - pyenv-
-      - restore_cache:
-          keys:
             - child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}- # yamllint disable-line rule:line-length
             - child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-
             - child-rbenv-v3-
             - child-rbenv-
+      - restore_cache:
+          keys:
+            - pyenv-v2-{{ checksum "requirements_dev.txt" }}-
+            - pyenv-v2-
+            - pyenv-
       - run:
           name: Initialize packages
           command: |
@@ -164,10 +164,15 @@ jobs:
             - save_cache:
                 key: child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }} # yamllint disable-line rule:line-length
                 paths:
-                  - "vendor/bundle"
                   - "Gemfile.lock.installed"
-                  - "/home/circleci/.cache/solargraph"
+                  - "vendor/bundle"
                   - "/home/circleci/.rbenv"
+                  - "/home/circleci/.cache/solargraph"
+                  - "/home/circleci/.sorbet-cache"
+                  - "/home/circleci/.cache/sorbet"
+                  - "/home/circleci/.cache/rubocop_cache"
+                  - "/home/circleci/.cache/gem"
+                  - "/home/circleci/.bundle/cache"
       - when:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
