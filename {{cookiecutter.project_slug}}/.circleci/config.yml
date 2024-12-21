@@ -199,7 +199,7 @@ jobs:
           label: Typecheck
           command: make citypecheck citypecoverage
       - save_cache:
-          key: rbenv-v5-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum "/home/circleci/data.mdb" }}{% endraw %} # yamllint disable-line rule:line-length
+          key: rbenv-v5-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum "/home/circleci/.sorbet-cache/data.mdb" }}{% endraw %} # yamllint disable-line rule:line-length
           paths:
             - "Gemfile.lock.installed"
             - "types.installed"
