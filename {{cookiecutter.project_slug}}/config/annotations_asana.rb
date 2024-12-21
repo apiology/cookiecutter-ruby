@@ -1,5 +1,5 @@
 # typed: strict
-# frozen_string_literal: true
+
 #
 # rubocop:disable Layout/LineLength
 # @!parse
@@ -21,6 +21,8 @@
 #       def users; end
 #       # @return [Asana::ProxiedResourceClasses::CustomField]
 #       def custom_fields; end
+#       # @return [Asana::ProxiedResourceClasses::Webhook]
+#       def webhooks; end
 #     end
 #     module Resources
 #       # https://developers.asana.com/reference/gettask
@@ -68,6 +70,7 @@
 #     end
 #     module Errors
 #       class NotFound < ::Asana::Errors::APIError; end
+#       class InvalidRequest < ::Asana::Errors::APIError; end
 #     end
 #     module Resources
 #       class Workspace
@@ -244,6 +247,26 @@
 #         #
 #         # @return [Asana::Resources::User]
 #         def me(options: {}); end
+#       end
+#       class Webhook
+#         # Returns the compact representation of all webhooks your app has
+#         # registered for the authenticated user in the given workspace.
+#         #
+#         # @param workspace [String] The workspace to query for webhooks in.
+#         # @param resource [String] Only return webhooks for the given resource.
+#         # @param per_page [Integer] the number of records to fetch per page.
+#         # @param options [Hash] the request I/O options.
+#         # @return [Array<Asana::Resources::Webhook>]
+#         def get_all(workspace: required("workspace"), resource: nil, per_page: 20, options: {})
+#         end
+#         # @param options [Hash] the request I/O options
+#         # @param opt_fields [Array<str>]  Defines fields to return.
+#         # @param opt_pretty [Boolean]  Provides “pretty” output.
+#         # @param data [Hash] the attributes to POST
+#         # @param client [Asana::Client] the client to use for the request
+#         # @return [Asana::Resources::Webhook]
+#         def create_webhook(options: {}, **data)
+#         end
 #       end
 #     end
 #   end
