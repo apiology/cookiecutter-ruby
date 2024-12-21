@@ -44,6 +44,9 @@ requirements_dev.txt.installed
 types.installed
 tapioca.installed
 
+# Type checking config
+sorbet/machine_specific_config
+
 # generated from local source
 config/defs.rbi
 

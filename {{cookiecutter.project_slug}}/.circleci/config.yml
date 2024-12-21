@@ -199,7 +199,7 @@ jobs:
           label: Typecheck
           command: make citypecheck citypecoverage
       - save_cache:
-          key: rbenv-v5-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}
+          key: rbenv-v5-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum "/home/circleci/data.mdb" }}{% endraw %}
           paths:
             - "Gemfile.lock.installed"
             - "types.installed"
@@ -207,6 +207,7 @@ jobs:
             - "/home/circleci/.rbenv"
             - ".yardoc"
             - "/home/circleci/.cache/solargraph"
+            - "/home/circleci/.sorbet-cache"
       - run:
           name: Verify deltas
           command: |
