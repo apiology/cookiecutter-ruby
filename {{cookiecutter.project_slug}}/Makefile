@@ -28,14 +28,18 @@ types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed ## Instal
 	# bundle exec solargraph scan 2>&1
 	touch types.installed
 
-sorbet/tapioca/require.rb:
+sorbet/machine_specific_config:
+	echo "--cache-dir=$$HOME/.sorbet-cache" > sorbet/machine_specific_config
+
+sorbet/tapioca/require.rb: sorbet/machine_specific_config
 	bin/tapioca init
 
-tapioca.installed: sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
+tapioca.installed: sorbet/machine_specific_config sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
 	bin/tapioca gems
 	bin/tapioca annotations
 #	bin/tapioca dsl
 	bin/tapioca todo
+	bin/spoom bump
 	touch tapioca.installed
 
 SOURCE_FILES = $(shell find lib -name '*.rb' -type f)
