@@ -59,7 +59,6 @@ config/defs.rbi
 /.ruby-version
 
 # Ruby-related
-/.bundle/
 /.yardoc
 /_yardoc/
 /doc/
@@ -67,6 +66,9 @@ config/defs.rbi
 /spec/reports/
 /tmp/
 /coverage/
+
+# Ignore bundler config.
+/.bundle/config
 
 # Ignore make target files
 /.make/*
