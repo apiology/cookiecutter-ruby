@@ -55,6 +55,13 @@ commands:
             - rbenv-v5-
             - rbenv-
       - restore_cache:
+          name: Restore ruby-types cache
+          keys:
+            - ruby-types-v1-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - ruby-types-v1-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
+            - ruby-types-v1-
+            - ruby-types-
+      - restore_cache:
           name: Restore pyenv cache
           keys:
             - pyenv-v2-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}-
@@ -212,9 +219,6 @@ jobs:
           steps:
             - update_dependencies:
                 gems: checkoff{% endif %}
-      - run_with_languages:
-          label: Typecheck
-          command: make citypecheck citypecoverage
       - run:
           name: Verify deltas
           command: |
@@ -223,6 +227,24 @@ jobs:
               >&2 echo "Please resolve changes to avoid caching difficulties"
               exit 1
             fi
+      - run_with_languages:
+          label: Typecheck
+          command: |
+            make citypecheck citypecoverage
+      - store_artifacts:
+          path: config/defs.rbi
+      - save_cache:
+          name: 'Save ruby-types cache'
+          key: ruby-types-v1-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum "config/defs.rbi" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}  # yamllint disable-line rule:line-length
+          paths:
+            - ".yardoc"
+            - "/home/circleci/.cache/solargraph"
+            - "/home/circleci/.sorbet-cache"
+            - "/home/circleci/.cache/sorbet"
+            - "types.installed"
+            - "yardoc.installed"
+            - "tapioca.installed"
+            - "config/defs.rbi"
       - run_with_languages:
           label: Test
           command: |
