@@ -239,6 +239,8 @@ jobs:
           paths:
             - ".yardoc"
             - "/home/circleci/.cache/solargraph"
+            - "/home/circleci/.sorbet-cache"
+            - "/home/circleci/.cache/sorbet"
             - "types.installed"
             - "yardoc.installed"
             - "tapioca.installed"
