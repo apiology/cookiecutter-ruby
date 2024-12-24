@@ -156,12 +156,6 @@ update_apt: .make/apt_updated
 
 cicoverage: coverage ## check code coverage
 
-update_apt: .make/apt_updated
-
-.make/apt_updated:
-	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
-	touch .make/apt_updated
-
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
 	bundle exec overcommit --uninstall
 	# cookiecutter_project_upgrader does its work in
