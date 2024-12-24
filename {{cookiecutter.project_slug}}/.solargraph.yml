@@ -10,6 +10,9 @@ include:
   - "bin/*"
   - "bin/overcommit_branch"
 exclude:
+  # vendored
+  - 'bin/bundle'
+  - 'bin/brakeman'
   - script/.rubocop.yml
   - vendor/**/*
   - spec/**/*
