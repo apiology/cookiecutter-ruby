@@ -17,28 +17,26 @@ help:
 
 default: clean-typecoverage typecheck typecoverage clean-coverage test coverage quality rubocop-ratchet ## run default typechecking, tests and quality
 
-config/defs.rbi: .yardoc/complete ## Generate RBS files
+SOURCE_FILES = $(shell find lib -name '*.rb' -type f)
+
+config/defs.rbi: yardoc.installed ## Generate YARD documentation ## Generate RBS files
 	rm -f config/defs.rbi
 	bundle exec sord --replace-errors-with-untyped --no-regenerate config/defs.rbi
 
-build-typecheck: Gemfile.lock.installed types.installed config/defs.rbi ## Fetch information that type checking depends on
-
-clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
-
-realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
-
-realclean: clean realclean-typecheck
-	rm -fr vendor .bundle
-	rm .make/*
-	rm *.installed
+types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed config/defs.rbi sorbet/tapioca/require.rb sorbet/rbi/todo.rbi sorbet/config ## Install Ruby dependencies
+	bundle exec yard gems 2>&1 || bundle exec yard gems --safe 2>&1 || bundle exec yard gems 2>&1
+	# bundle exec solargraph scan 2>&1
+	touch types.installed
 
 sorbet/machine_specific_config:
 	echo "--cache-dir=$$HOME/.sorbet-cache" > sorbet/machine_specific_config
 
+build-typecheck: Gemfile.lock.installed types.installed  ## Fetch information that type checking depends on
+
 sorbet/tapioca/require.rb: sorbet/machine_specific_config
 	bin/tapioca init
 
-tapioca.installed: sorbet/machine_specific_config sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
+tapioca.installed: sorbet/machine_specific_config config/defs.rbi sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
 	bin/tapioca gems
 	bin/tapioca annotations
 #	bin/tapioca dsl
@@ -46,28 +44,28 @@ tapioca.installed: sorbet/machine_specific_config sorbet/tapioca/require.rb Gemf
 	bin/spoom bump
 	touch tapioca.installed
 
-SOURCE_FILES = $(shell find lib -name '*.rb' -type f)
-
-.yardoc/complete: $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generate YARD documentation
-	bin/yard -c
+yardoc.installed: $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generate YARD documentation
+	bin/yard doc \{config,lib,app,script\}/**/*.rb ext/**/*.\{c,rb}
+	touch yardoc.installed
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
-	bin/solargraph clear
-	rm -fr .yardoc/ config/defs.rbi types.installed
-	echo all clear
+	bin/solargraph clear || true
+	rm -fr .yardoc/ config/defs.rbi types.installed yardoc.installed
+{% if cookiecutter.use_checkoff %}	rm -fr ../checkoff/.yardoc || true
+{% endif %}	echo all clear
 
 realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
+	rm -fr ~/.cache/solargraph
 	rm tapioca.installed
 
-typecheck: build-typecheck ## validate types in code and configuration
-#	bin/tapioca dsl --verify
-	bundle exec srb tc
-	bundle exec solargraph typecheck --level strong
+realclean: clean realclean-typecheck
+	rm -fr vendor .bundle
+	rm .make/*
+	rm *.installed
 
-types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed ## Install Ruby dependencies
-	bundle exec yard gems 2>&1 || bundle exec yard gems --safe 2>&1 || bundle exec yard gems 2>&1
-	# bundle exec solargraph scan 2>&1
-	touch types.installed
+typecheck: config/defs.rbi build-typecheck ## validate types in code and configuration
+	bin/srb tc
+	bin/solargraph typecheck --level strong
 
 citypecheck: typecheck ## Run type check from CircleCI
 
@@ -84,22 +82,30 @@ requirements_dev.txt.installed: requirements_dev.txt
 pip_install: requirements_dev.txt.installed ## Install Python dependencies
 
 Gemfile.lock: Gemfile
+	make .bundle/config
 	bundle lock
 
-gem_dependencies:
+gem_dependencies: .bundle/config
 
 # Ensure any Gemfile.lock changes, even pulled form git, ensure a
 # bundle is installed.
-Gemfile.lock.installed: Gemfile.lock Gemfile
-	bundle install
+Gemfile.lock.installed: Gemfile vendor/.keep
 	touch Gemfile.lock.installed
+
+vendor/.keep: Gemfile.lock
+	make .bundle/config
+	bundle install
+	touch vendor/.keep
+
+.bundle/config:
+	touch .bundle/config
 
 bundle_install: Gemfile.lock.installed ## Install Ruby dependencies
 
 clear_metrics: ## remove or reset result artifacts created by tests and quality tools
-	bundle exec rake clear_metrics
+	bundle exec rake clear_metrics || true
 
-clean: clear_metrics ## remove all built artifacts
+clean: clean-typecheck clean-coverage clear_metrics ## remove all built artifacts
 
 test: spec ## run tests quickly
 
@@ -132,16 +138,21 @@ feature: ## Run higher-level tests
 localtest: ## run default local actions
 	@bundle exec rake localtest
 
-repl: bundle_install ## Load up plate-spinner in pry
+repl: bundle_install
 	@bundle exec rake repl
 
-clean-coverage:
-	@bundle exec rake clear_metrics
+clean-coverage: clear_metrics
 
 coverage: test report-coverage ## check code coverage
 	@bundle exec rake undercover
 
 report-coverage: test ## Report summary of coverage to stdout, and generate HTML, XML coverage report
+
+update_apt: .make/apt_updated
+
+.make/apt_updated:
+	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
+	touch .make/apt_updated
 
 cicoverage: coverage ## check code coverage
 
@@ -168,8 +179,8 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	# update frequently security-flagged gems while we're here
 	bundle update --conservative rexml yard || true
 	make build-typecheck
-	git add Gemfile.lock || true
 	bundle install || true
+	git add Gemfile.lock || true
 	bundle exec overcommit --install || true
 	@echo
 	@echo "Please resolve any merge conflicts below and push up a PR with:"

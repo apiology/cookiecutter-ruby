@@ -43,6 +43,7 @@ Gemfile.lock.installed
 requirements_dev.txt.installed
 types.installed
 tapioca.installed
+yardoc.installed
 
 # Type checking config
 sorbet/machine_specific_config

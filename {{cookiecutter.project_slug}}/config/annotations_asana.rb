@@ -45,11 +45,11 @@
 #         def memberships; end
 #         class << self
 #           # @param client [Asana::Client]
-#           # @param assignee [String]
 #           # @param workspace [String]
-#           # @param name [String]
+#           # @param options [Hash]
 #           # @return [Asana::Resources::Task]
-#           def create(client, assignee:, workspace:, name:); end
+#           # @sg-ignore
+#           def create(client, workspace: nil, options: nil, **data); end
 #         end
 #       end
 #       class Section
@@ -65,7 +65,7 @@
 #       class Portfolio
 #         # @param options [Hash] the request I/O options
 #         # @return [Enumerable<Asana::Resources::Project>]
-#         def get_items(options = {}); end
+#         def get_items(options: {}); end
 #       end
 #     end
 #     module Errors
@@ -155,7 +155,6 @@
 #         # @param completed_since [Time]
 #         # @param per_page [Integer]
 #         # @param modified_since [Time]
-#         # @param section [Asana::Resources::Section]
 #         # @param options [Hash] the request I/O options.
 #         # @return [Enumerable<Asana::Resources::Task>]
 #         def get_tasks(assignee: nil,
@@ -260,10 +259,7 @@
 #         def get_all(workspace: required("workspace"), resource: nil, per_page: 20, options: {})
 #         end
 #         # @param options [Hash] the request I/O options
-#         # @param opt_fields [Array<str>]  Defines fields to return.
-#         # @param opt_pretty [Boolean]  Provides “pretty” output.
 #         # @param data [Hash] the attributes to POST
-#         # @param client [Asana::Client] the client to use for the request
 #         # @return [Asana::Resources::Webhook]
 #         def create_webhook(options: {}, **data)
 #         end
