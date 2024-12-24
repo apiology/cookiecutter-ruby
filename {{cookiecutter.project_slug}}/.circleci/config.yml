@@ -79,6 +79,8 @@ commands:
             export BUNDLE_PATH
             GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
             export GEM_HOME
+            PATH="$(pwd)/bin:${PATH}"
+            export PATH
 
             './fix.sh'
       - store_artifacts:
