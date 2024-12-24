@@ -19,6 +19,7 @@ commands:
             export PATH="${HOME}/.pyenv/bin:${PATH}"
             export PATH="${HOME}/.rbenv/bin:${HOME}/.rbenv/shims:${PATH}"
             export PATH="${HOME}/project/node_modules/.bin:${PATH}"
+            export PATH="$(pwd)/bin:${PATH}"
             eval "$(pyenv init --path)"
             eval "$(pyenv virtualenv-init -)"
             eval "$(rbenv init -)"
@@ -47,11 +48,14 @@ commands:
               touch -ht ${touchtime} "${filename}"
             done
       - restore_cache:
+          name: Restore rbenv cache
           keys:
-            - rbenv-v5-{{ checksum "Gemfile.lock" }}-
+            - rbenv-v5-{{ checksum "Gemfile" }}-{{ checksum "Gemfile.lock" }}-
+            - rbenv-v5-{{ checksum "Gemfile" }}-
             - rbenv-v5-
             - rbenv-
       - restore_cache:
+          name: Restore pyenv cache
           keys:
             - pyenv-v2-{{ checksum "requirements_dev.txt" }}-
             - pyenv-v2-
@@ -73,11 +77,21 @@ commands:
       - store_artifacts:
           path: /tmp/fix_sh_timing.log
       - save_cache:
+          name: 'Save pyenv cache'
           key: pyenv-v2-{{ checksum "requirements_dev.txt" }}-{{ checksum ".python-version" }}
           paths:
             - "requirements_dev.txt.installed"
             - "/home/circleci/.cache/pip/wheels"
             - "/home/circleci/.pyenv"
+      - save_cache:
+          name: 'Save rbenv cache'
+          key: rbenv-v5-{{ checksum "Gemfile" }}-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }}-{{ checksum "Makefile" }}-{{ checksum ".circleci/config.yml" }} # yamllint disable-line rule:line-length
+          paths:
+            - "Gemfile.lock.installed"
+            - 'vendor/.keep'
+            - "vendor/bundle"
+            - "/home/circleci/.rbenv"
+            - ".bundle"
       - run:
           name: Download new circleci tool
           command: |
@@ -164,15 +178,6 @@ jobs:
             equal: [<< pipeline.git.branch >>, "main"]
           steps:
             - tox
-      - save_cache:
-          key: rbenv-v5-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }}
-          paths:
-            - "Gemfile.lock.installed"
-            - "types.installed"
-            - "vendor/bundle"
-            - "/home/circleci/.rbenv"
-            - ".yardoc"
-            - "/home/circleci/.cache/solargraph"
       - run:
           name: Verify deltas
           command: |
