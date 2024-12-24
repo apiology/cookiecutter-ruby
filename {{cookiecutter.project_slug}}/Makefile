@@ -93,7 +93,7 @@ Gemfile.lock.installed: Gemfile vendor/.keep
 	touch Gemfile.lock.installed
 
 vendor/.keep: Gemfile.lock
-	make .bundle/config
+	make gem_dependencies
 	bundle install
 	touch vendor/.keep
 
