@@ -27,8 +27,6 @@ PreCommit:
       - '{{cookiecutter.project_slug}}/**/*'
   BrokenSymlinks:
     enabled: true
-    description: 'Check for broken symlinks'
-    quiet: true
     exclude:
       # This is a symlink to sibling checkout of plate-spinner, used
       # only in local development
