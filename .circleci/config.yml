@@ -166,6 +166,7 @@ jobs:
             - store_artifacts:
                 path: /tmp/child_fix_sh_timing.log
             - save_cache:
+                name: 'Save child rbenv cache'
                 key: child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }} # yamllint disable-line rule:line-length
                 paths:
                   - "Gemfile.lock.installed"
