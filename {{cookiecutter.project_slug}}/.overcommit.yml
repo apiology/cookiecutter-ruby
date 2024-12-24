@@ -21,8 +21,6 @@ PreCommit:
   # https://github.com/sds/overcommit/blob/master/config/default.yml
   BrokenSymlinks:
     enabled: true
-    description: 'Check for broken symlinks'
-    quiet: true
   RuboCop:
     enabled: true
     command: ['bundle', 'exec', 'rubocop']
@@ -76,6 +74,9 @@ PreCommit:
       - "bin/*"
       - "bin/overcommit_branch"
     exclude:
+      # vendored
+      - 'bin/bundle'
+      - 'bin/brakeman'
       - script/.rubocop.yml
       - vendor/**/*
       - spec/**/*
