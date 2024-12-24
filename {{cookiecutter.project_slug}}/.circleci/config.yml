@@ -19,6 +19,7 @@ commands:
             export PATH="${HOME}/.pyenv/bin:${PATH}"
             export PATH="${HOME}/.rbenv/bin:${HOME}/.rbenv/shims:${PATH}"
             export PATH="${HOME}/project/node_modules/.bin:${PATH}"
+            export PATH="$(pwd)/bin:${PATH}"
             eval "$(pyenv init --path)"
             eval "$(pyenv virtualenv-init -)"
             eval "$(rbenv init -)"
@@ -47,11 +48,14 @@ commands:
               touch -ht ${touchtime} "${filename}"
             done
       - restore_cache:
+          name: Restore rbenv cache
           keys:
-            - rbenv-v5-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
             - rbenv-v5-
             - rbenv-
       - restore_cache:
+          name: Restore pyenv cache
           keys:
             - pyenv-v2-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}-
             - pyenv-v2-
@@ -73,11 +77,24 @@ commands:
       - store_artifacts:
           path: /tmp/fix_sh_timing.log
       - save_cache:
+          name: 'Save pyenv cache'
           key: pyenv-v2-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}-{% raw %}{{ checksum ".python-version" }}{% endraw %}
           paths:
             - "requirements_dev.txt.installed"
             - "/home/circleci/.cache/pip/wheels"
             - "/home/circleci/.pyenv"
+      - save_cache:
+          name: 'Save rbenv cache'
+          key: rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %} # yamllint disable-line rule:line-length
+          paths:
+            - "Gemfile.lock.installed"
+            - 'vendor/.keep'
+            - "vendor/bundle"
+            - "/home/circleci/.rbenv"
+            - ".bundle"
+            - "/home/circleci/.cache/rubocop_cache"
+            - "/home/circleci/.cache/gem"
+            - "/home/circleci/.bundle/cache"
       - run:
           name: Download new circleci tool
           command: |
@@ -198,20 +215,6 @@ jobs:
       - run_with_languages:
           label: Typecheck
           command: make citypecheck citypecoverage
-      - save_cache:
-          key: rbenv-v5-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum "/home/circleci/.sorbet-cache/data.mdb" }}{% endraw %} # yamllint disable-line rule:line-length
-          paths:
-            - "Gemfile.lock.installed"
-            - "types.installed"
-            - "vendor/bundle"
-            - "/home/circleci/.rbenv"
-            - ".yardoc"
-            - "/home/circleci/.cache/solargraph"
-            - "/home/circleci/.sorbet-cache"
-            - "/home/circleci/.cache/sorbet"
-            - "/home/circleci/.cache/rubocop_cache"
-            - "/home/circleci/.cache/gem"
-            - "/home/circleci/.bundle/cache"
       - run:
           name: Verify deltas
           command: |
