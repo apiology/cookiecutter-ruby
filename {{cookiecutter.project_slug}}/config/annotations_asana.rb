@@ -43,14 +43,6 @@
 #         def html_notes; end
 #         # @return [Array<Hash{String => Hash{String => String}}>]
 #         def memberships; end
-#         class << self
-#           # @param client [Asana::Client]
-#           # @param workspace [String]
-#           # @param options [Hash]
-#           # @return [Asana::Resources::Task]
-#           # @sg-ignore
-#           def create(client, workspace: nil, options: nil, **data); end
-#         end
 #       end
 #       class Section
 #         # @return [String,nil]
