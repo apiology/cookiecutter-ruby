@@ -49,7 +49,7 @@ commands:
               touch -ht ${touchtime} "${filename}"
             done
       - restore_cache:
-          name: Restore rbenv cache
+          name: Restore child rbenv cache
           keys:
             - child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}- # yamllint disable-line rule:line-length
             - child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-
