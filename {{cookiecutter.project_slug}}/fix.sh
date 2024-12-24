@@ -20,16 +20,6 @@ debug_timing
 
 set -o pipefail
 
-apt_upgraded=0
-
-update_apt() {
-  if [ "${apt_upgraded}" = 0 ]
-  then
-    sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
-    apt_upgraded=1
-  fi
-}
-
 install_rbenv() {
   if [ "$(uname)" == "Darwin" ]
   then
@@ -99,21 +89,6 @@ latest_ruby_version() {
   set +e
   rbenv install --list 2>/dev/null | cat | grep "^${major_minor}."
   set -e
-}
-
-ensure_dev_library() {
-  header_file_name=${1:?header file name}
-  homebrew_package=${2:?homebrew package}
-  apt_package=${3:-${homebrew_package}}
-  if ! [ -f /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"${header_file_name}" ] && \
-      ! [ -f /opt/homebrew/include/"${header_file_name}" ] && \
-      ! [ -f /usr/include/"${header_file_name}" ] && \
-      ! [ -f /usr/include/x86_64-linux-gnu/"${header_file_name}" ] && \
-      ! [ -f /usr/local/include/"${header_file_name}" ] && \
-      ! [ -f /usr/local/opt/"${homebrew_package}"/include/"${header_file_name}" ]
-  then
-    install_package "${homebrew_package}" "${apt_package}"
-  fi
 }
 
 ensure_binary_library() {
@@ -256,12 +231,14 @@ ensure_bundle() {
   # This affects nokogiri, which will try to reinstall itself in
   # Docker builds where it's already installed if this is not run.
   make Gemfile.lock
-  PLATFORMS="ruby arm64-darwin-23 x86_64-darwin-23 x86_64-linux x86_64-linux-musl aarch64-linux arm64-linux"
+  PLATFORMS="arm64-darwin-24 x86_64-linux x86_64-linux-musl aarch64-linux aarch64-linux-musl"
   for platform in ${PLATFORMS}
   do
     if ! grep -q "^  ${platform}$" Gemfile.lock
     then
-      bundle lock --add-platform "${platform}"
+      echo "Missing platform $platform in Gemfile.lock - adding all of ${PLATFORMS}"
+      bundle lock --add-platform "${PLATFORMS// /,}"
+      break
     fi
   done
   make bundle_install
@@ -326,39 +303,6 @@ ensure_pyenv() {
   fi
 }
 
-ensure_package() {
-  homebrew_package=${1:?homebrew package}
-  apt_package=${2:-${homebrew_package}}
-  binary=${3:-${homebrew_package}}
-  if ! [ -f /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/bin/"${binary}" ] && \
-      ! [ -f /opt/homebrew/bin/"${binary}" ] && \
-      ! [ -f /usr/bin/"${binary}" ] && \
-      ! [ -f /usr/local/bin/"${binary}" ] && \
-      ! [ -f /usr/local/opt/"${homebrew_package}"/bin/"${binary}" ]
-  then
-    install_package "${homebrew_package}" "${apt_package}"
-  fi
-}
-
-install_package() {
-  homebrew_package=${1:?homebrew package}
-  apt_package=${2:-${homebrew_package}}
-  if [ "$(uname)" == "Darwin" ]
-  then
-    HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_UPGRADE=1 brew install "${homebrew_package}"
-  elif type apt-get >/dev/null 2>&1
-  then
-    if ! dpkg -s "${apt_package}" >/dev/null
-    then
-      update_apt
-      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${apt_package}"
-    fi
-  else
-    >&2 echo "Teach me how to install packages on this plaform"
-    exit 1
-  fi
-}
-
 update_package() {
   homebrew_package=${1:?homebrew package}
   apt_package=${2:-${homebrew_package}}
@@ -367,7 +311,7 @@ update_package() {
     brew install "${homebrew_package}"
   elif type apt-get >/dev/null 2>&1
   then
-    update_apt
+    make update_apt
     sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${apt_package}"
   else
     >&2 echo "Teach me how to install packages on this plaform"

@@ -1,4 +1,4 @@
-.PHONY: build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-build clean-coverage clean-pyc clean-typecheck clean-typecoverage coverage default help overcommit report-coverage report-coverage-to-codecov test typecheck typecoverage update_from_cookiecutter quality
+.PHONY: build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-build clean-coverage clean-pyc clean-typecheck clean-typecoverage coverage default gem_dependencies help overcommit quality report-coverage report-coverage-to-codecov test typecheck typecoverage update_from_cookiecutter
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -12,15 +12,29 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 
-default: clean-coverage test coverage clean-typecoverage typecheck typecoverage quality ## run default typechecking, tests and quality
+help:
+	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
+
+default: clean-typecoverage typecheck typecoverage clean-coverage test coverage quality ## run default typechecking, tests and quality
+
+build-typecheck: types.installed  ## Fetch information that type checking depends on
+
+clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
+	@rm -fr .mypy_cache
+
+realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
+
+realclean: clean realclean-typecheck
+	rm -fr vendor .bundle
+	rm .make/*
+	rm *.installed
 
 # https://app.circleci.com/pipelines/github/apiology/cookiecutter-pypackage/281/workflows/b85985a9-16d0-42c4-93d4-f965a111e090/jobs/366
-typecheck: ## run mypy against project
+typecheck: build-typecheck ## run mypy against project
 	mypy --cobertura-xml-report typecover --html-report typecover hooks tests
 
-build-typecheck: ## Fetch information that type checking depends on
-
-clean-typecheck: ## Refresh information that type checking depends on
+types.installed: Gemfile.lock Gemfile.lock.installed ## Install Ruby dependencies
+	touch types.installed
 
 citypecheck: typecheck ## Run type check from CircleCI
 
@@ -28,7 +42,6 @@ typecoverage: typecheck ## Run type checking and then ratchet coverage in metric
 	@python setup.py mypy_ratchet
 
 clean-typecoverage: ## Clean out mypy previous results to avoid flaky results
-	@rm -fr .mypy_cache
 
 ratchet-typecoverage: ## Run type checking, ratchet coverage, and then complain if ratchet needs to be committed
 	@echo "Looking for un-checked-in type coverage metrics..."
@@ -67,6 +80,8 @@ pip_install: requirements_dev.txt.installed ## Install Python dependencies
 Gemfile.lock: Gemfile
 	bundle lock
 
+gem_dependencies:
+
 # Ensure any Gemfile.lock changes, even pulled form git, ensure a
 # bundle is installed.
 Gemfile.lock.installed: Gemfile.lock Gemfile
@@ -92,9 +107,6 @@ overcommit: ## run precommit quality checks
 
 quality: overcommit ## run precommit quality checks
 
-help:
-	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
-
 bake: ## generate project using defaults
 	cookiecutter $(BAKE_OPTIONS) . --overwrite-if-exists
 
@@ -113,6 +125,12 @@ report-coverage: citest ## Report summary of coverage to stdout, and generate HT
 
 report-coverage-to-codecov: report-coverage ## use codecov.io for PR-scoped code coverage reports
 
+update_apt: .make/apt_updated
+
+.make/apt_updated:
+	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
+	touch .make/apt_updated
+
 cicoverage: report-coverage-to-codecov ## check code coverage, then report to codecov
 
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
@@ -125,6 +143,7 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	git checkout --ours Gemfile.lock || true
 	# update frequently security-flagged gems while we're here
 	bundle update --conservative rexml || true
+	make build-typecheck
 	git add Gemfile.lock || true
 	bundle install || true
 	bundle exec overcommit --install || true

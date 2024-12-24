@@ -1,4 +1,4 @@
-.PHONY: build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default feature help localtest overcommit quality repl report-coverage report-coverage-to-codecov rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter
+.PHONY: build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default feature gem_dependencies help localtest overcommit quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -23,10 +23,14 @@ config/defs.rbi: .yardoc/complete ## Generate RBS files
 
 build-typecheck: Gemfile.lock.installed types.installed config/defs.rbi ## Fetch information that type checking depends on
 
-types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed ## Install Ruby dependencies
-	bundle exec yard gems 2>&1 || bundle exec yard gems --safe 2>&1 || bundle exec yard gems 2>&1
-	# bundle exec solargraph scan 2>&1
-	touch types.installed
+clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
+
+realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
+
+realclean: clean realclean-typecheck
+	rm -fr vendor .bundle
+	rm .make/*
+	rm *.installed
 
 sorbet/machine_specific_config:
 	echo "--cache-dir=$$HOME/.sorbet-cache" > sorbet/machine_specific_config
@@ -60,6 +64,11 @@ typecheck: build-typecheck ## validate types in code and configuration
 	bundle exec srb tc
 	bundle exec solargraph typecheck --level strong
 
+types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed ## Install Ruby dependencies
+	bundle exec yard gems 2>&1 || bundle exec yard gems --safe 2>&1 || bundle exec yard gems 2>&1
+	# bundle exec solargraph scan 2>&1
+	touch types.installed
+
 citypecheck: typecheck ## Run type check from CircleCI
 
 typecoverage: typecheck ## Run type checking and then ratchet coverage in metrics/
@@ -76,6 +85,8 @@ pip_install: requirements_dev.txt.installed ## Install Python dependencies
 
 Gemfile.lock: Gemfile
 	bundle lock
+
+gem_dependencies:
 
 # Ensure any Gemfile.lock changes, even pulled form git, ensure a
 # bundle is installed.
@@ -133,6 +144,12 @@ coverage: test report-coverage ## check code coverage
 report-coverage: test ## Report summary of coverage to stdout, and generate HTML, XML coverage report
 
 cicoverage: coverage ## check code coverage
+
+update_apt: .make/apt_updated
+
+.make/apt_updated:
+	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
+	touch .make/apt_updated
 
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
 	bundle exec overcommit --uninstall
