@@ -183,6 +183,7 @@ commands:
                 exit 1
               fi
             done
+            make build-typecheck
             if [ -z "$(git status --porcelain Gemfile.lock)" ]
             then
               echo "No updates needed"
