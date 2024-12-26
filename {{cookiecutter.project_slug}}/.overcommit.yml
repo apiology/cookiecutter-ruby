@@ -84,7 +84,8 @@ PreCommit:
       - ".markdownlint_style.rb"
   Sorbet:
     enabled: true
-    problem_on_unmodified_line: warn
+    command: ['bin/srb-overcommit']
+    problem_on_unmodified_line: report
   Punchlist:
     command: ['bundle', 'exec', 'punchlist']
     enabled: true
