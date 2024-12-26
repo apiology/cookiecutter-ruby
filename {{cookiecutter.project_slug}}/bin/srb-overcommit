@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -euo pipefail
+
+temp_config_file=$(mktemp)
+
+# delete on exit
+trap 'rm -f $temp_config_file' EXIT
+
+# create a temporary config file
+echo '---' > "${temp_config_file}"
+echo "strict:" >> "${temp_config_file}"
+for file in "$@"; do
+  echo "  - ${file}" >> "${temp_config_file}"
+done
+
+srb tc --typed-override "${temp_config_file}" "$*"
