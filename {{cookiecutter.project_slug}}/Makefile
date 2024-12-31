@@ -136,8 +136,7 @@ spec: ## Run lower-level tests
 feature: ## Run higher-level tests
 	@bundle exec rake feature
 
-localtest: ## run default local actions
-	@bundle exec rake localtest
+localtest: clear_metrics spec undercover overcommit_branch ## run default local actions
 
 repl: bundle_install
 	@bundle exec rake repl
