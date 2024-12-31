@@ -113,7 +113,9 @@ types.installed
 /.ruby-version
 
 # Ruby-related
-/.bundle/
+
+# Ignore bundler config.
+/.bundle/config
 
 # Ignore make target files
 /.make/*

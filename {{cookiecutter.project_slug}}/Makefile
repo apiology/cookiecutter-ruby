@@ -17,7 +17,9 @@ help:
 
 default: clean-typecoverage typecheck typecoverage clean-coverage test coverage overcommit_branch quality rubocop-ratchet ## run default typechecking, tests and quality
 
-SOURCE_FILES = $(shell find lib -name '*.rb' -type f)
+SOURCE_FILE_GLOBS = ['{config,lib,app,script}/**/*.rb', 'ext/**/*.{c,rb}']
+
+SOURCE_FILES := $(shell ruby -e "puts Dir.glob($(SOURCE_FILE_GLOBS))")
 
 rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate YARD documentation ## Generate RBS files
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi
@@ -88,6 +90,9 @@ Gemfile.lock: Gemfile
 	make .bundle/config
 	bundle lock
 
+.bundle/config:
+	touch .bundle/config
+
 gem_dependencies: .bundle/config
 
 # Ensure any Gemfile.lock changes, even pulled from git, ensure a
@@ -100,15 +105,12 @@ vendor/.keep: Gemfile.lock
 	bundle install
 	touch vendor/.keep
 
-.bundle/config:
-	touch .bundle/config
-
 bundle_install: Gemfile.lock.installed ## Install Ruby dependencies
 
 clear_metrics: ## remove or reset result artifacts created by tests and quality tools
 	bundle exec rake clear_metrics || true
 
-clean: clear_metrics clean-typecoverage clean-typecheck clean-coverage  ## remove all built artifacts
+clean: clear_metrics clean-typecoverage clean-typecheck clean-coverage ## remove all built artifacts
 
 test: spec feature ## run tests quickly
 
@@ -141,12 +143,10 @@ spec: ## Run lower-level tests
 feature: ## Run higher-level tests
 	@bundle exec rake feature
 
-localtest: clear_metrics spec undercover overcommit_branch ## run default local actions
-
-repl: bundle_install
+repl: bundle_install ## Launch an interactive development shell
 	@bundle exec rake repl
 
-clean-coverage: clear_metrics
+clean-coverage: clear_metrics ## Clean out previous output of test coverage to avoid flaky results from previous runs
 
 coverage: test report-coverage ## check code coverage
 	@bundle exec rake undercover
@@ -159,7 +159,7 @@ update_apt: .make/apt_updated
 	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
 	touch .make/apt_updated
 
-cicoverage: coverage ## check code coverage
+cicoverage: citest coverage ## check code coverage
 
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
 	bundle exec overcommit --uninstall
