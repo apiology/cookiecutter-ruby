@@ -203,6 +203,7 @@ commands:
             OVERCOMMIT_DEBUG=1 bundle exec git push --set-upstream origin "${CIRCLE_BRANCH:?}"
             echo "Avoiding double build after git push"
             exit 1
+
 jobs:
   quality:
     working_directory: ~/{{cookiecutter.project_slug}}
@@ -235,10 +236,10 @@ jobs:
           command: |
             make citypecheck citypecoverage
       - store_artifacts:
-          path: config/defs.rbi
+          path: rbi/{{cookiecutter.project_slug}}.rbi
       - save_cache:
           name: 'Save ruby-types cache'
-          key: ruby-types-v1-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum "config/defs.rbi" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}  # yamllint disable-line rule:line-length
+          key: ruby-types-v1-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum "rbi/{{cookiecutter.project_slug}}.rbi" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}  # yamllint disable-line rule:line-length
           paths:
             - ".yardoc"
             - "/home/circleci/.cache/solargraph"
@@ -247,7 +248,7 @@ jobs:
             - "types.installed"
             - "yardoc.installed"
             - "tapioca.installed"
-            - "config/defs.rbi"
+            - "rbi/{{cookiecutter.project_slug}}.rbi"
       - run_with_languages:
           label: Test
           command: |
