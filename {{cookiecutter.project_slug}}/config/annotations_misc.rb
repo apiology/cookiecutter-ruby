@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: strict
 
 #
@@ -25,6 +26,11 @@
 #     #
 #     # @return [Object,nil]
 #     def self.[](key); end
+#     # @param key [String]
+#     # @param value [Object,nil]
+#     #
+#     # @return [Object,nil]
+#     def self.[]=(key,value); end
 #   end
 #   module Bundler
 #     class << self
