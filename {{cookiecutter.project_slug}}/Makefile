@@ -21,7 +21,7 @@ SOURCE_FILES = $(shell find lib -name '*.rb' -type f)
 
 
 rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate YARD documentation ## Generate RBS files
-	rm rbi/{{cookiecutter.project_slug}}.rbi
+	rm -f rbi/{{cookiecutter.project_slug}}.rbi
 	bundle exec sord --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate rbi/{{cookiecutter.project_slug}}.rbi
 
 types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Install Ruby dependencies
