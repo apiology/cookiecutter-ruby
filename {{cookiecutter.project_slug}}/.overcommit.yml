@@ -39,9 +39,8 @@ PreCommit:
       - 'exe/*'
       - 'script/*'
     problem_on_unmodified_line: warn
-    exclude:
-      - db/migrate/*.rb
-      - db/schema.rb
+  FixMe:
+    enabled: true
   PythonFlake8:
     enabled: true
     on_warn: fail
