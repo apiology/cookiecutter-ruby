@@ -38,7 +38,7 @@ build-typecheck: Gemfile.lock.installed types.installed  ## Fetch information th
 sorbet/tapioca/require.rb: sorbet/machine_specific_config
 	bin/tapioca init
 
-tapioca.installed: sorbet/machine_specific_config rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
+tapioca.installed: sorbet/machine_specific_config sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
 	bin/tapioca gems
 	bin/tapioca annotations
 #	bin/tapioca dsl
