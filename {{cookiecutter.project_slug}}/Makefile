@@ -19,11 +19,12 @@ default: clean-typecoverage typecheck typecoverage clean-coverage test coverage 
 
 SOURCE_FILES = $(shell find lib -name '*.rb' -type f)
 
-config/defs.rbi: yardoc.installed ## Generate YARD documentation ## Generate RBS files
-	rm -f config/defs.rbi
-	bundle exec sord --replace-errors-with-untyped --no-regenerate config/defs.rbi
 
-types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed config/defs.rbi sorbet/tapioca/require.rb sorbet/rbi/todo.rbi sorbet/config ## Install Ruby dependencies
+rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate YARD documentation ## Generate RBS files
+	rm -f rbi/{{cookiecutter.project_slug}}.rbi
+	bundle exec sord --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate rbi/{{cookiecutter.project_slug}}.rbi
+
+types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Install Ruby dependencies
 	bundle exec yard gems 2>&1 || bundle exec yard gems --safe 2>&1 || bundle exec yard gems 2>&1
 	# bundle exec solargraph scan 2>&1
 	touch types.installed
@@ -36,7 +37,7 @@ build-typecheck: Gemfile.lock.installed types.installed  ## Fetch information th
 sorbet/tapioca/require.rb: sorbet/machine_specific_config
 	bin/tapioca init
 
-tapioca.installed: sorbet/machine_specific_config config/defs.rbi sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
+tapioca.installed: sorbet/machine_specific_config rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
 	bin/tapioca gems
 	bin/tapioca annotations
 #	bin/tapioca dsl
@@ -50,7 +51,7 @@ yardoc.installed: $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generat
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
 	bin/solargraph clear || true
-	rm -fr .yardoc/ config/defs.rbi types.installed yardoc.installed
+	rm -fr .yardoc/ rbi/{{cookiecutter.project_slug}}.rbi types.installed yardoc.installed
 {% if cookiecutter.use_checkoff %}	rm -fr ../checkoff/.yardoc || true
 {% endif %}	echo all clear
 
@@ -63,7 +64,7 @@ realclean: clean realclean-typecheck
 	rm .make/*
 	rm *.installed
 
-typecheck: config/defs.rbi build-typecheck ## validate types in code and configuration
+typecheck: build-typecheck ## validate types in code and configuration
 	bin/srb tc
 	bin/solargraph typecheck --level strong
 
