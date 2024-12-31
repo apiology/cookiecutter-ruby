@@ -15,12 +15,17 @@ export PRINT_HELP_PYSCRIPT
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-default: clean-typecoverage typecheck typecoverage clean-coverage test coverage quality ## run default typechecking, tests and quality
+default: clean-typecoverage typecheck typecoverage clean-coverage test coverage overcommit_branch quality ## run default typechecking, tests and quality
+
+types.installed: Gemfile.lock Gemfile.lock.installed ## Ensure typechecking dependencies are in place
+	touch types.installed
 
 build-typecheck: types.installed  ## Fetch information that type checking depends on
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
-	@rm -fr .mypy_cache
+	rm -fr .mypy_cache
+	rm -f types.installed
+	echo all clear
 
 realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
 
@@ -32,9 +37,6 @@ realclean: clean realclean-typecheck
 # https://app.circleci.com/pipelines/github/apiology/cookiecutter-pypackage/281/workflows/b85985a9-16d0-42c4-93d4-f965a111e090/jobs/366
 typecheck: build-typecheck ## run mypy against project
 	mypy --cobertura-xml-report typecover --html-report typecover hooks tests
-
-types.installed: Gemfile.lock Gemfile.lock.installed ## Install Ruby dependencies
-	touch types.installed
 
 citypecheck: typecheck ## Run type check from CircleCI
 
@@ -71,6 +73,9 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
+config/env: config/env.1p  ## Create file suitable for docker-compose usage
+	cat config/env.1p | cut -d= -f1 > config/env
+
 requirements_dev.txt.installed: requirements_dev.txt
 	pip install -q --disable-pip-version-check -r requirements_dev.txt
 	touch requirements_dev.txt.installed
@@ -82,11 +87,14 @@ Gemfile.lock: Gemfile
 
 gem_dependencies:
 
-# Ensure any Gemfile.lock changes, even pulled form git, ensure a
+# Ensure any Gemfile.lock changes, even pulled from git, ensure a
 # bundle is installed.
-Gemfile.lock.installed: Gemfile.lock Gemfile
-	bundle install
+Gemfile.lock.installed: Gemfile vendor/.keep
 	touch Gemfile.lock.installed
+
+vendor/.keep: Gemfile.lock
+	bundle install
+	touch vendor/.keep
 
 bundle_install: Gemfile.lock.installed ## Install Ruby dependencies
 
@@ -104,6 +112,9 @@ citest:  ## Run unit tests from CircleCI
 
 overcommit: ## run precommit quality checks
 	bundle exec overcommit --run
+
+overcommit_branch: ## run precommit quality checks only on changed files
+	@bundle exec overcommit_branch
 
 quality: overcommit ## run precommit quality checks
 
@@ -123,15 +134,13 @@ coverage: test report-coverage ## check code coverage
 
 report-coverage: citest ## Report summary of coverage to stdout, and generate HTML, XML coverage report
 
-report-coverage-to-codecov: report-coverage ## use codecov.io for PR-scoped code coverage reports
-
 update_apt: .make/apt_updated
 
 .make/apt_updated:
 	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
 	touch .make/apt_updated
 
-cicoverage: report-coverage-to-codecov ## check code coverage, then report to codecov
+cicoverage: coverage ## check code coverage
 
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
 	bundle exec overcommit --uninstall
@@ -144,8 +153,8 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	# update frequently security-flagged gems while we're here
 	bundle update --conservative rexml || true
 	make build-typecheck
-	git add Gemfile.lock || true
 	bundle install || true
+	git add Gemfile.lock || true
 	bundle exec overcommit --install || true
 	@echo
 	@echo "Please resolve any merge conflicts below and push up a PR with:"
