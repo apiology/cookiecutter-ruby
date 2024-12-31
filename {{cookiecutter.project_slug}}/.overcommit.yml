@@ -23,6 +23,8 @@ PreCommit:
     enabled: true
   Fasterer:
     enabled: true
+  BundleAudit:
+    enabled: true
   RuboCop:
     enabled: true
     command: ['bundle', 'exec', 'rubocop']
