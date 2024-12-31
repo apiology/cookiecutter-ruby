@@ -15,16 +15,15 @@ export PRINT_HELP_PYSCRIPT
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-default: clean-typecoverage typecheck typecoverage clean-coverage test coverage quality rubocop-ratchet ## run default typechecking, tests and quality
+default: clean-typecoverage typecheck typecoverage clean-coverage test coverage overcommit_branch quality rubocop-ratchet ## run default typechecking, tests and quality
 
 SOURCE_FILES = $(shell find lib -name '*.rb' -type f)
-
 
 rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate YARD documentation ## Generate RBS files
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi
 	bundle exec sord --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate rbi/{{cookiecutter.project_slug}}.rbi
 
-types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Install Ruby dependencies
+types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Ensure typechecking dependencies are in place
 	bundle exec yard gems 2>&1 || bundle exec yard gems --safe 2>&1 || bundle exec yard gems 2>&1
 	# bundle exec solargraph scan 2>&1
 	touch types.installed
@@ -76,6 +75,9 @@ clean-typecoverage: ## Clean out type-related coverage previous results to avoid
 
 citypecoverage: typecoverage ## Run type checking, ratchet coverage, and then complain if ratchet needs to be committed
 
+config/env: config/env.1p  ## Create file suitable for docker-compose usage
+	cat config/env.1p | cut -d= -f1 > config/env
+
 requirements_dev.txt.installed: requirements_dev.txt
 	pip install -q --disable-pip-version-check -r requirements_dev.txt
 	touch requirements_dev.txt.installed
@@ -88,7 +90,7 @@ Gemfile.lock: Gemfile
 
 gem_dependencies: .bundle/config
 
-# Ensure any Gemfile.lock changes, even pulled form git, ensure a
+# Ensure any Gemfile.lock changes, even pulled from git, ensure a
 # bundle is installed.
 Gemfile.lock.installed: Gemfile vendor/.keep
 	touch Gemfile.lock.installed
@@ -108,7 +110,7 @@ clear_metrics: ## remove or reset result artifacts created by tests and quality 
 
 clean: clear_metrics clean-typecoverage clean-typecheck clean-coverage  ## remove all built artifacts
 
-test: spec ## run tests quickly
+test: spec feature ## run tests quickly
 
 citest: test ## Run unit tests from CircleCI
 
