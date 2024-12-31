@@ -47,7 +47,7 @@ tapioca.installed: sorbet/machine_specific_config sorbet/tapioca/require.rb Gemf
 	touch tapioca.installed
 
 yardoc.installed: $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generate YARD documentation
-	bin/yard doc \{config,lib,app,script\}/**/*.rb ext/**/*.\{c,rb}
+	bin/yard doc $?
 	touch yardoc.installed
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
