@@ -3,11 +3,13 @@
 source 'https://rubygems.org'
 
 group :development, :test do
+  gem "bundler"
   gem "mdl"
   gem "rspec"
+  gem "parlour", [">=5.0.0"]
   # ensure recent definitions
-  gem "rbs"
-  gem "sord"
+  gem "rbs", [">=3.8.1"]
+  gem "sord", [">=6.0.0"]
   # ensure version with branch coverage
   gem "simplecov", [">=0.18.0"]
   gem "simplecov-lcov"
@@ -29,7 +31,7 @@ group :development do
   # gem "solargraph", [">=0.50.0"]
   gem "solargraph",
       git: "https://github.com/apiology/solargraph",
-      branch: "master"
+      branch: "rbs"
   gem "yard"
 end
 
@@ -49,7 +51,8 @@ gem "asana",
 gem "cache_method",
     git: "https://github.com/apiology/cache_method",
     branch: "ruby_3_support"
-+  gem "yard"
 gem 'checkoff' # , path: '/Users/broz/src/checkoff'
 {% endif %}gem "rake"
 {% if cookiecutter.use_checkoff == 'Yes' %}gem "redis"{% endif %}
+
+gem "yard"
