@@ -31,6 +31,8 @@ PreCommit:
       # This is a symlink to sibling checkout of plate-spinner, used
       # only in local development
       - config/env.1p
+  FixMe:
+    enabled: true
   PythonFlake8:
     enabled: true
     on_warn: fail

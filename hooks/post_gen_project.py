@@ -50,8 +50,8 @@ if __name__ == '__main__':
     #
     # (commit here if you brought in any files above)
     #
-    run(['git', 'add', '-A'])
     run(['make', 'build-typecheck'])  # update from bundle updates
+    run(['git', 'add', '-A'])
     run(['bundle', 'exec', 'git', 'commit', '--allow-empty', '-m',
          'reformat'])
 
