@@ -17,6 +17,10 @@ help:
 
 default: clean-typecoverage typecheck typecoverage clean-coverage test coverage overcommit_branch quality ## run default typechecking, tests and quality
 
+SOURCE_FILE_GLOBS = ['{config,lib,app,script}/**/*.rb', 'ext/**/*.{c,rb}']
+
+SOURCE_FILES := $(shell ruby -e "puts Dir.glob($(SOURCE_FILE_GLOBS))")
+
 types.installed: Gemfile.lock Gemfile.lock.installed ## Ensure typechecking dependencies are in place
 	touch types.installed
 
@@ -53,9 +57,13 @@ requirements_dev.txt.installed: requirements_dev.txt
 pip_install: requirements_dev.txt.installed ## Install Python dependencies
 
 Gemfile.lock: Gemfile
+	make .bundle/config
 	bundle lock
 
-gem_dependencies:
+.bundle/config:
+	touch .bundle/config
+
+gem_dependencies: .bundle/config
 
 # Ensure any Gemfile.lock changes, even pulled from git, ensure a
 # bundle is installed.
@@ -63,12 +71,13 @@ Gemfile.lock.installed: Gemfile vendor/.keep
 	touch Gemfile.lock.installed
 
 vendor/.keep: Gemfile.lock
+	make gem_dependencies
 	bundle install
 	touch vendor/.keep
 
 bundle_install: Gemfile.lock.installed ## Install Ruby dependencies
 
-clean: ## remove all built artifacts
+clean: clean-typecoverage clean-typecheck clean-coverage ## remove all built artifacts
 
 test: ## run tests quickly
 
@@ -81,6 +90,10 @@ overcommit_branch: ## run precommit quality checks only on changed files
 	@bundle exec overcommit_branch
 
 quality: overcommit ## run precommit quality checks
+
+repl: ## Launch an interactive development shell
+	@echo "Teach me how to make repl"
+	@exit 1
 
 clean-coverage: ## Clean out previous output of test coverage to avoid flaky results from previous runs
 
@@ -99,7 +112,7 @@ update_apt: .make/apt_updated
 	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
 	touch .make/apt_updated
 
-cicoverage: coverage report-coverage-to-codecov ## check code coverage
+cicoverage: citest report-coverage-to-codecov ## check code coverage
 
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
 	bundle exec overcommit --uninstall

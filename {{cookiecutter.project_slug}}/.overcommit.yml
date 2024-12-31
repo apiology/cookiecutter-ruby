@@ -21,10 +21,6 @@ PreCommit:
   # https://github.com/sds/overcommit/blob/master/config/default.yml
   BrokenSymlinks:
     enabled: true
-    exclude:
-      # This is a symlink to sibling checkout of plate-spinner, used
-      # only in local development
-      - config/env.1p
   FixMe:
     enabled: true
   PythonFlake8:
