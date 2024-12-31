@@ -17,6 +17,10 @@ help:
 
 default: clean-typecoverage typecheck typecoverage clean-coverage test coverage overcommit_branch quality ## run default typechecking, tests and quality
 
+SOURCE_FILE_GLOBS = ['{tests,hooks}/**/*.py']
+
+SOURCE_FILES := $(shell ruby -e "puts Dir.glob($(SOURCE_FILE_GLOBS))")
+
 types.installed: Gemfile.lock Gemfile.lock.installed ## Ensure typechecking dependencies are in place
 	touch types.installed
 
@@ -52,8 +56,6 @@ ratchet-typecoverage: ## Run type checking, ratchet coverage, and then complain 
 
 citypecoverage: ratchet-typecoverage ## Run type checking, ratchet coverage, and then complain if ratchet needs to be committed
 
-clean: clean-build clean-pyc clean-test clean-mypy clean-coverage ## remove all build, test, coverage and Python artifacts
-
 clean-build: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/
@@ -83,9 +85,13 @@ requirements_dev.txt.installed: requirements_dev.txt
 pip_install: requirements_dev.txt.installed ## Install Python dependencies
 
 Gemfile.lock: Gemfile
+	make .bundle/config
 	bundle lock
 
-gem_dependencies:
+.bundle/config:
+	touch .bundle/config
+
+gem_dependencies: .bundle/config
 
 # Ensure any Gemfile.lock changes, even pulled from git, ensure a
 # bundle is installed.
@@ -93,6 +99,7 @@ Gemfile.lock.installed: Gemfile vendor/.keep
 	touch Gemfile.lock.installed
 
 vendor/.keep: Gemfile.lock
+	make gem_dependencies
 	bundle install
 	touch vendor/.keep
 
@@ -103,6 +110,8 @@ lint: ## check style with flake8
 
 test-all: ## run tests on every Python version with tox
 	tox
+
+clean: clean-build clean-pyc clean-test clean-typecoverage clean-typecheck clean-coverage ## remove all build, test, coverage and Python artifacts
 
 test: ## run tests quickly
 	pytest --maxfail=1 tests/test_bake_project.py --capture=no -v
@@ -116,7 +125,7 @@ overcommit: ## run precommit quality checks
 overcommit_branch: ## run precommit quality checks only on changed files
 	@bundle exec overcommit_branch
 
-quality: overcommit ## run precommit quality checks
+quality: lint overcommit ## run precommit quality checks
 
 bake: ## generate project using defaults
 	cookiecutter $(BAKE_OPTIONS) . --overwrite-if-exists
@@ -127,6 +136,9 @@ watch: bake ## generate project using defaults and watch for changes
 replay: BAKE_OPTIONS=--replay ## replay last cookiecutter run and watch for changes
 replay: watch
 	;
+
+repl: ## Launch an interactive development shell
+	python
 
 clean-coverage: ## Clean out previous output of test coverage to avoid flaky results from previous runs
 
@@ -140,7 +152,7 @@ update_apt: .make/apt_updated
 	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
 	touch .make/apt_updated
 
-cicoverage: coverage ## check code coverage
+cicoverage: citest ## check code coverage
 
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
 	bundle exec overcommit --uninstall
