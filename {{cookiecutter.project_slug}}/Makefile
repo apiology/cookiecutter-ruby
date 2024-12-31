@@ -115,6 +115,9 @@ citest: test ## Run unit tests from CircleCI
 overcommit: ## run precommit quality checks
 	bundle exec overcommit --run
 
+overcommit_branch: ## run precommit quality checks only on changed files
+	@bundle exec overcommit_branch
+
 quality: overcommit ## run precommit quality checks
 
 rubocop: ## Run rubocop
