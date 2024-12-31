@@ -96,6 +96,22 @@ PreCommit:
     exclude:
       - 'sorbet/**/*'
 
+PostCheckout:
+  BundleInstall:
+    enabled: true
+
+PostCommit:
+  BundleInstall:
+    enabled: true
+
+PostMerge:
+  BundleInstall:
+    enabled: true
+
+PostRewrite:
+  BundleInstall:
+    enabled: true
+
 PrePush:
   Brakeman:
     enabled: true

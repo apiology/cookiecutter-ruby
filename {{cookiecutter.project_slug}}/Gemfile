@@ -5,10 +5,10 @@ source "https://rubygems.org"
 group :development, :test do
   gem "bundler"
   gem "mdl"
-  gem "rspec"
   gem "parlour", [">=5.0.0"]
   # ensure recent definitions
   gem "rbs", [">=3.8.1"]
+  gem "rspec"
   gem "sord", [">=6.0.0"]
   # ensure version with branch coverage
   gem "simplecov", [">=0.18.0"]
