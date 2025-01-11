@@ -43,7 +43,8 @@ PreCommit:
     enabled: true
     on_warn: fail
     exclude:
-      - 'sorbet/**/*'
+      # generated files:
+      - 'sorbet/rbi/gems/**/*.rbi'
       # sorbet sure likes to crash
       - 'core.*'
       # don't freak out over line below
@@ -102,7 +103,8 @@ PreCommit:
     enabled: true
     problem_on_unmodified_line: warn
     exclude:
-      - 'sorbet/**/*'
+      # generated files:
+      - 'sorbet/rbi/gems/**/*.rbi'
       # sorbet sure likes to crash
       - 'core.*'
       # don't freak out over line below
