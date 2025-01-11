@@ -29,6 +29,17 @@ PreCommit:
     enabled: true
   FixMe:
     enabled: true
+    on_warn: fail
+    exclude:
+      # Files are templated and the raw version is not always valid
+      # syntax as a result; these will be tested in pytest after being
+      # templated.
+      - '{{cookiecutter.project_slug}}/**/*'
+      # sorbet sure likes to crash
+      - 'core.*'
+      # don't freak out over line below
+      - '.overcommit.yml'
+    keywords: ['BROKEN', 'BUG', 'ERROR', 'FIXME', 'HACK', 'OPTIMIZE', 'REVIEW', 'TODO', 'WTF', 'XXX']
   PythonFlake8:
     enabled: true
     on_warn: fail
@@ -52,6 +63,19 @@ PreCommit:
     command: ['bundle', 'exec', 'punchlist']
     enabled: true
     problem_on_unmodified_line: warn
+    exclude:
+      # Files are templated and the raw version is not always valid
+      # syntax as a result; these will be tested in pytest after being
+      # templated.
+      - '{{cookiecutter.project_slug}}/**/*'
+      # sorbet sure likes to crash
+      - 'core.*'
+      # don't freak out over line below
+      - '.overcommit.yml'
+  CustomScript:
+    enabled: true
+    requires_files: false
+    required_executable: 'bin/git-commit-validate'
 
 #PostCheckout:
 #  ALL: # Special hook name that customizes all hooks of this type
