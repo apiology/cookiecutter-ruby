@@ -24,12 +24,6 @@ commands:
             eval "$(pyenv virtualenv-init -)"
             eval "$(rbenv init -)"
 
-            # keep this in a single place for both main and child builds for cachability
-            BUNDLE_PATH="$(pwd)/vendor/bundle"
-            export BUNDLE_PATH
-            GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
-            export GEM_HOME
-
             <<parameters.command>>
           environment:
             # https://app.circleci.com/pipelines/github/apiology/cookiecutter-pypackage/4/workflows/29074dc8-944c-4600-8aaa-5116575fed90/jobs/4
@@ -69,10 +63,6 @@ commands:
 
             # export FIX_SH_TIMING_LOG=/tmp/fix_sh_timing.log
 
-            BUNDLE_PATH="$(pwd)/vendor/bundle"
-            export BUNDLE_PATH
-            GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
-            export GEM_HOME
             PATH="$(pwd)/bin:${PATH}"
             export PATH
 
