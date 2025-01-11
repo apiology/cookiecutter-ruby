@@ -108,7 +108,8 @@ PreCommit:
       # sorbet sure likes to crash
       - 'core.*'
       # don't freak out over line below
-      - '.overcommit'
+      - '.overcommit.yml'
+
 PostCheckout:
   BundleInstall:
     enabled: true
