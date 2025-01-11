@@ -239,7 +239,7 @@ jobs:
           path: rbi/{{cookiecutter.project_slug}}.rbi
       - save_cache:
           name: 'Save ruby-types cache'
-          key: ruby-types-v1-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum "rbi/{{cookiecutter.project_slug}}.rbi" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}  # yamllint disable-line rule:line-length
+          key: ruby-types-v1-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum {% endraw %}"rbi/{{cookiecutter.project_slug}}.rbi" {% raw %}}}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}  # yamllint disable-line rule:line-length
           paths:
             - ".yardoc"
             - "/home/circleci/.cache/solargraph"
