@@ -1,0 +1,4 @@
+/sorbet/rbi/gems/*.rbi
+/sig/*.rbs
+/rbi/*.rbi
+/doc/*.html
