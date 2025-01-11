@@ -1,4 +1,4 @@
-.PHONY: build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default feature gem_dependencies help localtest overcommit quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default feature gem_dependencies help localtest overcommit quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -15,11 +15,15 @@ export PRINT_HELP_PYSCRIPT
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-default: clean-typecoverage typecheck typecoverage clean-coverage test coverage overcommit_branch quality rubocop-ratchet ## run default typechecking, tests and quality
+default: clean-typecoverage build typecheck typecoverage clean-coverage test coverage overcommit_branch quality rubocop-ratchet ## run default typechecking, tests and quality
 
 SOURCE_FILE_GLOBS = ['{config,lib,app,script}/**/*.rb', 'ext/**/*.{c,rb}']
 
 SOURCE_FILES := $(shell ruby -e "puts Dir.glob($(SOURCE_FILE_GLOBS))")
+
+start: ## run code continously and watch files for changes
+	echo "Teach me how to 'make start'"
+	exit 1
 
 rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate Sorbet types from Yard docs
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi
@@ -29,6 +33,8 @@ types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{coo
 	bundle exec yard gems 2>&1 || bundle exec yard gems --safe 2>&1 || bundle exec yard gems 2>&1
 	# bundle exec solargraph scan 2>&1
 	touch types.installed
+
+build: bundle_install pip_install build-typecheck ## Update 3rd party packages as well and produce any artifacts needed from code
 
 sorbet/machine_specific_config:
 	echo "--cache-dir=$$HOME/.sorbet-cache" > sorbet/machine_specific_config
@@ -61,9 +67,9 @@ realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
 	rm tapioca.installed
 
 realclean: clean realclean-typecheck
-	rm -fr vendor .bundle
-	rm .make/*
-	rm *.installed
+	rm -fr vendor/bundle .bundle
+	rm -f .make/*
+	rm -f *.installed
 
 typecheck: build-typecheck ## validate types in code and configuration
 	bin/srb tc
@@ -177,9 +183,7 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	git checkout --ours Gemfile.lock || true
 	# update frequently security-flagged gems while we're here
 	bundle update --conservative json rexml yard || true
-	make build-typecheck
-	bundle install || true
-	git add Gemfile.lock || true
+	( make build && git add Gemfile.lock ) || true
 	bundle exec overcommit --install || true
 	@echo
 	@echo "Please resolve any merge conflicts below and push up a PR with:"
