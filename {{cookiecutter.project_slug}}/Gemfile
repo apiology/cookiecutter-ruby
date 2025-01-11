@@ -56,5 +56,3 @@ gem "cache_method",
 gem "checkoff" # , path: "/Users/broz/src/checkoff"
 {% endif %}gem "rake"
 {% if cookiecutter.use_checkoff == "Yes" %}gem "redis"{% endif %}
-
-gem "yard"
