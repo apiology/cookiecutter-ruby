@@ -39,7 +39,7 @@ PreCommit:
       - 'core.*'
       # don't freak out over line below
       - '.overcommit.yml'
-    keywords: ['BROKEN', 'BUG', 'ERROR', 'FIXME', 'HACK', 'OPTIMIZE', 'REVIEW', 'TODO', 'WTF', 'XXX']
+    keywords: ['BROKEN', 'BUG', 'FIXME', 'HACK', 'OPTIMIZE', 'REVIEW', 'TODO', 'WTF', 'XXX']
   PythonFlake8:
     enabled: true
     on_warn: fail

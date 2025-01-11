@@ -1,4 +1,4 @@
-.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-build clean-coverage clean-pyc clean-typecheck clean-typecoverage coverage default gem_dependencies help overcommit quality report-coverage report-coverage-to-codecov test typecheck typecoverage update_from_cookiecutter
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-build clean-coverage clean-pyc clean-typecheck clean-typecoverage coverage default gem_dependencies help overcommit quality test typecheck typecoverage update_from_cookiecutter
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -51,7 +51,6 @@ typecheck: build-typecheck ## run mypy against project
 citypecheck: typecheck ## Run type check from CircleCI
 
 typecoverage: typecheck ## Run type checking and then ratchet coverage in metrics/mypy_high_water_mark
-	@python setup.py mypy_ratchet
 
 clean-typecoverage: ## Clean out mypy previous results to avoid flaky results
 
@@ -148,9 +147,7 @@ repl: ## Launch an interactive development shell
 
 clean-coverage: ## Clean out previous output of test coverage to avoid flaky results from previous runs
 
-coverage: test report-coverage ## check code coverage
-
-report-coverage: citest ## Report summary of coverage to stdout, and generate HTML, XML coverage report
+coverage: test ## check code coverage
 
 update_apt: .make/apt_updated
 
