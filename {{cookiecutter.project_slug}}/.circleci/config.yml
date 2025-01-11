@@ -27,8 +27,8 @@ commands:
             # keep this in a single place for both main and child builds for cachability
             BUNDLE_PATH="$(pwd)/vendor/bundle"
             export BUNDLE_PATH
-            GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
-            export GEM_HOME
+            # GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
+            # export GEM_HOME
 
             <<parameters.command>>
           environment:
@@ -77,8 +77,8 @@ commands:
 
             BUNDLE_PATH="$(pwd)/vendor/bundle"
             export BUNDLE_PATH
-            GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
-            export GEM_HOME
+            # GEM_HOME="${BUNDLE_PATH}/ruby/3.3.0"
+            # export GEM_HOME
             PATH="$(pwd)/bin:${PATH}"
             export PATH
 
