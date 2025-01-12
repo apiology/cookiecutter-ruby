@@ -27,11 +27,11 @@ start: ## run code continously and watch files for changes
 
 rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate Sorbet types from Yard docs
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi
-	bundle exec sord --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate rbi/{{cookiecutter.project_slug}}.rbi
+	bin/sord --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate rbi/{{cookiecutter.project_slug}}.rbi
 
 types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Ensure typechecking dependencies are in place
-	bundle exec yard gems 2>&1 || bundle exec yard gems --safe 2>&1 || bundle exec yard gems 2>&1
-	# bundle exec solargraph scan 2>&1
+	bin/yard gems 2>&1 || bin/yard gems --safe 2>&1 || bin/yard gems 2>&1
+	# bin/solargraph scan 2>&1
 	touch types.installed
 
 build: bundle_install pip_install build-typecheck ## Update 3rd party packages as well and produce any artifacts needed from code
@@ -114,7 +114,7 @@ vendor/.keep: Gemfile.lock
 bundle_install: Gemfile.lock.installed ## Install Ruby dependencies
 
 clear_metrics: ## remove or reset result artifacts created by tests and quality tools
-	bundle exec rake clear_metrics || true
+	bin/rake clear_metrics || true
 
 clean: clear_metrics clean-typecoverage clean-typecheck clean-coverage ## remove all built artifacts
 
@@ -123,18 +123,18 @@ test: spec feature ## run tests quickly
 citest: test ## Run unit tests from CircleCI
 
 overcommit: ## run precommit quality checks
-	bundle exec overcommit --run
+	bin/overcommit --run
 
 overcommit_branch: ## run precommit quality checks only on changed files
-	@bundle exec overcommit_branch
+	@bin/overcommit_branch
 
 quality: overcommit ## run precommit quality checks
 
 rubocop: ## Run rubocop
-	@bundle exec rubocop
+	@bin/rubocop
 
 rubocop-ratchet: rubocop ## Run rubocop and then ratchet numbers of errors in todo file
-	@bundle exec rubocop --regenerate-todo --no-exclude-limit --auto-gen-only-exclude --no-auto-gen-timestamp
+	@bin/rubocop --regenerate-todo --no-exclude-limit --auto-gen-only-exclude --no-auto-gen-timestamp
 	@if [ -f .rubocop_todo.yml ]; \
 	  then \
 	    git diff --exit-code .rubocop.yml; \
@@ -144,18 +144,18 @@ rubocop-ratchet: rubocop ## Run rubocop and then ratchet numbers of errors in to
 test: spec ## run tests quickly
 
 spec: ## Run lower-level tests
-	@bundle exec rake spec
+	@bin/rake spec
 
 feature: ## Run higher-level tests
-	@bundle exec rake feature
+	@bin/rake feature
 
 repl: bundle_install ## Launch an interactive development shell
-	@bundle exec rake repl
+	@bin/rake repl
 
 clean-coverage: clear_metrics ## Clean out previous output of test coverage to avoid flaky results from previous runs
 
 coverage: test report-coverage ## check code coverage
-	@bundle exec rake undercover
+	@bin/rake undercover
 
 report-coverage: test ## Report summary of coverage to stdout, and generate HTML, XML coverage report
 
@@ -168,7 +168,7 @@ update_apt: .make/apt_updated
 cicoverage: citest coverage ## check code coverage
 
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
-	bundle exec overcommit --uninstall
+	bin/overcommit --uninstall
 	# cookiecutter_project_upgrader does its work in
 	# .git/cookiecutter/{{cookiecutter.project_slug}}, but RuboCop wants to inherit
 	# config from all directories above it - avoid config
@@ -185,7 +185,7 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	# update frequently security-flagged gems while we're here
 	bundle update --conservative json rexml yard || true
 	( make build && git add Gemfile.lock ) || true
-	bundle exec overcommit --install || true
+	bin/overcommit --install || true
 	@echo
 	@echo "Please resolve any merge conflicts below and push up a PR with:"
 	@echo
