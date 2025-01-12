@@ -1,4 +1,4 @@
-.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default feature gem_dependencies help localtest overcommit quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default feature gem_dependencies help overcommit quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -32,6 +32,12 @@ rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate Sorbet types
 types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Ensure typechecking dependencies are in place
 	bin/yard gems 2>&1 || bin/yard gems --safe 2>&1 || bin/yard gems 2>&1
 	# bin/solargraph scan 2>&1
+	bin/spoom srb bump || true
+	# spoom rudely updates timestamps on files, so let's keep up by
+	# touching yardoc.installed so we don't end up in a vicious
+	# cycle
+	touch yardoc.installed rbi/{{cookiecutter.project_slug}}.rbi
+	# bundle exec solargraph scan 2>&1
 	touch types.installed
 
 build: bundle_install pip_install build-typecheck ## Update 3rd party packages as well and produce any artifacts needed from code
@@ -49,7 +55,6 @@ tapioca.installed: sorbet/machine_specific_config sorbet/tapioca/require.rb Gemf
 	bin/tapioca annotations
 #	bin/tapioca dsl
 	bin/tapioca todo
-	bin/spoom srb bump
 	touch tapioca.installed
 
 yardoc.installed: $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generate YARD documentation
@@ -75,13 +80,15 @@ typecheck: build-typecheck ## validate types in code and configuration
 	bin/srb tc
 	bin/solargraph typecheck --level strong
 
-citypecheck: typecheck ## Run type check from CircleCI
+citypecheck: ## Run type check from CircleCI
+	bin/srb tc
+	bin/solargraph typecheck --level strong
 
 typecoverage: typecheck ## Run type checking and then ratchet coverage in metrics/
 
 clean-typecoverage: ## Clean out type-related coverage previous results to avoid flaky results
 
-citypecoverage: typecoverage ## Run type checking, ratchet coverage, and then complain if ratchet needs to be committed
+citypecoverage: citypecheck ## Run type checking, ratchet coverage, and then complain if ratchet needs to be committed
 
 config/env: config/env.1p  ## Create file suitable for docker-compose usage
 	cat config/env.1p | cut -d= -f1 > config/env
@@ -141,8 +148,6 @@ rubocop-ratchet: rubocop ## Run rubocop and then ratchet numbers of errors in to
 	    git diff --exit-code .rubocop_todo.yml; \
 	fi
 
-test: spec ## run tests quickly
-
 spec: ## Run lower-level tests
 	@bin/rake spec
 
@@ -185,6 +190,7 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	# update frequently security-flagged gems while we're here
 	bundle update --conservative json rexml yard || true
 	( make build && git add Gemfile.lock ) || true
+	bin/spoom srb bump || true
 	bin/overcommit --install || true
 	@echo
 	@echo "Please resolve any merge conflicts below and push up a PR with:"
