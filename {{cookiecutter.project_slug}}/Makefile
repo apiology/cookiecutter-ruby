@@ -141,8 +141,6 @@ rubocop-ratchet: rubocop ## Run rubocop and then ratchet numbers of errors in to
 	    git diff --exit-code .rubocop_todo.yml; \
 	fi
 
-test: spec ## run tests quickly
-
 spec: ## Run lower-level tests
 	@bundle exec rake spec
 
