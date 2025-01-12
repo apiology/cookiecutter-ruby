@@ -31,6 +31,11 @@ rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate Sorbet types
 
 types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Ensure typechecking dependencies are in place
 	bundle exec yard gems 2>&1 || bundle exec yard gems --safe 2>&1 || bundle exec yard gems 2>&1
+	bin/spoom srb bump || true
+	# spoom rudely updates timestamps on files, so let's keep up by
+	# touching yardoc.installed so we don't end up in a vicious
+	# cycle
+	touch yardoc.installed rbi/{{cookiecutter.project_slug}}.rbi
 	# bundle exec solargraph scan 2>&1
 	touch types.installed
 
@@ -49,7 +54,6 @@ tapioca.installed: sorbet/machine_specific_config sorbet/tapioca/require.rb Gemf
 	bin/tapioca annotations
 #	bin/tapioca dsl
 	bin/tapioca todo
-	bin/spoom srb bump
 	touch tapioca.installed
 
 yardoc.installed: $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generate YARD documentation
@@ -185,6 +189,7 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	# update frequently security-flagged gems while we're here
 	bundle update --conservative json rexml yard || true
 	( make build && git add Gemfile.lock ) || true
+	bin/spoom srb bump || true
 	bundle exec overcommit --install || true
 	@echo
 	@echo "Please resolve any merge conflicts below and push up a PR with:"
