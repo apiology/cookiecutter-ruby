@@ -100,8 +100,7 @@ requirements_dev.txt.installed: requirements_dev.txt
 
 pip_install: requirements_dev.txt.installed ## Install Python dependencies
 
-Gemfile.lock: Gemfile
-	make .bundle/config
+Gemfile.lock: Gemfile .bundle/config
 	bundle lock
 
 .bundle/config:
