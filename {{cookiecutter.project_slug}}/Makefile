@@ -55,7 +55,7 @@ sorbet/tapioca/require.rb:
 	make sorbet/machine_specific_config vendor/.keep
 	bin/tapioca init
 
-tapioca.installed: sorbet/tapioca/require.rb Gemfile.lock.installed db/schema.rb ## Install Tapioca-generated type information
+tapioca.installed: sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
 	make sorbet/machine_specific_config
 	bin/tapioca gems
 	bin/tapioca annotations
