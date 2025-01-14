@@ -48,9 +48,6 @@ yardoc.installed
 # Type checking config
 sorbet/machine_specific_config
 
-# generated from local source
-config/defs.rbi
-
 # Used by CircleCI as a place to store installed gems
 /vendor/bundle
 
