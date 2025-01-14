@@ -94,6 +94,7 @@ commands:
             - "/home/circleci/.cache/rubocop_cache"
             - "/home/circleci/.cache/gem"
             - "/home/circleci/.bundle/cache"
+            - ".bundle"
       - run:
           name: Download new circleci tool
           command: |
