@@ -45,7 +45,10 @@ build: bundle_install pip_install build-typecheck ## Update 3rd party packages a
 sorbet/machine_specific_config:
 	echo "--cache-dir=$$HOME/.sorbet-cache" > sorbet/machine_specific_config
 
-build-typecheck: Gemfile.lock.installed types.installed  ## Fetch information that type checking depends on
+sorbet/rbi/todo.rbi: rbi/{{cookiecutter.project_slug}}.rbi tapioca.installed
+	bin/tapioca todo
+
+build-typecheck: Gemfile.lock.installed types.installed sorbet/machine_specific_config sorbet/rbi/todo.rbi ## Fetch information that type checking depends on
 
 # Only create this once, so no dependencies
 sorbet/tapioca/require.rb:
@@ -56,7 +59,6 @@ tapioca.installed: sorbet/machine_specific_config sorbet/tapioca/require.rb Gemf
 	bin/tapioca gems
 	bin/tapioca annotations
 #	bin/tapioca dsl
-	bin/tapioca todo
 	touch tapioca.installed
 
 yardoc.installed: $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generate YARD documentation
