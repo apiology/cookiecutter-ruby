@@ -27,7 +27,7 @@ start: ## run code continously and watch files for changes
 
 rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate Sorbet types from Yard docs
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi
-	bin/sord --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate rbi/{{cookiecutter.project_slug}}.rbi
+	bin/sord gen --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate rbi/{{cookiecutter.project_slug}}.rbi
 
 types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Ensure typechecking dependencies are in place
 	bin/yard gems 2>&1 || bin/yard gems --safe 2>&1 || bin/yard gems 2>&1
@@ -55,7 +55,8 @@ sorbet/tapioca/require.rb:
 	make sorbet/machine_specific_config vendor/.keep
 	bin/tapioca init
 
-tapioca.installed: sorbet/machine_specific_config sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
+tapioca.installed: sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
+	make sorbet/machine_specific_config
 	bin/tapioca gems
 	bin/tapioca annotations
 #	bin/tapioca dsl
@@ -78,13 +79,12 @@ realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
 realclean: clean realclean-typecheck
 	rm -fr vendor/bundle .bundle
 	rm -f .make/*
-	rm -f *.installed
 
 typecheck: build-typecheck ## validate types in code and configuration
 	bin/srb tc
 	bin/solargraph typecheck --level strong
 
-citypecheck: ## Run type check from CircleCI
+citypecheck: build-typecheck ## Run type check from CircleCI
 	bin/srb tc
 	bin/solargraph typecheck --level strong
 
