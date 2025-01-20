@@ -191,7 +191,7 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	git checkout --theirs sorbet/rbi/gems || true
 	git checkout --ours Gemfile.lock || true
 	# update frequently security-flagged gems while we're here
-	bundle update --conservative json rexml yard || true
+	bundle update --conservative json rexml yard brakeman || true
 	( make build && git add Gemfile.lock ) || true
 	bin/spoom srb bump || true
 	bin/overcommit --install || true
