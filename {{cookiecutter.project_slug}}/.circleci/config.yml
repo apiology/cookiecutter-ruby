@@ -84,6 +84,7 @@ commands:
             - "vendor/bundle"
             - "/home/circleci/.rbenv"
             - ".bundle"
+            - ".ruby-version"
       - run:
           name: Download new circleci tool
           command: |
