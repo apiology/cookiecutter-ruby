@@ -62,6 +62,9 @@ commands:
 
             # export FIX_SH_TIMING_LOG=/tmp/fix_sh_timing.log
 
+            PATH="$(pwd)/bin:${PATH}"
+            export PATH
+
             './fix.sh'
       - store_artifacts:
           path: /tmp/fix_sh_timing.log
