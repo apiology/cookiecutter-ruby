@@ -190,7 +190,8 @@ commands:
             # https://app.circleci.com/pipelines/github/apiology/"${package}"-rails/806/workflows/40fdf1ef-fa23-421b-a0f1-641ea0ed1641/jobs/1173
             #
             bundle exec overcommit --sign pre-commit
-            bundle exec git commit -m "Bump dependency releases" Gemfile.lock || true
+            bundle exec git add Gemfile.lock sorbet
+            bundle exec git commit -m "Bump dependency releases"
             OVERCOMMIT_DEBUG=1 bundle exec git push --set-upstream origin "${CIRCLE_BRANCH:?}"
             echo "Avoiding double build after git push"
             exit 1
