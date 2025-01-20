@@ -37,7 +37,7 @@ types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{coo
 	# touching yardoc.installed so we don't end up in a vicious
 	# cycle
 	touch yardoc.installed rbi/{{cookiecutter.project_slug}}.rbi
-	# bundle exec solargraph scan 2>&1
+	# bin/solargraph scan 2>&1
 	touch types.installed
 
 build: bundle_install pip_install build-typecheck ## Update 3rd party packages as well and produce any artifacts needed from code
@@ -79,6 +79,7 @@ realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
 realclean: clean realclean-typecheck
 	rm -fr vendor/bundle .bundle
 	rm -f .make/*
+	rm *.installed
 
 typecheck: build-typecheck ## validate types in code and configuration
 	bin/srb tc
