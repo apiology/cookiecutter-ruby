@@ -29,11 +29,7 @@ group :development do
   gem "rubocop-rake"
   # ensure version with RSpec/VerifiedDoubleReference
   gem "rubocop-rspec", [">=2.10.0"]
-  # https://github.com/castwide/solargraph/pull/727
-  # gem "solargraph", [">=0.50.0"]
-  gem "solargraph",
-      git: "https://github.com/apiology/solargraph",
-      branch: "rbs"
+  gem "solargraph", [">=0.51.0"]
   gem "yard"
 end
 
