@@ -239,6 +239,7 @@ jobs:
             - "types.installed"
             - "yardoc.installed"
             - "tapioca.installed"
+            - "sorbet/machine_specific_config"
             - "rbi/{{cookiecutter.project_slug}}.rbi"
       - run_with_languages:
           label: Test
