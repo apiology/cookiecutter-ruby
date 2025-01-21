@@ -87,7 +87,6 @@ RSpec/MultipleMemoizedHelpers:
 # verified.
 RSpec/VerifiedDoubleReference:
   Enabled: true
-  EnforcedStyle: constant
 
 #
 # Add 'XX X' to the standard list
