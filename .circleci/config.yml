@@ -162,6 +162,7 @@ jobs:
                 key: child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }} # yamllint disable-line rule:line-length
                 paths:
                   - "Gemfile.lock.installed"
+                  - "vendor/.keep"
                   - "vendor/bundle"
                   - "/home/circleci/.rbenv"
                   - "/home/circleci/.cache/solargraph"
@@ -171,6 +172,7 @@ jobs:
                   - "/home/circleci/.cache/gem"
                   - "/home/circleci/.bundle/cache"
                   - ".bundle"
+                  - ".ruby-version"
       - when:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]

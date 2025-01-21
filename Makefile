@@ -103,7 +103,7 @@ gem_dependencies: .bundle/config
 Gemfile.lock.installed: Gemfile vendor/.keep
 	touch Gemfile.lock.installed
 
-vendor/.keep: Gemfile.lock
+vendor/.keep: Gemfile.lock .ruby-version
 	make gem_dependencies
 	bundle install
 	touch vendor/.keep
@@ -125,10 +125,10 @@ citest:  ## Run unit tests from CircleCI
 	pytest --maxfail=1 tests/test_bake_project.py -v
 
 overcommit: ## run precommit quality checks
-	bundle exec overcommit --run
+	bin/overcommit --run
 
 overcommit_branch: ## run precommit quality checks only on changed files
-	@bundle exec overcommit_branch
+	@bin/overcommit_branch
 
 quality: lint overcommit ## run precommit quality checks
 
@@ -158,7 +158,7 @@ update_apt: .make/apt_updated
 cicoverage: citest ## check code coverage
 
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
-	bundle exec overcommit --uninstall
+	bin/overcommit --uninstall
 	cookiecutter_project_upgrader --help >/dev/null
 	IN_COOKIECUTTER_PROJECT_UPGRADER=1 cookiecutter_project_upgrader || true
 	git checkout cookiecutter-template && git push --no-verify
@@ -166,9 +166,9 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	git merge cookiecutter-template || true
 	git checkout --ours Gemfile.lock || true
 	# update frequently security-flagged gems while we're here
-	bundle update --conservative rexml || true
+	bundle update --conservative json rexml || true
 	( make build && git add Gemfile.lock ) || true
-	bundle exec overcommit --install || true
+	bin/overcommit --install || true
 	@echo
 	@echo "Please resolve any merge conflicts below and push up a PR with:"
 	@echo

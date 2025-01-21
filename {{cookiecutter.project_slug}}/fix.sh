@@ -238,7 +238,10 @@ ensure_bundle() {
 
 set_ruby_local_version() {
   latest_ruby_version="$(cut -d' ' -f1 <<< "${ruby_versions}")"
-  echo "${latest_ruby_version}" > .ruby-version
+  if [ "${latest_ruby_version}" != "$(cat .ruby-version 2>/dev/null)" ]
+  then
+    echo "${latest_ruby_version}" > .ruby-version
+  fi
 }
 
 latest_python_version() {

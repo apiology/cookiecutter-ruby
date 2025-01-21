@@ -95,6 +95,7 @@ commands:
             - "/home/circleci/.cache/gem"
             - "/home/circleci/.bundle/cache"
             - ".bundle"
+            - ".ruby-version"
       - run:
           name: Download new circleci tool
           command: |
