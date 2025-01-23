@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+make rbi/{{cookiecutter.project_slug}}.rbi
+
 temp_config_file=$(mktemp)
 
 # delete on exit
@@ -11,7 +13,11 @@ trap 'rm -f $temp_config_file' EXIT
 echo '---' > "${temp_config_file}"
 echo "strict:" >> "${temp_config_file}"
 for file in "$@"; do
+  # if file doesn't start in / or ./, prepend ./
+  if [[ ! "${file}" =~ ^(\.|/).* ]]; then
+    file="./${file}"
+  fi
   echo "  - ${file}" >> "${temp_config_file}"
 done
 
-srb tc --typed-override "${temp_config_file}" "$*"
+bin/srb tc --typed-override "${temp_config_file}" "$*"
