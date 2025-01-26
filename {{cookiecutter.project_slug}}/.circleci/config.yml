@@ -53,7 +53,7 @@ commands:
       - restore_cache:
           name: Restore ruby-types cache
           keys:
-            - ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-
+            - ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}- # yamllint disable-line rule:line-length
             - ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-
             - ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
             - ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
