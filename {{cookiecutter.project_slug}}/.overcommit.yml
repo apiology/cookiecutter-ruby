@@ -92,6 +92,7 @@ PreCommit:
       - script/.rubocop.yml
       - vendor/**/*
       - spec/**/*
+      - feature/**/*
       - ".bundle/**/*"
       - ".markdownlint_style.rb"
   Sorbet:
