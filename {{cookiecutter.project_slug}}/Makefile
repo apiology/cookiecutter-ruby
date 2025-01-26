@@ -1,4 +1,4 @@
-.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default gem_dependencies help overcommit quality report-coverage report-coverage-to-codecov test typecheck typecoverage update_from_cookiecutter
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default gem_dependencies help overcommit quality repl report-coverage report-coverage-to-codecov test typecheck typecoverage update_from_cookiecutter
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -125,7 +125,7 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	cookiecutter_project_upgrader --help >/dev/null
 	IN_COOKIECUTTER_PROJECT_UPGRADER=1 cookiecutter_project_upgrader || true
 	git checkout cookiecutter-template && git push --no-verify
-	git checkout main; overcommit --sign && overcommit --sign pre-commit && git checkout main && git pull && git checkout -b update-from-cookiecutter-$$(date +%Y-%m-%d-%H%M)
+	git checkout main; overcommit --sign && overcommit --sign pre-commit && overcommit --sign pre-push && git checkout main && git pull && git checkout -b update-from-cookiecutter-$$(date +%Y-%m-%d-%H%M)
 	git merge cookiecutter-template || true
 	git checkout --ours Gemfile.lock || true
 	# update frequently security-flagged gems while we're here
