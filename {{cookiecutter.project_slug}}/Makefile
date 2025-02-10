@@ -1,4 +1,4 @@
-.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default gem_dependencies help overcommit quality repl report-coverage report-coverage-to-codecov test typecheck typecoverage update_from_cookiecutter
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default gem_dependencies help overcommit quality repl report-coverage report-coverage-to-codecov test typecheck typecoverage update_from_cookiecutter docs
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -17,7 +17,7 @@ help:
 
 default: clean-typecoverage build typecheck typecoverage clean-coverage test coverage overcommit_branch quality ## run default typechecking, tests and quality
 
-SOURCE_FILE_GLOBS = ['{config,lib,app,script}/**/*.rb', 'ext/**/*.{c,rb}']
+SOURCE_FILE_GLOBS = ['{config,lib,app,script,spec}/**/*.rb', 'ext/**/*.{c,rb}']
 
 SOURCE_FILES := $(shell ruby -e "puts Dir.glob($(SOURCE_FILE_GLOBS))")
 
@@ -31,6 +31,8 @@ types.installed: Gemfile.lock Gemfile.lock.installed ## Ensure typechecking depe
 	touch types.installed
 
 build-typecheck: types.installed  ## Fetch information that type checking depends on
+
+docs: ## Generate documentation
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
 	rm -f types.installed
@@ -62,8 +64,7 @@ requirements_dev.txt.installed: requirements_dev.txt
 
 pip_install: requirements_dev.txt.installed ## Install Python dependencies
 
-Gemfile.lock: Gemfile
-	make .bundle/config
+Gemfile.lock: Gemfile .bundle/config
 	bundle lock
 
 .bundle/config:
@@ -74,6 +75,7 @@ gem_dependencies: .bundle/config
 # Ensure any Gemfile.lock changes, even pulled from git, ensure a
 # bundle is installed.
 Gemfile.lock.installed: Gemfile vendor/.keep
+	bundle install
 	touch Gemfile.lock.installed
 
 vendor/.keep: Gemfile.lock .ruby-version
