@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: strict
 
 #
@@ -43,6 +44,9 @@
 #         def html_notes; end
 #         # @return [Array<Hash{String => Hash{String => String}}>]
 #         def memberships; end
+#         # @return [Hash{String => String}, Section, nil] if it is asked for as part of the initial task request,
+#         #     you'll get a hash, otherwise you'll get a resource object
+#         def assignee_section; end
 #       end
 #       class Section
 #         # @return [String,nil]
