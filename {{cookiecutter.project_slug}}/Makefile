@@ -83,12 +83,12 @@ clean-typecheck: ## Refresh the easily-regenerated information that type checkin
 
 realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
 	rm -fr ~/.cache/solargraph
-	rm tapioca.installed
+	rm -f tapioca.installed
 
 realclean: clean realclean-typecheck
-	rm -fr vendor/bundle .bundle
+	rm -fr vendor/bundle .bundle/config
 	rm -f .make/*
-	rm *.installed
+	rm -f *.installed
 
 SORBET_TC_OPTIONS = --suppress-error-code 4010 # --suppress-error-code 4002
 
