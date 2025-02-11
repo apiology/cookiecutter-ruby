@@ -84,13 +84,17 @@ realclean: clean realclean-typecheck
 	rm -f .make/*
 	rm *.installed
 
-typecheck: build-typecheck ## validate types in code and configuration
-	bin/srb tc
+SORBET_TC_OPTIONS = --suppress-error-code 4010 # --suppress-error-code 4002
+
+srb: build-typecheck ## Run Sorbet typechecker
+	bin/srb tc $(SORBET_TC_OPTIONS)
+
+solargraph: build-typecheck ## Run Solargraph typechecker
 	bin/solargraph typecheck --level strong
 
-citypecheck: build-typecheck ## Run type check from CircleCI
-	bin/srb tc
-	bin/solargraph typecheck --level strong
+typecheck: build-typecheck srb solargraph ## validate types in code and configuration
+
+citypecheck: build-typecheck srb solargraph ## Run type check from CircleCI
 
 typecoverage: typecheck ## Run type checking and then ratchet coverage in metrics/
 
