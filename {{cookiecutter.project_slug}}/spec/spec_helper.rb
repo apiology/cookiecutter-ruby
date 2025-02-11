@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+# typed: false
+
 {% if cookiecutter.use_checkoff == 'Yes' %}
 # @sg-ignore
 ENV['REDIS_HOSTNAME'] = 'deactivated-anyway'{% endif %}

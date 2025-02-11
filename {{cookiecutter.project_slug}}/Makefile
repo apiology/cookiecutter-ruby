@@ -1,4 +1,5 @@
-.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default feature gem_dependencies help overcommit quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default docs feature gem_dependencies help overcommit quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter
+
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -17,7 +18,7 @@ help:
 
 default: clean-typecoverage build typecheck typecoverage clean-coverage test coverage overcommit_branch quality rubocop-ratchet ## run default typechecking, tests and quality
 
-SOURCE_FILE_GLOBS = ['{config,lib,app,script}/**/*.rb', 'ext/**/*.{c,rb}']
+SOURCE_FILE_GLOBS = ['{config,lib,app,script,spec,feature}/**/*.rb', 'ext/**/*.{c,rb}']
 
 SOURCE_FILES := $(shell ruby -e "puts Dir.glob($(SOURCE_FILE_GLOBS))")
 
@@ -65,6 +66,8 @@ tapioca.installed: sorbet/tapioca/require.rb Gemfile.lock.installed ## Install T
 yardoc.installed: $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generate YARD documentation
 	bin/yard doc -c .yardoc $^
 	touch yardoc.installed
+
+docs: ## Generate documentation
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
 	bin/solargraph clear || true
@@ -115,6 +118,7 @@ gem_dependencies: .bundle/config
 # Ensure any Gemfile.lock changes, even pulled from git, ensure a
 # bundle is installed.
 Gemfile.lock.installed: Gemfile vendor/.keep
+	bundle install
 	touch Gemfile.lock.installed
 
 vendor/.keep: Gemfile.lock .ruby-version

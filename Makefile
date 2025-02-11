@@ -1,4 +1,5 @@
-.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-build clean-coverage clean-pyc clean-typecheck clean-typecoverage coverage default gem_dependencies help overcommit quality repl test typecheck typecoverage update_from_cookiecutter
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-build clean-coverage clean-pyc clean-typecheck clean-typecoverage coverage default docs gem_dependencies help overcommit quality repl test typecheck typecoverage update_from_cookiecutter
+
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -31,6 +32,8 @@ types.installed: Gemfile.lock Gemfile.lock.installed ## Ensure typechecking depe
 	touch types.installed
 
 build-typecheck: types.installed  ## Fetch information that type checking depends on
+
+docs: ## Generate documentation
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
 	rm -fr .mypy_cache
@@ -89,8 +92,7 @@ requirements_dev.txt.installed: requirements_dev.txt
 
 pip_install: requirements_dev.txt.installed ## Install Python dependencies
 
-Gemfile.lock: Gemfile
-	make .bundle/config
+Gemfile.lock: Gemfile .bundle/config
 	bundle lock
 
 .bundle/config:
@@ -101,6 +103,7 @@ gem_dependencies: .bundle/config
 # Ensure any Gemfile.lock changes, even pulled from git, ensure a
 # bundle is installed.
 Gemfile.lock.installed: Gemfile vendor/.keep
+	bundle install
 	touch Gemfile.lock.installed
 
 vendor/.keep: Gemfile.lock .ruby-version
