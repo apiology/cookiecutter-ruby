@@ -4,7 +4,6 @@
 {% if cookiecutter.use_checkoff == 'Yes' %}
 # @sg-ignore
 ENV['REDIS_HOSTNAME'] = 'deactivated-anyway'{% endif %}
-
 require 'simplecov'
 require 'simplecov-lcov'
 
