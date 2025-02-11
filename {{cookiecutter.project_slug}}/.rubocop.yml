@@ -17,12 +17,14 @@ Lint/UnusedMethodArgument:
 # https://stackoverflow.com/questions/40934345/rubocop-25-line-block-size-and-rspec-tests
 Metrics/BlockLength:
   # Exclude DSLs
-  Exclude:
-    - 'Rakefile'
-    - '*.gemspec'
-    - '**/*.rake'
-    - 'spec/**/*.rb'
-    - 'feature/**/*.rb'
+  inherit_mode:
+    merge:
+      Exclude:
+        - 'Rakefile'
+        - '*.gemspec'
+        - '**/*.rake'
+        - 'spec/**/*.rb'
+        - 'feature/**/*.rb'
 
 # I use keyword arguments for a poor man's dependency injection to cut
 # down on the magic in my tests.
