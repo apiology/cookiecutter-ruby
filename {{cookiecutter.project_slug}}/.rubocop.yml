@@ -17,17 +17,23 @@ Lint/UnusedMethodArgument:
 # https://stackoverflow.com/questions/40934345/rubocop-25-line-block-size-and-rspec-tests
 Metrics/BlockLength:
   # Exclude DSLs
-  Exclude:
-    - 'Rakefile'
-    - '*.gemspec'
-    - '**/*.rake'
-    - 'spec/**/*.rb'
-    - 'feature/**/*.rb'
+  inherit_mode:
+    merge:
+      Exclude:
+        - 'Rakefile'
+        - '*.gemspec'
+        - '**/*.rake'
+        - 'spec/**/*.rb'
+        - 'feature/**/*.rb'
 
 # I use keyword arguments for a poor man's dependency injection to cut
 # down on the magic in my tests.
 Metrics/ParameterLists:
   CountKeywordArgs: false
+
+# incompatible with sord and/or sorbet as of 2025-01-21
+Naming/BlockForwarding:
+  Enabled: false
 
 Naming/FileName:
   Exclude:
@@ -82,11 +88,20 @@ RSpec/NestedGroups:
 RSpec/MultipleMemoizedHelpers:
   Max: 8
 
+# Not compatible with sorbet sigs
+Style/ArgumentsForwarding:
+  Enabled: false
+
 # Ensure we reference constants on classes in instance_double() so
 # that a renamed class is caught and doubles are always actually
 # verified.
 RSpec/VerifiedDoubleReference:
   Enabled: true
+
+Style/BlockComments:
+  Exclude:
+    # keep to what rails generates
+    - 'spec/spec_helper.rb'
 
 #
 # Add 'XX X' to the standard list

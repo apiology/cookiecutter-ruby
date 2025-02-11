@@ -99,6 +99,7 @@ PreCommit:
     enabled: true
     command: ['bin/srb-overcommit', 'tc', '--suppress-error-code', '4010']
     problem_on_unmodified_line: report
+    include: '**/*.rb,.*/**/*.rb'
   Punchlist:
     command: ['bundle', 'exec', 'punchlist']
     enabled: true
