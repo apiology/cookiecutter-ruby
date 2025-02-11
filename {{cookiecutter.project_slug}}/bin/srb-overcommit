@@ -20,4 +20,4 @@ for file in "$@"; do
   echo "  - ${file}" >> "${temp_config_file}"
 done
 
-bin/srb tc --typed-override "${temp_config_file}" "$*"
+bin/srb tc --typed-override "${temp_config_file}" "$@"
