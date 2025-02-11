@@ -1,0 +1,4 @@
+---
+output_file:
+  rbi: rbi/{{cookiecutter.project_slug}}.rbi
+strictness: 'true'

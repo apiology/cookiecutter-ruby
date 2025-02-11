@@ -28,13 +28,13 @@ start: ## run code continously and watch files for changes
 
 SORD_GEN_OPTIONS = --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate #  --hide-private
 
-rbi/plate-spinner.rbi: tapioca.installed yardoc.installed sorbet/config ## Generate Sorbet types from Yard docs
+rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet/config ## Generate Sorbet types from Yard docs
 	bin/parlour run --trace
-	bin/sord gen $(SORD_GEN_OPTIONS) rbi/plate-spinner-sord.rbi
-	cat rbi/plate-spinner-parlour.rbi rbi/plate-spinner-sord.rbi > rbi/plate-spinner.rbi
-	rm -f rbi/plate-spinner-sord.rbi rbi/plate-spinner-parlour.rbi
-	sed -i.bak -e 's/^# typed: strong/# typed: true/' rbi/plate-spinner.rbi
-	rm -f rbi/plate-spinner.rbi.bak
+	bin/sord gen $(SORD_GEN_OPTIONS) rbi/{{cookiecutter.project_slug}}-sord.rbi
+	cat rbi/{{cookiecutter.project_slug}}-parlour.rbi rbi/{{cookiecutter.project_slug}}-sord.rbi > rbi/{{cookiecutter.project_slug}}.rbi
+	rm -f rbi/{{cookiecutter.project_slug}}-sord.rbi rbi/{{cookiecutter.project_slug}}-parlour.rbi
+	sed -i.bak -e 's/^# typed: strong/# typed: true/' rbi/{{cookiecutter.project_slug}}.rbi
+	rm -f rbi/{{cookiecutter.project_slug}}.rbi.bak
 
 YARD_PLUGIN_OPTS = --plugin yard-sorbet
 
