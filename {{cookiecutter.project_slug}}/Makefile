@@ -1,4 +1,4 @@
-.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default docs feature gem_dependencies help overcommit quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default docs feature gem_dependencies help overcommit quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter yard
 
 .DEFAULT_GOAL := default
 
@@ -29,9 +29,12 @@ start: ## run code continously and watch files for changes
 rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate Sorbet types from Yard docs
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi
 	bin/sord gen --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate rbi/{{cookiecutter.project_slug}}.rbi
+YARD_PLUGIN_OPTS = --plugin yard-sorbet
+
+YARD_OPTS = $(YARD_PLUGIN_OPTS) -c .yardoc --output-dir yardoc --backtrace
 
 types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Ensure typechecking dependencies are in place
-	bin/yard gems 2>&1 || bin/yard gems --safe 2>&1 || bin/yard gems 2>&1
+	bin/yard gems $(YARD_PLUGIN_OPTS) 2>&1 || bin/yard gems --safe $(YARD_PLUGIN_OPTS) 2>&1 || bin/yard gems $(YARD_PLUGIN_OPTS) 2>&1
 	# bin/solargraph scan 2>&1
 	bin/spoom srb bump || true
 	# spoom rudely updates timestamps on files, so let's keep up by
@@ -64,10 +67,13 @@ tapioca.installed: sorbet/tapioca/require.rb Gemfile.lock.installed ## Install T
 	touch tapioca.installed
 
 yardoc.installed: $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generate YARD documentation
-	bin/yard doc -c .yardoc $^
+	bin/yard doc $(YARD_OPTS)
 	touch yardoc.installed
 
-docs: ## Generate documentation
+yard: yardoc.installed ## Generate YARD documentation
+
+docs: ## Generate YARD documentation
+	@rake doc
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
 	bin/solargraph clear || true
