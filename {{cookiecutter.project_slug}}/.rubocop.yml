@@ -29,6 +29,10 @@ Metrics/BlockLength:
 Metrics/ParameterLists:
   CountKeywordArgs: false
 
+# incompatible with sord and/or sorbet as of 2025-01-21
+Naming/BlockForwarding:
+  Enabled: false
+
 Naming/FileName:
   Exclude:
     - 'lib/{{cookiecutter.project_slug}}.rb'
@@ -82,11 +86,20 @@ RSpec/NestedGroups:
 RSpec/MultipleMemoizedHelpers:
   Max: 8
 
+# Not compatible with sorbet sigs
+Style/ArgumentsForwarding:
+  Enabled: false
+
 # Ensure we reference constants on classes in instance_double() so
 # that a renamed class is caught and doubles are always actually
 # verified.
 RSpec/VerifiedDoubleReference:
   Enabled: true
+
+Style/BlockComments:
+  Exclude:
+    # keep to what rails generates
+    - 'spec/spec_helper.rb'
 
 #
 # Add 'XX X' to the standard list
