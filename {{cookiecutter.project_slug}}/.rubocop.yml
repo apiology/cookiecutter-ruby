@@ -88,6 +88,11 @@ RSpec/MultipleMemoizedHelpers:
 RSpec/VerifiedDoubleReference:
   Enabled: true
 
+Style/BlockComments:
+  Exclude:
+    # keep to what rails generates
+    - 'spec/spec_helper.rb'
+
 #
 # Add 'XX X' to the standard list
 #
