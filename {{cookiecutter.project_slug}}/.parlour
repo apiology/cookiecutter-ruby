@@ -1,4 +1,4 @@
 ---
 output_file:
-  rbi: rbi/{{cookiecutter.project_slug}}-sorbet.rbi
+  rbi: rbi/{{cookiecutter.project_slug}}-parlour.rbi
 strictness: 'true'
