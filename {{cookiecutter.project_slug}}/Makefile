@@ -26,9 +26,16 @@ start: ## run code continously and watch files for changes
 	echo "Teach me how to 'make start'"
 	exit 1
 
-rbi/{{cookiecutter.project_slug}}.rbi: yardoc.installed ## Generate Sorbet types from Yard docs
-	rm -f rbi/{{cookiecutter.project_slug}}.rbi
-	bin/sord gen --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate rbi/{{cookiecutter.project_slug}}.rbi
+SORD_GEN_OPTIONS = --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate #  --hide-private
+
+rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet/config ## Generate Sorbet types from Yard docs
+	bin/parlour run --trace
+	bin/sord gen $(SORD_GEN_OPTIONS) rbi/{{cookiecutter.project_slug}}-sord.rbi
+	cat rbi/{{cookiecutter.project_slug}}-parlour.rbi rbi/{{cookiecutter.project_slug}}-sord.rbi > rbi/{{cookiecutter.project_slug}}.rbi
+	rm -f rbi/{{cookiecutter.project_slug}}-sord.rbi rbi/{{cookiecutter.project_slug}}-parlour.rbi
+	sed -i.bak -e 's/^# typed: strong/# typed: true/' rbi/{{cookiecutter.project_slug}}.rbi
+	rm -f rbi/{{cookiecutter.project_slug}}.rbi.bak
+
 YARD_PLUGIN_OPTS = --plugin yard-sorbet
 
 YARD_OPTS = $(YARD_PLUGIN_OPTS) -c .yardoc --output-dir yardoc --backtrace
