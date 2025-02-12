@@ -118,6 +118,7 @@ commands:
             git config --global user.name "Test Test"
             bundle exec overcommit --sign
             bundle exec overcommit --sign pre-commit
+            bundle exec overcommit --sign pre-push
 
             bundle exec overcommit --run
       - run_with_languages:
@@ -225,9 +226,11 @@ jobs:
       - run:
           name: Verify deltas
           command: |
-            if ! git diff --exit-code .
+            if [ -n "$(git status --porcelain)" ]
             then
-              >&2 echo "Please resolve changes to avoid caching difficulties"
+              git status --porcelain
+              git diff -u .
+              >&2 echo "Please check in all files"
               exit 1
             fi
       - run_with_languages:
