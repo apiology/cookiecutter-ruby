@@ -38,9 +38,6 @@ group :development do
   # ensure version with RSpec/VerifiedDoubleReference
   gem "rubocop-rspec", [">=3.4.0"]
   gem "solargraph", [">=0.51.2"]
-  gem "solargraph-rails",
-      git: "https://github.com/apiology/solargraph-rails",
-      branch: "main"
   gem "yard",
       git: "https://github.com/apiology/yard",
       branch: "fix_word_array_in_array_parsing"
