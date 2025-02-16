@@ -57,7 +57,7 @@ sorbet/machine_specific_config
 
 # Ruby-related
 /.yardoc
-/_yardoc/
+/yardoc/
 /doc/
 /pkg/
 /spec/reports/
@@ -70,3 +70,6 @@ sorbet/machine_specific_config
 # Ignore make target files
 /.make/*
 !/.make/.keep
+
+# Ignore 1Password-generated secrets
+/config/env
