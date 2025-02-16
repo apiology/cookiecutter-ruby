@@ -116,11 +116,11 @@ commands:
             # Coax overcommit into working
             git config --global user.email "test@test.test"
             git config --global user.name "Test Test"
-            bundle exec overcommit --sign
-            bundle exec overcommit --sign pre-commit
-            bundle exec overcommit --sign pre-push
+            bin/overcommit --sign
+            bin/overcommit --sign pre-commit
+            bin/overcommit --sign pre-push
 
-            bundle exec overcommit --run
+            bin/overcommit --run
       - run_with_languages:
           label: Run brakeman
           command: |
