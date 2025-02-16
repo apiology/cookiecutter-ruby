@@ -56,7 +56,7 @@ build: bundle_install pip_install build-typecheck ## Update 3rd party packages a
 sorbet/machine_specific_config:
 	echo "--cache-dir=$$HOME/.sorbet-cache" > sorbet/machine_specific_config
 
-sorbet/rbi/todo.rbi: rbi/{{cookiecutter.project_slug}}.rbi tapioca.installed
+sorbet/rbi/todo.rbi: sorbet/tapioca/require.rb rbi/{{cookiecutter.project_slug}}.rbi tapioca.installed
 	bin/tapioca todo
 
 build-typecheck: Gemfile.lock.installed types.installed sorbet/machine_specific_config sorbet/rbi/todo.rbi ## Fetch information that type checking depends on
@@ -209,8 +209,8 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	git checkout cookiecutter-template && git push --no-verify
 	git checkout main; overcommit --sign && overcommit --sign pre-commit && overcommit --sign pre-push && git checkout main && git pull && git checkout -b update-from-cookiecutter-$$(date +%Y-%m-%d-%H%M)
 	git merge cookiecutter-template || true
-	git checkout --theirs sorbet/rbi/gems || true
 	git checkout --ours Gemfile.lock || true
+	git checkout --theirs sorbet/rbi/gems || true
 	# update frequently security-flagged gems while we're here
 	bundle update --conservative json rexml yard brakeman || true
 	( make build && git add Gemfile.lock ) || true
