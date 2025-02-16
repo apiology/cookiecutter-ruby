@@ -135,7 +135,6 @@ gem_dependencies: .bundle/config
 # Ensure any Gemfile.lock changes, even pulled from git, ensure a
 # bundle is installed.
 Gemfile.lock.installed: Gemfile vendor/.keep
-	bundle install
 	touch Gemfile.lock.installed
 
 vendor/.keep: Gemfile.lock .ruby-version
