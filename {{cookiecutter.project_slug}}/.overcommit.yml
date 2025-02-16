@@ -21,10 +21,14 @@ PreCommit:
   # https://github.com/sds/overcommit/blob/master/config/default.yml
   BrokenSymlinks:
     enabled: true
+    exclude:
+      # used for development
+      - 'config/env.1p'
   Fasterer:
     enabled: true
   BundleAudit:
     enabled: true
+    on_warn: fail
   RuboCop:
     enabled: true
     command: ['bundle', 'exec', 'rubocop']
@@ -105,6 +109,8 @@ PreCommit:
     enabled: true
     problem_on_unmodified_line: warn
     exclude:
+      # used for development
+      - 'config/env.1p'
       # generated files:
       - 'sorbet/rbi/gems/**/*.rbi'
       # sorbet sure likes to crash
