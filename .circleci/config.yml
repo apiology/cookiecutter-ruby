@@ -66,6 +66,7 @@ commands:
             PATH="$(pwd)/bin:${PATH}"
             export PATH
 
+            ls -la ~/.rbenv/versions/3.3.8/lib/ruby/gems/3.3.0/cache/bundler/git/
             './fix.sh'
       - store_artifacts:
           path: /tmp/fix_sh_timing.log
@@ -154,6 +155,8 @@ jobs:
                   # want to debug where this is spending time
 
                   # export FIX_SH_TIMING_LOG=/tmp/child_fix_sh_timing.log
+
+                  ls -la ~/.rbenv/versions/3.3.8/lib/ruby/gems/3.3.0/cache/bundler/git/
 
                   make citest cicoverage
             - store_artifacts:
