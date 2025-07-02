@@ -21,6 +21,9 @@ PreCommit:
   # https://github.com/sds/overcommit/blob/master/config/default.yml
   BrokenSymlinks:
     enabled: true
+    exclude:
+      # used for development
+      - 'config/env.1p'
   FixMe:
     enabled: true
     on_warn: fail
@@ -30,6 +33,7 @@ PreCommit:
       # don't freak out over line below
       - '.overcommit.yml'
     keywords: ['BROKEN', 'BUG', 'FIXME', 'HACK', 'OPTIMIZE', 'REVIEW', 'TODO', 'WTF', 'XXX']
+    problem_on_unmodified_line: warn
   PythonFlake8:
     enabled: true
     on_warn: fail
@@ -54,6 +58,8 @@ PreCommit:
     enabled: true
     problem_on_unmodified_line: warn
     exclude:
+      # used for development
+      - 'config/env.1p'
       # sorbet sure likes to crash
       - 'core.*'
       # don't freak out over line below
@@ -62,6 +68,30 @@ PreCommit:
     enabled: true
     requires_files: false
     required_executable: 'bin/git-commit-validate'
+  BundleInstall:
+    enabled: true
+
+PostCheckout:
+  BundleInstall:
+    enabled: true
+
+PostCommit:
+  BundleInstall:
+    enabled: true
+
+PostMerge:
+  BundleInstall:
+    enabled: true
+
+PostRewrite:
+  BundleInstall:
+    enabled: true
+
+PrePush:
+  CustomScript:
+    enabled: true
+    requires_files: false
+    required_executable: 'bin/git-push-validate'
 
 #PostCheckout:
 #  ALL: # Special hook name that customizes all hooks of this type

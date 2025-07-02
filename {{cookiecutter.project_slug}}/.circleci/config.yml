@@ -44,6 +44,8 @@ commands:
       - restore_cache:
           name: Restore rbenv cache
           keys:
+            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %} {{ checksum "Makefile"  }}{% endraw %}-{% raw %} {{ checksum ".circleci/config.yml" }}{% endraw %}- # yamllint disable-line rule:line-length
+            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %} {{ checksum "Makefile"  }}{% endraw %}- # yamllint disable-line rule:line-length
             - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
             - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
             - rbenv-v5-
@@ -77,7 +79,7 @@ commands:
             - "/home/circleci/.pyenv"
       - save_cache:
           name: 'Save rbenv cache'
-          key: rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %} # yamllint disable-line rule:line-length
+          key: rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %} # yamllint disable-line rule:line-length
           paths:
             - "Gemfile.lock.installed"
             - 'vendor/.keep'
@@ -102,6 +104,8 @@ commands:
             git config --global user.name "Test Test"
             bin/overcommit --sign
             bin/overcommit --sign pre-commit
+            bin/overcommit --sign pre-push
+
 
             bin/overcommit --run
 jobs:
@@ -121,16 +125,26 @@ jobs:
           label: Typecheck
           command: make citypecheck citypecoverage
       - run:
-          name: Verify deltas
+          label: Verify deltas
           command: |
-            if ! git diff --exit-code .
+            if [ -n "$(git status --porcelain)" ]
             then
-              >&2 echo "Please resolve changes to avoid caching difficulties"
+              git status --porcelain
+              git diff -u .
+              >&2 echo "Please check in all files"
               exit 1
             fi
       - run_with_languages:
           label: Test
           command: |
+            # Set timezone as same on dev box for test consistency
+
+            # https://stackoverflow.com/questions/44331836/apt-get-install-tzdata-noninteractive
+            sudo ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
+            export TZ=America/New_York
+            date
+
             make citest cicoverage
     # This seemed to shave 5ish% of the build time off when added
     resource_class: large

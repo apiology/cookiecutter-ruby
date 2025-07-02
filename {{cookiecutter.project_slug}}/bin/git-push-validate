@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if [ -x "$HOME/bin/git-push-validate" ]; then
+    exec "$HOME/bin/git-push-validate" "$@"
+fi
+
+make

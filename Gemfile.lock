@@ -1,13 +1,3 @@
-GIT
-  remote: https://github.com/apiology/overcommit.git
-  revision: ab4beba508171b9b5cbc2bb39808b3f2477aa1b8
-  branch: add_solargraph
-  specs:
-    overcommit (0.67.1)
-      childprocess (>= 0.6.3, < 6)
-      iniparse (~> 1.4)
-      rexml (>= 3.3.9)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -33,6 +23,10 @@ GEM
       tomlrb
     mixlib-shellout (3.3.9)
       chef-utils
+    overcommit (0.68.0)
+      childprocess (>= 0.6.3, < 6)
+      iniparse (~> 1.4)
+      rexml (>= 3.3.9)
     punchlist (1.3.2)
       source_finder (>= 2)
     rexml (3.4.1)
@@ -45,7 +39,7 @@ PLATFORMS
 
 DEPENDENCIES
   mdl
-  overcommit!
+  overcommit (~> 0.68.0)
   punchlist (>= 1.3.1)
 
 BUNDLED WITH
