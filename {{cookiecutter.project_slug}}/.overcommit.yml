@@ -54,6 +54,7 @@ PreCommit:
       # don't freak out over line below
       - '.overcommit.yml'
     keywords: ['BROKEN', 'BUG', 'FIXME', 'HACK', 'OPTIMIZE', 'REVIEW', 'TODO', 'WTF', 'XXX']
+    problem_on_unmodified_line: warn
   PythonFlake8:
     enabled: true
     on_warn: fail
@@ -151,6 +152,30 @@ PrePush:
     enabled: true
     requires_files: false
     required_executable: 'bin/git-commit-validate'
+  BundleInstall:
+    enabled: true
+
+PostCheckout:
+  BundleInstall:
+    enabled: true
+
+PostCommit:
+  BundleInstall:
+    enabled: true
+
+PostMerge:
+  BundleInstall:
+    enabled: true
+
+PostRewrite:
+  BundleInstall:
+    enabled: true
+
+PrePush:
+  CustomScript:
+    enabled: true
+    requires_files: false
+    required_executable: 'bin/git-push-validate'
 
 
 #PostCheckout:
