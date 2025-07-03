@@ -77,7 +77,7 @@ PreCommit:
     include:
       - '.circleci/config.yml'
     enabled: true
-  SolargraphTypecheck:
+  Solargraph:
     enabled: true
     problem_on_unmodified_line: warn
     include:
