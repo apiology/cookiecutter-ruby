@@ -171,8 +171,8 @@ AllCops:
     - 'bin/*'
     - 'vendor/**/*'
 
-require:
-  - rubocop-rspec
+plugins:
   - rubocop-performance
   - rubocop-rake
+  - rubocop-rspec
   - rubocop-yard
