@@ -170,6 +170,7 @@ AllCops:
   Exclude:
     - 'bin/*'
     - 'vendor/**/*'
+    - 'sorbet/**/*'
 
 plugins:
   - rubocop-performance
