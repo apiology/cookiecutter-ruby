@@ -119,6 +119,9 @@ solargraph-typed: build-typecheck ## Run Solargraph typechecker
 solargraph-strict: build-typecheck ## Run Solargraph typechecker
 	bin/solargraph typecheck --level strict
 
+solargraph-strong: build-typecheck ## Run Solargraph typechecker
+	bin/solargraph typecheck --level strong
+
 typecheck: build-typecheck srb solargraph ## validate types in code and configuration
 
 citypecheck: build-typecheck srb solargraph ## Run type check from CircleCI
