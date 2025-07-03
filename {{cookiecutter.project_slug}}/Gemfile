@@ -1,41 +1,41 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
 group :development, :test do
-  gem "bundler"
-  gem "mdl"
-  gem "parlour"
-  gem "rbi"
+  gem 'bundler'
+  gem 'mdl'
+  gem 'parlour'
+  gem 'rbi'
   # ensure recent definitions
-  gem "rbs", [">=3.8.1"]
-  gem "rspec"
-  gem "sord", [">= 6.0.0"]
+  gem 'rbs', ['>=3.8.1']
+  gem 'rspec'
+  gem 'sord', ['>= 6.0.0']
   # ensure version with branch coverage
-  gem "simplecov", [">=0.18.0"]
-  gem "simplecov-lcov"
-  gem "tapioca", [">= 0.16.0"], require: false
+  gem 'simplecov', ['>=0.18.0']
+  gem 'simplecov-lcov'
+  gem 'tapioca', ['>= 0.16.0'], require: false
   # need --exclude-files
-  gem "undercover", [">=0.6.3"]
-  gem "webmock"
+  gem 'undercover', ['>=0.6.3']
+  gem 'webmock'
 end
 
 group :development do
-  gem "brakeman"
-  gem "bundler-audit"
-  gem "fasterer"
+  gem 'brakeman'
+  gem 'bundler-audit'
+  gem 'fasterer'
   gem 'overcommit', '~>0.68.0'
   gem 'punchlist', ['>=1.3.1']
-  gem "rubocop", ["~> 1.52"]
-  gem "rubocop-performance"
-  gem "rubocop-rake"
+  gem 'rubocop', ['~> 1.52']
+  gem 'rubocop-performance'
+  gem 'rubocop-rake'
   # ensure version with RSpec/VerifiedDoubleReference
-  gem "rubocop-rspec", [">=3.4.0"]
-  gem "solargraph", [">=0.51.2"]
-  gem "yard",
-      git: "https://github.com/apiology/yard",
-      branch: "fix_word_array_in_array_parsing"
-  gem "yard-sorbet"
+  gem 'rubocop-rspec', ['>=3.4.0']
+  gem 'solargraph', ['>=0.51.2']
+  gem 'yard',
+      git: 'https://github.com/apiology/yard',
+      branch: 'fix_word_array_in_array_parsing'
+  gem 'yard-sorbet'
   gem 'mdl'
 end
 
@@ -46,18 +46,18 @@ end
 #  https://github.com/Asana/ruby-asana/issues/109
 #  https://github.com/Asana/ruby-asana/issues/110
 #
-gem "asana",
-    git: "https://github.com/apiology/ruby-asana",
-    branch: "checkoff_fixes"
-#   path: "/Users/broz/src/ruby-asana"
+gem 'asana',
+    git: 'https://github.com/apiology/ruby-asana',
+    branch: 'checkoff_fixes'
+#   path: '/Users/broz/src/ruby-asana'
 
-# gem "asana", path: "/Users/broz/src/ruby-asana"
+# gem 'asana', path: '/Users/broz/src/ruby-asana'
 
 # Awaiting merge and release of
 # https://github.com/seamusabshere/cache_method/pull/18
-gem "cache_method",
-    git: "https://github.com/apiology/cache_method",
-    branch: "ruby_3_support"
-gem "checkoff" # , path: "/Users/broz/src/checkoff"
-{% endif %}gem "rake"
-{% if cookiecutter.use_checkoff == "Yes" %}gem "redis"{% endif %}
+gem 'cache_method',
+    git: 'https://github.com/apiology/cache_method',
+    branch: 'ruby_3_support'
+gem 'checkoff' # , path: '/Users/broz/src/checkoff'
+{% endif %}gem 'rake'
+{% if cookiecutter.use_checkoff == 'Yes' %}gem 'redis'{% endif %}
