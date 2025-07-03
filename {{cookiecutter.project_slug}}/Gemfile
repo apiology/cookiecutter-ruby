@@ -41,7 +41,6 @@ group :development do
       git: 'https://github.com/apiology/yard',
       branch: 'fix_word_array_in_array_parsing'
   gem 'yard-sorbet'
-  gem 'mdl'
 end
 
 {% if cookiecutter.use_checkoff == 'Yes' %}# ruby-asana gem is pending key bugfixes for checkoff as of
