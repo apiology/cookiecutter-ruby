@@ -36,10 +36,8 @@ group :development do
   gem 'rubocop-rake'
   # ensure version with RSpec/VerifiedDoubleReference
   gem 'rubocop-rspec', ['>=3.4.0']
-  gem 'solargraph', ['>=0.51.2']
-  gem 'yard',
-      git: 'https://github.com/apiology/yard',
-      branch: 'fix_word_array_in_array_parsing'
+  gem 'solargraph', ['>=0.56']
+  gem 'yard'
   gem 'yard-sorbet'
 end
 
