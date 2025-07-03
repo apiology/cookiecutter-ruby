@@ -175,3 +175,4 @@ require:
   - rubocop-rspec
   - rubocop-performance
   - rubocop-rake
+  - rubocop-yard

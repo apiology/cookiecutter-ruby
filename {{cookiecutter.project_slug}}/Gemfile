@@ -29,6 +29,7 @@ group :development do
   gem 'rubocop', ['~> 1.52']
   gem 'rubocop-performance'
   gem 'rubocop-rake'
+  gem 'rubocop-yard'
   # ensure version with RSpec/VerifiedDoubleReference
   gem 'rubocop-rspec', ['>=3.4.0']
   gem 'solargraph', ['>=0.51.2']
