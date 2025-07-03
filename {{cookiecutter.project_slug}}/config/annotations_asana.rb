@@ -1,7 +1,6 @@
-# frozen_string_literal: true
 # typed: strict
 # frozen_string_literal: true
-#
+
 # rubocop:disable Layout/LineLength
 # @!parse
 #   module Asana
@@ -26,7 +25,8 @@
 #       def custom_fields; end
 #       # @return [Asana::ProxiedResourceClasses::Webhook]
 #       def webhooks; end
-#       # Public: Performs a GET request against an arbitrary Asana URL. Allows for
+#
+#       # Performs a GET request against an arbitrary Asana URL. Allows for
 #       # the user to interact with the API in ways that haven't been
 #       # reflected/foreseen in this library.
 #       #
@@ -54,8 +54,9 @@
 #         def html_notes; end
 #         # @return [Array<Hash{String => Hash{String => String}}>]
 #         def memberships; end
-#         # @return [Hash{String => String}, Section, nil] if it is asked for as part of the initial task request,
-#         #     you'll get a hash, otherwise you'll get a resource object
+#         # @return [Hash{String => String}, Asana::Resources::Section, nil] if it
+#         #   is asked for as part of the initial task request,
+#         #   you'll get a hash, otherwise you'll get a resource object
 #         def assignee_section; end
 #         class << self
 #           # @param client [Asana::Client]
@@ -176,12 +177,11 @@
 #                      modified_since: nil, per_page: 20, options: {}); end
 #         # @param assignee [String]
 #         # @param project [String]
-#         # @param section [String]
+#         # @param section [Asana::Resources::Section, String]
 #         # @param workspace [String]
 #         # @param completed_since [Time]
 #         # @param per_page [Integer]
 #         # @param modified_since [Time]
-#         # @param section [Asana::Resources::Section]
 #         # @param options [Hash] the request I/O options.
 #         # @return [Enumerable<Asana::Resources::Task>]
 #         def get_tasks(assignee: nil,
