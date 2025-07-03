@@ -54,6 +54,7 @@ PreCommit:
       # don't freak out over line below
       - '.overcommit.yml'
     keywords: ['BROKEN', 'BUG', 'FIXME', 'HACK', 'OPTIMIZE', 'REVIEW', 'TODO', 'WTF', 'XXX']
+    problem_on_unmodified_line: warn
   PythonFlake8:
     enabled: true
     on_warn: fail
@@ -117,6 +118,10 @@ PreCommit:
       - 'core.*'
       # don't freak out over line below
       - '.overcommit.yml'
+  CustomScript:
+    enabled: true
+    requires_files: false
+    required_executable: 'bin/git-commit-validate'
 
 PostCheckout:
   BundleInstall:
@@ -150,8 +155,9 @@ PrePush:
   CustomScript:
     enabled: true
     requires_files: false
-    required_executable: 'bin/git-commit-validate'
-
+    required_executable: 'bin/git-push-validate'
+  BundleInstall:
+    enabled: true
 
 #PostCheckout:
 #  ALL: # Special hook name that customizes all hooks of this type
