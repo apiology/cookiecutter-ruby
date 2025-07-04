@@ -34,16 +34,21 @@ group :development do
   gem 'rubocop', ['~> 1.52']
   gem 'rubocop-performance'
   gem 'rubocop-rake'
+  gem 'rubocop-yard'
   # ensure version with RSpec/VerifiedDoubleReference
   gem 'rubocop-rspec', ['>=3.4.0']
   gem 'solargraph', ['>=0.56']
-  gem 'yard'
+  # need https://github.com/lsegal/yard/pull/1604
+  gem 'yard',
+      github: 'lsegal/yard',
+      branch: 'main'
   gem 'yard-sorbet'
 end
 
 {% if cookiecutter.use_checkoff == 'Yes' %}# ruby-asana gem is pending key bugfixes for checkoff as of
 # 2021-07-29:
 #
+
 # See
 #  https://github.com/Asana/ruby-asana/issues/109
 #  https://github.com/Asana/ruby-asana/issues/110
@@ -60,6 +65,7 @@ gem 'asana',
 gem 'cache_method',
     git: 'https://github.com/apiology/cache_method',
     branch: 'ruby_3_support'
+
 gem 'checkoff' # , path: '/Users/broz/src/checkoff'
 {% endif %}gem 'rake'
 {% if cookiecutter.use_checkoff == 'Yes' %}gem 'redis'{% endif %}
