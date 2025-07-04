@@ -244,6 +244,7 @@ jobs:
           key: ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum {% endraw %}"rbi/{{cookiecutter.project_slug}}.rbi" {% raw %}}}{% endraw %}  # yamllint disable-line rule:line-length
           paths:
             - ".yardoc"
+            - 'yarddoc'
             - "/home/circleci/.cache/solargraph"
             - "/home/circleci/.sorbet-cache"
             - "/home/circleci/.cache/sorbet"
