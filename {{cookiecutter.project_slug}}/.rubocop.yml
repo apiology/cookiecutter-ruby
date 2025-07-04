@@ -172,8 +172,8 @@ AllCops:
     - 'vendor/**/*'
     - 'sorbet/**/*'
 
-require:
-  - rubocop-rspec
+plugins:
   - rubocop-performance
   - rubocop-rake
+  - rubocop-rspec
   - rubocop-yard
