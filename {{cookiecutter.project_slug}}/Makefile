@@ -35,6 +35,7 @@ rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet
 	rm -f rbi/{{cookiecutter.project_slug}}-sord.rbi rbi/{{cookiecutter.project_slug}}-parlour.rbi
 #	sed -i.bak -e 's/^# typed: strong/# typed: ignore/' rbi/{{cookiecutter.project_slug}}.rbi
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi.bak
+	touch rbi/{{cookiecutter.project_slug}}.rbi
 
 sig/{{cookiecutter.project_slug}}.rbs: yardoc.installed ## Generate RBS file
 	rm -f rbi/{{cookiecutter.project_slug}}.rbs
@@ -42,7 +43,7 @@ sig/{{cookiecutter.project_slug}}.rbs: yardoc.installed ## Generate RBS file
 
 YARD_PLUGIN_OPTS = --plugin yard-sorbet --plugin yard-solargraph
 
-YARD_OPTS = $(YARD_PLUGIN_OPTS) -c .yardoc --output-dir yardoc --backtrace  --exclude '^config/'
+YARD_OPTS = $(YARD_PLUGIN_OPTS) -c .yardoc --output-dir yardoc --backtrace --exclude '^config/' '{lib,app,test}/**/*.rb' 'ext/**/*.{c,rb}'
 
 types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Ensure typechecking dependencies are in place
 	bin/solargraph gems
@@ -66,6 +67,9 @@ sorbet/rbi/todo.rbi: sorbet/tapioca/require.rb rbi/{{cookiecutter.project_slug}}
 
 build-typecheck: Gemfile.lock.installed types.installed sorbet/machine_specific_config sorbet/rbi/todo.rbi ## Fetch information that type checking depends on
 
+ci-build-typecheck: build-typecheck  ## Ensure cache is filled for CI to save regardless of actions run
+	bundle exec solargraph gems
+
 # Only create this once, so no dependencies
 sorbet/tapioca/require.rb:
 	make sorbet/machine_specific_config vendor/.keep
@@ -88,13 +92,14 @@ docs: ## Generate YARD documentation
 	@rake doc
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
-	bin/solargraph clear || true
 	rm -fr .yardoc/ rbi/{{cookiecutter.project_slug}}.rbi types.installed yardoc.installed sig/{{cookiecutter.project_slug}}.rbs || true
 	rm -fr ../{{cookiecutter.project_slug}}/.yardoc || true
 {% if cookiecutter.use_checkoff %}	rm -fr ../checkoff/.yardoc || true
 {% endif %}	echo all clear
 
 realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
+	bin/solargraph clear || true
+	rm -fr rbi/*.rbi
 	rm -fr ~/.cache/solargraph
 	rm -f tapioca.installed
 
@@ -124,7 +129,7 @@ solargraph-strong: build-typecheck ## Run Solargraph typechecker
 
 typecheck: build-typecheck srb solargraph ## validate types in code and configuration
 
-citypecheck: build-typecheck srb solargraph ## Run type check from CircleCI
+citypecheck: ci-build-typecheck srb solargraph ## Run type check from CircleCI
 
 typecoverage: typecheck ## Run type checking and then ratchet coverage in metrics/
 
@@ -156,6 +161,7 @@ gem_dependencies: .bundle/config
 # Ensure any Gemfile.lock changes, even pulled from git, ensure a
 # bundle is installed.
 Gemfile.lock.installed: Gemfile vendor/.keep
+	bundle install
 	touch Gemfile.lock.installed
 
 vendor/.keep: Gemfile.lock .ruby-version
