@@ -55,6 +55,7 @@ end
 #  https://github.com/Asana/ruby-asana/issues/110
 #
 gem 'asana',
+    #   path: '/Users/broz/src/ruby-asana'
     git: 'https://github.com/apiology/ruby-asana',
     branch: 'checkoff_fixes'
 #   path: '/Users/broz/src/ruby-asana'
