@@ -70,6 +70,8 @@ PreCommit:
     flags: ['-c', '.yamllint.yml', '--format=parsable', '--strict']
     on_warn: fail
     exclude:
+      - 'rbs_collection.yaml' # generated
+      - 'rbs_collection.lock.yaml' # generated
       - '.rubocop_todo.yml' # generated
       - 'sorbet/**/*' # generated
   CircleCi:
