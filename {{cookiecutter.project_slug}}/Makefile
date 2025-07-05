@@ -28,18 +28,18 @@ start: ## run code continously and watch files for changes
 
 SORD_GEN_OPTIONS = --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate #  --hide-private
 
-rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet/config rbs_collection.lock.yaml ## Generate Sorbet types from Yard docs
-	bin/parlour run --trace
-	bin/sord gen $(SORD_GEN_OPTIONS) rbi/{{cookiecutter.project_slug}}-sord.rbi
+rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet/config .gem_rbs_collection/.keepme ## Generate Sorbet types from Yard docs
+	bin/parlour run --trace # creates RBI file from from RBI inline annotations in code
+	bin/sord gen $(SORD_GEN_OPTIONS) rbi/{{cookiecutter.project_slug}}-sord.rbi # YARD to RBI
 	cat rbi/{{cookiecutter.project_slug}}-parlour.rbi rbi/{{cookiecutter.project_slug}}-sord.rbi > rbi/{{cookiecutter.project_slug}}.rbi
 	rm -f rbi/{{cookiecutter.project_slug}}-sord.rbi rbi/{{cookiecutter.project_slug}}-parlour.rbi
 #	sed -i.bak -e 's/^# typed: strong/# typed: ignore/' rbi/{{cookiecutter.project_slug}}.rbi
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi.bak
 	touch rbi/{{cookiecutter.project_slug}}.rbi
 
-sig/{{cookiecutter.project_slug}}.rbs: yardoc.installed rbs_collection.lock.yaml ## Generate RBS file
+sig/{{cookiecutter.project_slug}}.rbs: yardoc.installed gem_rbs_collection/.keepme ## Generate RBS file
 	rm -f rbi/{{cookiecutter.project_slug}}.rbs
-	bin/sord gen $(SORD_GEN_OPTIONS) sig/{{cookiecutter.project_slug}}.rbs
+	bin/sord gen $(SORD_GEN_OPTIONS) sig/{{cookiecutter.project_slug}}.rbs # YARD to RBS
 
 YARD_PLUGIN_OPTS = --plugin yard-sorbet --plugin yard-solargraph
 
