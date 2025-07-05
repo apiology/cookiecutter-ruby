@@ -73,3 +73,5 @@ sorbet/machine_specific_config
 
 # Ignore 1Password-generated secrets
 /config/env
+
+/.gem_rbs_collection
