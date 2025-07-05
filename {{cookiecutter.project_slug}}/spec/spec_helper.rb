@@ -25,23 +25,26 @@ end
 
 require 'webmock/rspec'
 
-module LogCaptureHelper
-  # @return [String]
-  def capture_logs
-    original_logger = Rails.logger
-    log_output = StringIO.new
-    Rails.logger = Logger.new(log_output)
-
-    yield
-
-    log_output.string
-  ensure
-    Rails.logger = original_logger
-  end
-end
+# module LogCaptureHelper
+#   # @return [String]
+#   def capture_logs
+#     # @sg-ignore
+#     original_logger = Rails.logger
+#     log_output = StringIO.new
+#     # @sg-ignore
+#     Rails.logger = Logger.new(log_output)
+#
+#     yield
+#
+#     log_output.string
+#   ensure
+#     # @sg-ignore
+#     Rails.logger = original_logger
+#   end
+# end
 
 RSpec.configure do |config|
-  config.include LogCaptureHelper
+#  config.include LogCaptureHelper
 
   config.around do |example|
     log_messages = capture_logs do
