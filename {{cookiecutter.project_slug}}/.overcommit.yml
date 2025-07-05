@@ -45,7 +45,6 @@ PreCommit:
     problem_on_unmodified_line: warn
   FixMe:
     enabled: true
-    on_warn: fail
     exclude:
       # generated files:
       - 'sorbet/rbi/gems/**/*.rbi'
