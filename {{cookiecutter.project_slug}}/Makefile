@@ -66,11 +66,14 @@ sorbet/rbi/todo.rbi: sorbet/tapioca/require.rb rbi/{{cookiecutter.project_slug}}
 
 build-typecheck: Gemfile.lock.installed rbs_collection.lock.yaml types.installed sorbet/machine_specific_config sorbet/rbi/todo.rbi ## Fetch information that type checking depends on
 
-rbs_collection.lock.yaml: Gemfile.lock .gem_rbs_collection/.keepme
+rbs_collection.lock.yaml: Gemfile.lock rbs_collection.yaml
 	bin/rbs collection update
 	touch rbs_collection.lock.yaml
 
-.gem_rbs_collection/.keepme:
+rbs_collection.yaml:
+	bin/rbs collection init
+
+.gem_rbs_collection/.keepme: rbs_collection.lock.yaml
 	# Ensure that the gem rbs collection is installed
 	bin/rbs collection install
 	touch .gem_rbs_collection/.keepme
