@@ -63,6 +63,7 @@ sorbet/machine_specific_config
 /spec/reports/
 /tmp/
 /coverage/
+/yardoc
 
 # Ignore bundler config.
 /.bundle/config
