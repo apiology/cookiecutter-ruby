@@ -28,7 +28,7 @@ start: ## run code continously and watch files for changes
 
 SORD_GEN_OPTIONS = --replace-errors-with-untyped --exclude-messages OMIT --no-regenerate #  --hide-private
 
-rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet/config ## Generate Sorbet types from Yard docs
+rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet/config rbs_collection.lock.yaml ## Generate Sorbet types from Yard docs
 	bin/parlour run --trace
 	bin/sord gen $(SORD_GEN_OPTIONS) rbi/{{cookiecutter.project_slug}}-sord.rbi
 	cat rbi/{{cookiecutter.project_slug}}-parlour.rbi rbi/{{cookiecutter.project_slug}}-sord.rbi > rbi/{{cookiecutter.project_slug}}.rbi
@@ -37,7 +37,7 @@ rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi.bak
 	touch rbi/{{cookiecutter.project_slug}}.rbi
 
-sig/{{cookiecutter.project_slug}}.rbs: yardoc.installed ## Generate RBS file
+sig/{{cookiecutter.project_slug}}.rbs: yardoc.installed rbs_collection.lock.yaml ## Generate RBS file
 	rm -f rbi/{{cookiecutter.project_slug}}.rbs
 	bin/sord gen $(SORD_GEN_OPTIONS) sig/{{cookiecutter.project_slug}}.rbs
 
@@ -65,7 +65,20 @@ sorbet/machine_specific_config:
 sorbet/rbi/todo.rbi: sorbet/tapioca/require.rb rbi/{{cookiecutter.project_slug}}.rbi tapioca.installed
 	bin/tapioca todo
 
-build-typecheck: Gemfile.lock.installed types.installed sorbet/machine_specific_config sorbet/rbi/todo.rbi ## Fetch information that type checking depends on
+build-typecheck: Gemfile.lock.installed rbs_collection.lock.yaml types.installed sorbet/machine_specific_config sorbet/rbi/todo.rbi ## Fetch information that type checking depends on
+
+rbs_collection.lock.yaml: Gemfile.lock rbs_collection.yaml
+	bin/rbs collection update
+	touch rbs_collection.lock.yaml
+
+rbs_collection.yaml:
+	bin/rbs collection init
+
+.gem_rbs_collection/.keepme: rbs_collection.lock.yaml
+	# Ensure that the gem rbs collection is installed
+	bin/rbs collection install
+	touch .gem_rbs_collection/.keepme
+
 
 ci-build-typecheck: build-typecheck  ## Ensure cache is filled for CI to save regardless of actions run
 	bundle exec solargraph gems
