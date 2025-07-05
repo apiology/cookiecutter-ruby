@@ -18,6 +18,7 @@ group :development, :test do
   #   path: '../sord'
   # ensure version with branch coverage
   gem 'simplecov', ['>=0.18.0']
+  gem 'simplecov_json_formatter'
   gem 'simplecov-lcov'
   gem 'tapioca', ['>= 0.16.0'], require: false
   # need --exclude-files
