@@ -23,6 +23,7 @@ SimpleCov.start do
   enable_coverage(:branch) # Report branch coverage to trigger branch-level undercover warnings
 end
 
+require 'rspec'
 require 'webmock/rspec'
 
 # module LogCaptureHelper
@@ -43,23 +44,23 @@ require 'webmock/rspec'
 #   end
 # end
 
-RSpec.configure do |config|
+# RSpec.configure do |config|
 #  config.include LogCaptureHelper
-
-  config.around do |example|
-    log_messages = capture_logs do
-      example.run
-    end
-  ensure
-    # ideally this would be stashed somewhere and retrieved in the
-    # reporter so that these appear directly in the failure message
-    # instead of out of ordre earlier
-    if example.exception
-      puts "\n--- Logs for #{example.inspect_output} ---\n"
-      puts log_messages
-    end
-  end
-end
+#
+#   config.around do |example|
+#     log_messages = capture_logs do
+#       example.run
+#     end
+#   ensure
+#     # ideally this would be stashed somewhere and retrieved in the
+#     # reporter so that these appear directly in the failure message
+#     # instead of out of ordre earlier
+#     if example.exception
+#       puts "\n--- Logs for #{example.inspect_output} ---\n"
+#       puts log_messages
+#     end
+#   end
+# end
 
 # The generated `.rspec` file contains `--require spec_helper` which will cause
 # this file to always be loaded, without a need to explicitly require it in any
