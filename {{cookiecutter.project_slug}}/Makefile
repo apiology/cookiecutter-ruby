@@ -79,7 +79,6 @@ rbs_collection.yaml:
 	bin/rbs collection install
 	touch .gem_rbs_collection/.keepme
 
-
 ci-build-typecheck: build-typecheck  ## Ensure cache is filled for CI to save regardless of actions run
 	bundle exec solargraph gems
 
@@ -106,7 +105,6 @@ docs: ## Generate YARD documentation
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
 	rm -fr .yardoc/ rbi/{{cookiecutter.project_slug}}.rbi types.installed yardoc.installed sig/{{cookiecutter.project_slug}}.rbs || true
-	rm -fr ../{{cookiecutter.project_slug}}/.yardoc || true
 {% if cookiecutter.use_checkoff %}	rm -fr ../checkoff/.yardoc || true
 {% endif %}	echo all clear
 
