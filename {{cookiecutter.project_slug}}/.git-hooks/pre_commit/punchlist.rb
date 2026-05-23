@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 require 'overcommit'
@@ -11,9 +12,9 @@ module Overcommit
       class Punchlist < Base
         # @param stdout [String]
         # @return [Array<Overcommit::Hook::Message>]
-        # @sg-ignore
         def parse_output(stdout)
           stdout.split("\n").map do |line|
+            # @sg-ignore
             file, line_no, _message = line.split(':', 3)
             Overcommit::Hook::Message.new(:error, file, line_no.to_i, line)
           end
@@ -28,6 +29,7 @@ module Overcommit
 
         # @return [Symbol, Array<Overcommit::Hook::Message>]
         def run
+          # @sg-ignore
           # @type [Overcommit::Subprocess::Result]
           result = execute([*command, '-g', files_glob])
 
