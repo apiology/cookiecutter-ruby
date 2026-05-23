@@ -21,6 +21,10 @@ gemfile: Gemfile
 PreCommit:
   # Extend default config at
   # https://github.com/sds/overcommit/blob/master/config/default.yml
+  ALL:
+    on_warn: fail
+    problem_on_unmodified_line: warn
+    quiet: false
   BrokenSymlinks:
     enabled: true
     exclude:
@@ -50,6 +54,7 @@ PreCommit:
     problem_on_unmodified_line: warn
   FixMe:
     enabled: true
+    on_warn: fail
     exclude:
       # generated files:
       - 'sorbet/rbi/gems/**/*.rbi'
@@ -131,10 +136,6 @@ PreCommit:
     required_executable: 'bin/git-commit-validate'
   BundleInstall:
     enabled: true
-  ALL:
-    on_warn: fail
-    problem_on_unmodified_line: warn
-    quiet: false
 
 PostCheckout:
   BundleInstall:

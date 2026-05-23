@@ -21,6 +21,15 @@ gemfile: Gemfile
 PreCommit:
   # Extend default config at
   # https://github.com/sds/overcommit/blob/master/config/default.yml
+  ALL:
+    exclude:
+      # Files are templated and the raw version is not always valid
+      # syntax as a result; these will be tested in pytest after being
+      # templated.
+      - '{{cookiecutter.project_slug}}/**/*'
+    on_warn: fail
+    problem_on_unmodified_line: warn
+    quiet: false
   BrokenSymlinks:
     enabled: true
     exclude:
@@ -29,6 +38,7 @@ PreCommit:
       - 'config/env.local'
   FixMe:
     enabled: true
+    on_warn: fail
     exclude:
       # Files are templated and the raw version is not always valid
       # syntax as a result; these will be tested in pytest after being
@@ -39,16 +49,20 @@ PreCommit:
       # don't freak out over line below
       - '.overcommit.yml'
     keywords: ['BROKEN', 'BUG', 'FIXME', 'HACK', 'OPTIMIZE', 'REVIEW', 'TODO', 'WTF', 'XXX']
+    problem_on_unmodified_line: warn
   PythonFlake8:
     enabled: true
+    on_warn: fail
   ShellCheck:
     enabled: true
+    on_warn: fail
     include:
       - '.envrc'
       - '**/*.sh'
   YamlLint:
     enabled: true
     flags: ['-c', '.yamllint.yml', '--format=parsable', '--strict']
+    on_warn: fail
   CircleCi:
     required_executable: 'circleci'
     flags: ['config', 'validate']
@@ -58,6 +72,7 @@ PreCommit:
   Punchlist:
     command: ['bundle', 'exec', 'punchlist']
     enabled: true
+    problem_on_unmodified_line: warn
     exclude:
       # Files are templated and the raw version is not always valid
       # syntax as a result; these will be tested in pytest after being
@@ -76,15 +91,10 @@ PreCommit:
     required_executable: 'bin/git-commit-validate'
   BundleInstall:
     enabled: true
-  ALL:
-    exclude:
-      # Files are templated and the raw version is not always valid
-      # syntax as a result; these will be tested in pytest after being
-      # templated.
-      - '{{cookiecutter.project_slug}}/**/*'
-    on_warn: fail
-    problem_on_unmodified_line: warn
-    quiet: false
+
+PostCheckout:
+  BundleInstall:
+    enabled: true
 
 PostCommit:
   BundleInstall:
