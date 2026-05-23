@@ -43,12 +43,21 @@ commands:
               touch -ht ${touchtime} "${filename}"
             done
       - restore_cache:
-          name: Restore child rbenv cache
+          name: Restore rbenv cache
           keys:
-            - child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}- # yamllint disable-line rule:line-length
-            - child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-
-            - child-rbenv-v3-
-            - child-rbenv-
+            - rbenv-v5-{{ checksum "Gemfile" }}-{{ checksum "Gemfile.lock" }}-{{ checksum "Makefile" }}-{{ checksum ".circleci/config.yml" }}- # yamllint disable-line rule:line-length
+            - rbenv-v5-{{ checksum "Gemfile" }}-{{ checksum "Gemfile.lock" }}-{{ checksum "Makefile" }}-
+            - rbenv-v5-{{ checksum "Gemfile" }}-{{ checksum "Gemfile.lock" }}-
+            - rbenv-v5-{{ checksum "Gemfile" }}-
+            - rbenv-v5-
+            - rbenv-
+      - restore_cache:
+          name: Restore mypy cache
+          keys:
+            - mypy-v1-{{ checksum "requirements_dev.txt" }}-{{ checksum "Makefile" }}-{{ checksum "fix.sh" }}-
+            - mypy-v1-{{ checksum "requirements_dev.txt" }}-{{ checksum "Makefile" }}-
+            - mypy-v1-{{ checksum "requirements_dev.txt" }}-
+            - mypy-v1-
       - restore_cache:
           name: Restore pyenv cache
           keys:
@@ -76,6 +85,19 @@ commands:
             - "requirements_dev.txt.installed"
             - "/home/circleci/.cache/pip/wheels"
             - "/home/circleci/.pyenv"
+      - save_cache:
+          name: 'Save rbenv cache'
+          key: rbenv-v5-{{ checksum "Gemfile" }}-{{ checksum "Gemfile.lock" }}-{{ checksum "Makefile" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum ".ruby-version" }} # yamllint disable-line rule:line-length
+          paths:
+            - "Gemfile.lock.installed"
+            - "vendor/.keep"
+            - "vendor/bundle"
+            - "/home/circleci/.rbenv"
+            - "/home/circleci/.cache/rubocop_cache"
+            - "/home/circleci/.cache/gem"
+            - "/home/circleci/.bundle/cache"
+            - ".bundle"
+            - ".ruby-version"
       - run:
           name: Download new circleci tool
           command: |
@@ -98,6 +120,51 @@ commands:
 
             # bundle exec overcommit --diff # if full run takes too long in this repo
             bin/overcommit --run
+  citest:
+    description: "Bake cookie and run tests; cache global Ruby from child fix.sh"
+    steps:
+      - restore_cache:
+          name: Restore child rbenv cache
+          keys:
+            - child-rbenv-v4-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}- # yamllint disable-line rule:line-length
+            - child-rbenv-v4-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-
+            - child-rbenv-v4-
+      - run_with_languages:
+          label: Test
+          command: |
+            # These will be used in post_gen_project.py while testing
+            # the cookies, as well as by overcommit
+            git config --global user.email "test@test.test"
+            git config --global user.name "Test Test"
+            # Coax overcommit into working
+            bundle exec overcommit --sign
+            bundle exec overcommit --sign pre-commit
+
+            # Set timezone as same on dev box for test consistency
+
+            # https://stackoverflow.com/questions/44331836/apt-get-install-tzdata-noninteractive
+            sudo ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
+            export TZ=America/New_York
+            date
+
+            # measuring slows down the script - only enable when you
+            # want to debug where this is spending time
+
+            # export FIX_SH_TIMING_LOG=/tmp/child_fix_sh_timing.log
+
+            make citest cicoverage
+      - store_artifacts:
+          path: /tmp/child_fix_sh_timing.log
+      - save_cache:
+          name: Save child rbenv cache
+          key: child-rbenv-v4-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}- # yamllint disable-line rule:line-length
+          paths:
+            # Baked project vendor/ lives under /tmp, not the workspace
+            - "/home/circleci/.rbenv"
+            - "/home/circleci/.cache/sorbet"
+            - "/home/circleci/.sorbet-cache"
+            - "/home/circleci/.cache/solargraph"
   tox:
     description: "Run tox"
     parameters:
@@ -106,6 +173,12 @@ commands:
         default: ''
         description: "Which tox arguments to pass"
     steps:
+      - restore_cache:
+          name: Restore tox cache
+          keys:
+            - tox-v1-{{ checksum "tox.ini" }}-{{ checksum "requirements_dev.txt" }}-
+            - tox-v1-{{ checksum "tox.ini" }}-
+            - tox-v1-
       - run_with_languages:
           label: Test
           command: |
@@ -120,6 +193,11 @@ commands:
             tox <<parameters.tox_arguments>>
 
             bin/overcommit --run
+      - save_cache:
+          name: Save tox cache
+          key: tox-v1-{{ checksum "tox.ini" }}-{{ checksum "requirements_dev.txt" }}
+          paths:
+            - ".tox"
 jobs:
   quality:
     working_directory: ~/cookiecutter-ruby
@@ -136,55 +214,19 @@ jobs:
       - run_with_languages:
           label: Typecheck
           command: make citypecheck citypecoverage
+      - save_cache:
+          name: Save mypy cache
+          key: mypy-v1-{{ checksum "requirements_dev.txt" }}-{{ checksum "Makefile" }}-{{ checksum "fix.sh" }}
+          paths:
+            - ".mypy_cache"
+            - "types.installed"
       - unless:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
           steps:
             # skip tox to speed things by not installing another
             # virtualenv, and only run in default Python version.
-            - run_with_languages:
-                label: Test
-                command: |
-                  # These will be used in post_gen_project.py while testing
-                  # the cookies, as well as by overcommit
-                  git config --global user.email "test@test.test"
-                  git config --global user.name "Test Test"
-                  # Coax overcommit into working
-                  bundle exec overcommit --sign
-                  bundle exec overcommit --sign pre-commit
-
-                  # Set timezone as same on dev box for test consistency
-
-                  # https://stackoverflow.com/questions/44331836/apt-get-install-tzdata-noninteractive
-                  sudo ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
-                  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
-                  export TZ=America/New_York
-                  date
-
-                  # measuring slows down the script - only enable when you
-                  # want to debug where this is spending time
-
-                  # export FIX_SH_TIMING_LOG=/tmp/child_fix_sh_timing.log
-
-                  make citest cicoverage
-            - store_artifacts:
-                path: /tmp/child_fix_sh_timing.log
-            - save_cache:
-                name: 'Save child rbenv cache'
-                key: child-rbenv-v3-{{ checksum "{{cookiecutter.project_slug}}/Gemfile" }}-{{ checksum "hooks/post_gen_project.py" }}-{{ checksum "Gemfile.lock" }}-{{ checksum ".ruby-version" }} # yamllint disable-line rule:line-length
-                paths:
-                  - "Gemfile.lock.installed"
-                  - "vendor/.keep"
-                  - "vendor/bundle"
-                  - "/home/circleci/.rbenv"
-                  - "/home/circleci/.cache/solargraph"
-                  - "/home/circleci/.sorbet-cache"
-                  - "/home/circleci/.cache/sorbet"
-                  - "/home/circleci/.cache/rubocop_cache"
-                  - "/home/circleci/.cache/gem"
-                  - "/home/circleci/.bundle/cache"
-                  - ".bundle"
-                  - ".ruby-version"
+            - citest
       - when:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
