@@ -110,8 +110,16 @@ PreCommit:
       - vendor/**/*
       - spec/**/*
       - feature/**/*
+      - test/**/*
       - ".bundle/**/*"
       - ".markdownlint_style.rb"
+  RegenerateTypecheck:
+    enabled: true
+    description: 'Run make build-typecheck when Gemfile.lock changes'
+    requires_files: true
+    include:
+      - 'Gemfile.lock'
+    parallelize: false
   Sorbet:
     enabled: true
     command: ['bin/srb-overcommit', 'tc', '--suppress-error-code', '4010']
