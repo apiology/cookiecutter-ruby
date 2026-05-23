@@ -194,6 +194,8 @@ ensure_bundle() {
   #
   # https://app.circleci.com/pipelines/github/apiology/checkoff/1281/workflows/f667f909-c3fc-4ae2-8593-dde2b588a7a7/jobs/2491
 
+  # Version <2.2.22 of bundler isn't compatible with Ruby 3.3:
+  #
   # Version <2.2.9 doesn't seem to handle git branches during 'bundle lock' in some situations
   #
   # https://stackoverflow.com/questions/70800753/rails-calling-didyoumeanspell-checkers-mergeerror-name-spell-checker-h
@@ -410,6 +412,29 @@ ensure_shellcheck() {
   fi
 }
 
+ensure_hooks_path() {
+  if [ -d .git ]
+  then
+    git config core.hooksPath .githooks
+  fi
+}
+
+install_bootstrap_post_checkout_hook() {
+  if [ ! -d .githooks ]
+  then
+    mkdir -p .githooks
+  fi
+
+  cat > .githooks/post-checkout << 'EOF'
+#!/bin/bash
+
+set -euo pipefail
+
+exec ./bin/git-post-checkout-fix "$@"
+EOF
+  chmod +x .githooks/post-checkout
+}
+
 ensure_overcommit() {
   # don't run if we're in the middle of a cookiecutter child project
   # test, or otherwise don't have a Git repo to install hooks into...
@@ -418,6 +443,7 @@ ensure_overcommit() {
     bundle exec overcommit --install
     bundle exec overcommit --sign
     bundle exec overcommit --sign pre-commit
+    install_bootstrap_post_checkout_hook
   else
     >&2 echo 'Not in a git repo; not installing git hooks'
   fi
@@ -451,6 +477,8 @@ ensure_rbenv
 ensure_types_built() {
   make build-typecheck
 }
+
+ensure_hooks_path
 
 ensure_ruby_versions
 

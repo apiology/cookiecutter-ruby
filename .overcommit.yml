@@ -16,6 +16,8 @@
 #
 # Uncomment the following lines to make the configuration take effect.
 
+gemfile: Gemfile
+
 PreCommit:
   # Extend default config at
   # https://github.com/sds/overcommit/blob/master/config/default.yml
@@ -25,11 +27,15 @@ PreCommit:
       # syntax as a result; these will be tested in pytest after being
       # templated.
       - '{{cookiecutter.project_slug}}/**/*'
+    on_warn: fail
+    problem_on_unmodified_line: warn
+    quiet: false
   BrokenSymlinks:
     enabled: true
     exclude:
       # used for development
       - 'config/env.1p'
+      - 'config/env.local'
   FixMe:
     enabled: true
     on_warn: fail
@@ -74,6 +80,7 @@ PreCommit:
       - '{{cookiecutter.project_slug}}/**/*'
       # used for development
       - 'config/env.1p'
+      - 'config/env.local'
       # sorbet sure likes to crash
       - 'core.*'
       # don't freak out over line below

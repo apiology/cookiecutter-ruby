@@ -10,23 +10,24 @@ module Overcommit
       # Runs `punchlist` against any modified Ruby files.
       class Punchlist < Base
         # @param stdout [String]
-        # @return [Array<Overcommit::Hook::Message]
+        # @return [Array<Overcommit::Hook::Message>]
+        # @sg-ignore
         def parse_output(stdout)
           stdout.split("\n").map do |line|
-            # @sg-ignore
             file, line_no, _message = line.split(':', 3)
             Overcommit::Hook::Message.new(:error, file, line_no.to_i, line)
           end
         end
 
+        # @return [String]
         def files_glob
           "{" \
             "#{applicable_files.join(',')}" \
             "}"
         end
 
+        # @return [Symbol, Array<Overcommit::Hook::Message>]
         def run
-          # @sg-ignore
           # @type [Overcommit::Subprocess::Result]
           result = execute([*command, '-g', files_glob])
 
