@@ -1,0 +1,32 @@
+---
+description: >-
+  Editing the project cookiecutter inside cookiecutter-ruby — what to
+  port at this tier; never push specificity to ancestor templates
+alwaysApply: false
+---
+
+# Template hierarchy (project)
+
+**This tree** is the **project** cookiecutter nested under `cookiecutter-ruby` (Ruby). Ancestors: meta cookiecutter → language/tool template. Descendants: none (end-user repos baked from here).
+
+| Direction | Rule |
+|-----------|------|
+| **Reference → this template** | Port only what belongs in **every** project this cookiecutter generates. |
+| **Reference → ancestors** | Do **not** add language-wide or meta-only config here — belongs upstream. |
+| **Ancestor → this template** | Pull agnostic improvements down; never push framework/app specifics **up**. |
+
+## At this level
+
+- If a reference repo is more specific than this template (e.g. Rails app vs Ruby repo), treat extra config as **out of scope** for this cookiecutter (or a different child template).
+- Do **not** add cookiecutter-family sync skills, `SYNCING_BOILERPLATE.md`, or pytest bake tips unless this project template is Python-specific by design.
+- From baked private apps: do **not** port reference `.overcommit.yml` Ruby hooks, Sorbet yamllint ignores, or `fix.sh` **`rugged`** (Ruby repos only, e.g. `cookiecutter-gem`) / `handlebars` / `mini_racer` / `chromedriver`. Agnostic `env.local` / `.envrc` ports are still fine when this tree has `config/env.1p`. Do not name private reference repos in public text.
+
+## Propagate across tiers (agent checklist)
+
+Cross-language boilerplate (`fix.sh`, `.overcommit.yml`, `.githooks/post-checkout`, `bin/git-*`, etc.) is mirrored at **meta root**, the language/tool template, and **this** nested project template. When editing one copy, check whether the same file exists upstream or downstream and keep all applicable tiers in sync. If unsure whether a change belongs here only or at every tier, **ask the user**. See ancestor `template-hierarchy.mdc` rules (meta and `cookiecutter-ruby/`).
+
+## Referenced paths must exist here
+
+When porting `.envrc`, Makefile paths, or hook `include`s — if the path does not exist in this tree, it likely belongs in an **ancestor** or a different template, not here.
+
+When unsure: **too specific for every baked project → do not add**; **too general to live only here → ancestor**.

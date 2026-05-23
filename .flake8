@@ -8,5 +8,12 @@ per-file-ignores =
     # distinction between sample code and comments about it...which
     # affects indentation when in a multi-line literal dictionary
     docs/conf.py:E265,E122
+    # Not too worried about docstrings in post-gen:
+    #
+    # D103: Missing docstring in public function
+    # D100: Missing docstring
+    hooks/post_gen_project.py:D103,D100
 application-import-names = tests
 import-order-style = google
+# we use flake8-import-order, not flake8-isort
+ignore = I001

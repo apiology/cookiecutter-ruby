@@ -16,6 +16,8 @@
 #
 # Uncomment the following lines to make the configuration take effect.
 
+gemfile: Gemfile
+
 PreCommit:
   # Extend default config at
   # https://github.com/sds/overcommit/blob/master/config/default.yml
@@ -24,6 +26,7 @@ PreCommit:
     exclude:
       # used for development
       - 'config/env.1p'
+      - 'config/env.local'
       # generated
       - '.gem_rbs_collection/**/*'
   Fasterer:
@@ -115,6 +118,7 @@ PreCommit:
     exclude:
       # used for development
       - 'config/env.1p'
+      - 'config/env.local'
       # generated files:
       - 'sorbet/rbi/gems/**/*.rbi'
       # sorbet sure likes to crash
@@ -125,6 +129,12 @@ PreCommit:
     enabled: true
     requires_files: false
     required_executable: 'bin/git-commit-validate'
+  BundleInstall:
+    enabled: true
+  ALL:
+    on_warn: fail
+    problem_on_unmodified_line: warn
+    quiet: false
 
 PostCheckout:
   BundleInstall:
