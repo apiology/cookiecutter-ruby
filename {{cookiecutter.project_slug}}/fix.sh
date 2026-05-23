@@ -189,15 +189,7 @@ ensure_bundle() {
   bundler_version_major=$(cut -d. -f1 <<< "${bundler_version}")
   bundler_version_minor=$(cut -d. -f2 <<< "${bundler_version}")
   bundler_version_patch=$(cut -d. -f3 <<< "${bundler_version}")
-  # Version 2.1 of bundler seems to have some issues with nokogiri:
-  #
-  # https://app.asana.com/0/1107901397356088/1199504270687298
-
   # Version <2.2.22 of bundler isn't compatible with Ruby 3.3:
-  #
-  # https://stackoverflow.com/questions/70800753/rails-calling-didyoumeanspell-checkers-mergeerror-name-spell-checker-h
-
-  # Version <2.2.9 doesn't seem to handle git branches during 'bundle lock' in some situations
   #
   # https://stackoverflow.com/questions/70800753/rails-calling-didyoumeanspell-checkers-mergeerror-name-spell-checker-h
   need_better_bundler=false
@@ -413,6 +405,29 @@ ensure_shellcheck() {
   fi
 }
 
+ensure_hooks_path() {
+  if [ -d .git ]
+  then
+    git config core.hooksPath .githooks
+  fi
+}
+
+install_bootstrap_post_checkout_hook() {
+  if [ ! -d .githooks ]
+  then
+    mkdir -p .githooks
+  fi
+
+  cat > .githooks/post-checkout << 'EOF'
+#!/bin/bash
+
+set -euo pipefail
+
+exec ./bin/git-post-checkout-fix "$@"
+EOF
+  chmod +x .githooks/post-checkout
+}
+
 ensure_overcommit() {
   # don't run if we're in the middle of a cookiecutter child project
   # test, or otherwise don't have a Git repo to install hooks into...
@@ -421,6 +436,7 @@ ensure_overcommit() {
     bundle exec overcommit --install
     bundle exec overcommit --sign
     bundle exec overcommit --sign pre-commit
+    install_bootstrap_post_checkout_hook
   else
     >&2 echo 'Not in a git repo; not installing git hooks'
   fi
@@ -429,6 +445,8 @@ ensure_overcommit() {
 ensure_types_built() {
   make build-typecheck
 }
+
+ensure_hooks_path
 
 ensure_ruby_versions
 

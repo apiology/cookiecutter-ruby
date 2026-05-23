@@ -15,6 +15,7 @@ commands:
     steps:
       - run:
           name: <<parameters.label>>
+          no_output_timeout: 30m
           command: |
             export PATH="${HOME}/.pyenv/bin:${PATH}"
             export PATH="${HOME}/.rbenv/bin:${HOME}/.rbenv/shims:${PATH}"
@@ -107,6 +108,7 @@ commands:
             bin/overcommit --sign pre-push
 
 
+            # bundle exec overcommit --diff # if full run takes too long in this repo
             bin/overcommit --run
 jobs:
   quality:

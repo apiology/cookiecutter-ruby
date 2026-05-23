@@ -7,6 +7,6 @@ group :development, :test do
 end
 
 group :development do
-  gem 'overcommit', '~>0.68.0'
+  gem 'overcommit', '~>0.69.0'
   gem 'punchlist', ['>=1.3.1']
 end
