@@ -13,6 +13,7 @@
 
 # used for local dev only
 /config/env.1p
+/config/env.local
 
 # Ignore all logfiles and tempfiles.
 /log/*

@@ -80,7 +80,7 @@ commands:
           path: /tmp/fix_sh_timing.log
       - save_cache:
           name: 'Save pyenv cache'
-          key: pyenv-v2-{{ checksum "requirements_dev.txt" }}-{{ checksum ".python-version" }}
+          key: pyenv-v2-{{ checksum "requirements_dev.txt" }}-{{ checksum ".python-version" }} # yamllint disable-line rule:line-length
           paths:
             - "requirements_dev.txt.installed"
             - "/home/circleci/.cache/pip/wheels"
@@ -118,6 +118,7 @@ commands:
             bin/overcommit --sign pre-push
 
 
+            # bundle exec overcommit --diff # if full run takes too long in this repo
             bin/overcommit --run
   citest:
     description: "Bake cookie and run tests; cache global Ruby from child fix.sh"

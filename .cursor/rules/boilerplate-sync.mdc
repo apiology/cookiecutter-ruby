@@ -1,0 +1,21 @@
+---
+description: >-
+  Syncing boilerplate into this Ruby cookiecutter
+  (cookiecutter-ruby) from reference repos — origin/main only; respect
+  template hierarchy (ancestors vs descendants); see docs/SYNCING_BOILERPLATE.md
+alwaysApply: false
+---
+
+# Boilerplate sync
+
+**This template:** `cookiecutter-ruby` (Ruby cookiecutter).
+
+When syncing from **reference repos** (production projects on `origin/main`):
+
+1. Project skill [apiology-boilerplate-sync](../skills/apiology-boilerplate-sync/SKILL.md) (`origin/main` discipline and this tier’s scope).
+2. Read [docs/SYNCING_BOILERPLATE.md](../docs/SYNCING_BOILERPLATE.md).
+3. **Only** `git show origin/main:<path>` — never unpushed local trees.
+4. Follow [template-hierarchy.mdc](template-hierarchy.mdc) for what belongs at **this** level vs ancestors vs descendants.
+5. At the **meta** tier, never port Ruby-only `fix.sh`, Sorbet/Tapioca/YARD `.gitignore` entries, or `# @sg-ignore` hook churn from Ruby app references (e.g. checkoff) — see [SYNCING_BOILERPLATE.md](../docs/SYNCING_BOILERPLATE.md).
+6. From **baked** private Ruby apps: do **not** copy reference `.overcommit.yml` / Ruby `.yamllint.yml` hooks or CircleCI `method: full` / `pwd`; do **not** copy **`rugged`** / `handlebars` / `mini_racer` / `chromedriver` `fix.sh` helpers into this **generic** language template — **`rugged` belongs in Ruby repos only** (e.g. `cookiecutter-gem`). Do **not** name private reference repos in public commits or docs.
+7. Classify each diff: agnostic → propagate all tiers that hold the file; Ruby-tool → language template only; app-only → descendant or never.

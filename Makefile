@@ -125,10 +125,10 @@ test-all: ## run tests on every Python version with tox
 clean: clean-build clean-pyc clean-test clean-typecoverage clean-typecheck clean-coverage ## remove all build, test, coverage and Python artifacts
 
 test: ## run tests quickly
-	pytest --maxfail=1 tests/test_bake_project.py --capture=no -v
+	pytest --maxfail=1 tests/test_bake_project.py --capture=no --keep-baked-projects -v
 
 citest:  ## Run unit tests from CircleCI
-	pytest --maxfail=1 tests/test_bake_project.py --capture=no -v
+	pytest --keep-baked-projects  --maxfail=1 tests/test_bake_project.py --capture=no -v
 
 overcommit: ## run precommit quality checks
 	bin/overcommit --run
