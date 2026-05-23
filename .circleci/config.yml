@@ -50,6 +50,22 @@ commands:
             - child-rbenv-v3-
             - child-rbenv-
       - restore_cache:
+          name: Restore rbenv cache
+          keys:
+            - rbenv-v5-{{ checksum "Gemfile" }}-{{ checksum "Gemfile.lock" }}-{{ checksum "Makefile" }}-{{ checksum ".circleci/config.yml" }}- # yamllint disable-line rule:line-length
+            - rbenv-v5-{{ checksum "Gemfile" }}-{{ checksum "Gemfile.lock" }}-{{ checksum "Makefile" }}-
+            - rbenv-v5-{{ checksum "Gemfile" }}-{{ checksum "Gemfile.lock" }}-
+            - rbenv-v5-{{ checksum "Gemfile" }}-
+            - rbenv-v5-
+            - rbenv-
+      - restore_cache:
+          name: Restore mypy cache
+          keys:
+            - mypy-v1-{{ checksum "requirements_dev.txt" }}-{{ checksum "Makefile" }}-{{ checksum "fix.sh" }}-
+            - mypy-v1-{{ checksum "requirements_dev.txt" }}-{{ checksum "Makefile" }}-
+            - mypy-v1-{{ checksum "requirements_dev.txt" }}-
+            - mypy-v1-
+      - restore_cache:
           name: Restore pyenv cache
           keys:
             - pyenv-v2-{{ checksum "requirements_dev.txt" }}-
@@ -76,6 +92,19 @@ commands:
             - "requirements_dev.txt.installed"
             - "/home/circleci/.cache/pip/wheels"
             - "/home/circleci/.pyenv"
+      - save_cache:
+          name: 'Save rbenv cache'
+          key: rbenv-v5-{{ checksum "Gemfile" }}-{{ checksum "Gemfile.lock" }}-{{ checksum "Makefile" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum ".ruby-version" }} # yamllint disable-line rule:line-length
+          paths:
+            - "Gemfile.lock.installed"
+            - "vendor/.keep"
+            - "vendor/bundle"
+            - "/home/circleci/.rbenv"
+            - "/home/circleci/.cache/rubocop_cache"
+            - "/home/circleci/.cache/gem"
+            - "/home/circleci/.bundle/cache"
+            - ".bundle"
+            - ".ruby-version"
       - run:
           name: Download new circleci tool
           command: |
@@ -105,6 +134,12 @@ commands:
         default: ''
         description: "Which tox arguments to pass"
     steps:
+      - restore_cache:
+          name: Restore tox cache
+          keys:
+            - tox-v1-{{ checksum "tox.ini" }}-{{ checksum "requirements_dev.txt" }}-
+            - tox-v1-{{ checksum "tox.ini" }}-
+            - tox-v1-
       - run_with_languages:
           label: Test
           command: |
@@ -119,6 +154,11 @@ commands:
             tox <<parameters.tox_arguments>>
 
             bin/overcommit --run
+      - save_cache:
+          name: Save tox cache
+          key: tox-v1-{{ checksum "tox.ini" }}-{{ checksum "requirements_dev.txt" }}
+          paths:
+            - ".tox"
 jobs:
   quality:
     working_directory: ~/cookiecutter-ruby
@@ -135,6 +175,12 @@ jobs:
       - run_with_languages:
           label: Typecheck
           command: make citypecheck citypecoverage
+      - save_cache:
+          name: Save mypy cache
+          key: mypy-v1-{{ checksum "requirements_dev.txt" }}-{{ checksum "Makefile" }}-{{ checksum "fix.sh" }}
+          paths:
+            - ".mypy_cache"
+            - "types.installed"
       - unless:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
