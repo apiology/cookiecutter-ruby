@@ -13,14 +13,11 @@ module Overcommit
         def run
           # @type [Overcommit::Subprocess::Result]
           result = execute(command)
-          # @sg-ignore
           return :pass if result.success?
 
-          # @sg-ignore
           if result.success?
             :pass
           else
-            # @sg-ignore
             [:fail, result.stderr]
           end
         end
