@@ -2,8 +2,9 @@
 description: >-
   When git commit fails with overcommit plugin signature or security messages,
   run bin/overcommit --sign and bin/overcommit --sign pre-commit, then retry.
-  In a fresh worktree, ./fix.sh should run automatically via .githooks/post-checkout
-  when core.hooksPath is set; if not, run ./fix.sh so .ruby-version pins the same
+  In a fresh worktree, direnv exec . ./fix.sh should run automatically via
+  .githooks/post-checkout when core.hooksPath is set; if not, run it manually so
+  .ruby-version pins the same
   Ruby the git hook will use — overcommit plugin signatures are not stable
   across Ruby versions.
 alwaysApply: false
@@ -23,9 +24,10 @@ Run **both** sign commands every time — not only one. Do not use `--no-verify`
 
 ## Worktrees: pin Ruby first
 
-After `git worktree add`, `.githooks/post-checkout` runs `./fix.sh` automatically
-when the repo already has `core.hooksPath` set (via a prior `./fix.sh` on the main
-checkout). If the hook did not run, run `./fix.sh` manually in the new worktree.
+After `git worktree add`, `.githooks/post-checkout` runs `direnv exec . ./fix.sh`
+automatically when the repo already has `core.hooksPath` set (via a prior bootstrap
+on the main checkout). If the hook did not run, run `direnv exec . ./fix.sh`
+manually in the new worktree (or `./fix.sh` when there is no `.envrc`).
 `fix.sh` writes `.ruby-version` (gitignored) so rbenv pins the same Ruby in the
 worktree as in the main checkout.
 

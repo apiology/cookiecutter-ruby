@@ -13,4 +13,9 @@ if [ "${branch_checkout}" != '1' ] || [ "${prev_head}" != "${NULL_REF}" ]; then
   exit 0
 fi
 
+# fix.sh calls bin/* helpers; .envrc (via direnv) adds bin/ to PATH.
+if [ -f .envrc ] && command -v direnv >/dev/null 2>&1; then
+  exec direnv exec . ./fix.sh
+fi
+
 exec ./fix.sh
