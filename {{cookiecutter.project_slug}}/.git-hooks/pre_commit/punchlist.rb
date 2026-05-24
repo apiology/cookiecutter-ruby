@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 require 'overcommit'
@@ -11,7 +12,7 @@ module Overcommit
       class Punchlist < Base
         # @param stdout [String]
         # @return [Array<Overcommit::Hook::Message>]
-        # @sg-ignore
+        # @sg-ignore Message.new inferred as Punchlist in this hook class
         def parse_output(stdout)
           stdout.split("\n").map do |line|
             file, line_no, _message = line.split(':', 3)
