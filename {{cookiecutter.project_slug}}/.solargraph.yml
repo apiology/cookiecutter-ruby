@@ -14,6 +14,8 @@ include:
   - "bin/*"
   - "bin/overcommit_branch"
 exclude:
+  # Cursor skills/scripts are agent tooling, not gem API surface
+  - '.cursor/**/*'
   # vendored
   - 'bin/bundle'
   - 'bin/brakeman'
