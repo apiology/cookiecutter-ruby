@@ -191,14 +191,7 @@ ensure_bundle() {
   bundler_version_major=$(cut -d. -f1 <<< "${bundler_version}")
   bundler_version_minor=$(cut -d. -f2 <<< "${bundler_version}")
   bundler_version_patch=$(cut -d. -f3 <<< "${bundler_version}")
-  #
-  # Version 2.5.5 fixed an issue in 2.2.22 with the 'bump' gem:
-  #
-  # https://app.circleci.com/pipelines/github/apiology/checkoff/1281/workflows/f667f909-c3fc-4ae2-8593-dde2b588a7a7/jobs/2491
-
   # Version <2.2.22 of bundler isn't compatible with Ruby 3.3:
-  #
-  # Version <2.2.9 doesn't seem to handle git branches during 'bundle lock' in some situations
   #
   # https://stackoverflow.com/questions/70800753/rails-calling-didyoumeanspell-checkers-mergeerror-name-spell-checker-h
   need_better_bundler=false
@@ -456,19 +449,6 @@ ensure_rugged_packages_installed() {
   # only needed if we don't already have rugged installed
   if ! ls vendor/bundle/ruby/*/gems/rugged-* &>/dev/null
   then
-    echo "Current directory"
-    pwd
-    echo "Vendor dir"
-    ls -l vendor || true
-    echo "List of vendor/bundle/gems:"
-    ls vendor/bundle/gems || true
-    echo "Did not find rugged gem installed; installing packages needed for rugged"
-    echo "Installed gems:"
-    gem list
-    echo "Gem environment:"
-    gem environment
-    echo "Bundle list:"
-    bundle list || true
     ensure_binary_library libicuio icu4c libicu-dev # needed by rugged, needed by undercover
     ensure_package pkg-config # needed by rugged, needed by undercover
     ensure_package cmake # needed by rugged, needed by undercover
