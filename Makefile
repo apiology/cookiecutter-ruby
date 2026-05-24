@@ -166,11 +166,54 @@ cicoverage: citest ## check code coverage
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
 	bin/overcommit --uninstall
 	cookiecutter_project_upgrader --help >/dev/null
-	IN_COOKIECUTTER_PROJECT_UPGRADER=1 cookiecutter_project_upgrader || true
+	@mkdir -p .make
+	@if [ -f docs/cookiecutter_input.json ]; then \
+	  jq 'del(._output_dir, ._repo_dir, ._checkout)' docs/cookiecutter_input.json > .make/cookiecutter_context.json; \
+	fi
+	@MAIN_REPO_ROOT=$$(dirname "$$(git rev-parse --git-common-dir)"); \
+	if [ -f "$$MAIN_REPO_ROOT/rbs_collection.yaml" ]; then \
+	  mv "$$MAIN_REPO_ROOT/rbs_collection.yaml" .make/rbs_collection.yaml.bak; \
+	  touch .make/rbs_collection_yaml_hidden; \
+	fi; \
+	if [ -f "$$MAIN_REPO_ROOT/.rubocop.yml" ]; then \
+	  mv "$$MAIN_REPO_ROOT/.rubocop.yml" .make/rubocop-main.yml.bak; \
+	  touch .make/rubocop_main_hidden; \
+	fi; \
+	if [ -f .git ] && [ ! -L .git ]; then \
+	  cp .git .make/git-worktree-pointer; \
+	  GIT_DIR=$$(git rev-parse --git-dir); \
+	  rm -f .git; \
+	  ln -s "$$GIT_DIR" .git; \
+	fi; \
+	if [ -f .make/cookiecutter_context.json ]; then \
+	  IN_COOKIECUTTER_PROJECT_UPGRADER=1 cookiecutter_project_upgrader -c .make/cookiecutter_context.json -p true || true; \
+	else \
+	  IN_COOKIECUTTER_PROJECT_UPGRADER=1 cookiecutter_project_upgrader || true; \
+	fi; \
+	if [ -f .make/git-worktree-pointer ]; then \
+	  rm -f .git; \
+	  mv .make/git-worktree-pointer .git; \
+	fi; \
+	if [ -f .make/rbs_collection_yaml_hidden ]; then \
+	  mv .make/rbs_collection.yaml.bak "$$MAIN_REPO_ROOT/rbs_collection.yaml"; \
+	  rm -f .make/rbs_collection_yaml_hidden; \
+	fi; \
+	if [ -f .make/rubocop_main_hidden ]; then \
+	  mv .make/rubocop-main.yml.bak "$$MAIN_REPO_ROOT/.rubocop.yml"; \
+	  rm -f .make/rubocop_main_hidden; \
+	fi
+	@if ! git diff --quiet -- Makefile 2>/dev/null || ! git diff --cached --quiet -- Makefile 2>/dev/null; then \
+	  git stash push -m 'update_from_cookiecutter Makefile' -- Makefile; \
+	  touch .make/cookiecutter_makefile_stashed; \
+	fi
 	git checkout cookiecutter-template && git push --no-verify
 	git checkout main; overcommit --sign && overcommit --sign pre-commit && overcommit --sign pre-push && git checkout main && git pull && git checkout -b update-from-cookiecutter-$$(date +%Y-%m-%d-%H%M)
 	git merge cookiecutter-template || true
 	git checkout --ours Gemfile.lock || true
+	@if [ -f .make/cookiecutter_makefile_stashed ]; then \
+	  git stash pop; \
+	  rm -f .make/cookiecutter_makefile_stashed; \
+	fi
 	# update frequently security-flagged gems while we're here
 	bundle update --conservative json rexml || true
 	( make build && git add Gemfile.lock ) || true
