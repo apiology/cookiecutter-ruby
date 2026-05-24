@@ -15,7 +15,7 @@ Cookiecutter templates in this family stack **general → specific** (meta → l
 | Kind of change | Meta ancestor | **This repo** | Nested `{{cookiecutter.project_slug}}/` |
 |----------------|---------------|---------------|----------------------------------------------------------------|
 | `overcommit-signing.mdc` | Yes | Yes | Yes |
-| `template-hierarchy.mdc` | Yes | Yes (this file) | Yes (project tier) |
+| `template-hierarchy.mdc` | Yes | Yes (this file) | No |
 | `fix.sh`, `bin/git-*` hooks, `.githooks/post-checkout`, shared `.overcommit.yml` bootstrap | Yes | Yes | Yes |
 | Boilerplate sync skill + `SYNCING_BOILERPLATE.md` | Baked path only | **Yes** | No |
 | Language hooks (RuboCop, etc.) | No | Generic only (template `ALL.exclude`) | **Yes** — baked gem hooks |
