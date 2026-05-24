@@ -10,8 +10,9 @@ bootstrap hooks apply to this repo and all its worktrees.
 ## Git hooks and worktrees
 
 Bootstrap hooks live in `.githooks/` (plain bash, not Overcommit) so
-`post-checkout` can run `./fix.sh` on clone or `git worktree add` before
-Ruby and Bundler are ready.
+`post-checkout` can run `direnv exec . ./fix.sh` on clone or
+`git worktree add` before Ruby and Bundler are ready. `fix.sh` uses
+helpers under `bin/`; direnv (via `.envrc`) puts `bin/` on `PATH`.
 
 For a fresh clone with automatic bootstrap on checkout:
 
@@ -19,12 +20,13 @@ For a fresh clone with automatic bootstrap on checkout:
 git clone -c core.hooksPath=.githooks <url>
 ```
 
-Otherwise run `./fix.sh` once after clone — it sets `core.hooksPath` for
-future worktrees.
+Otherwise run `direnv exec . ./fix.sh` once after clone (or `./fix.sh` if
+you have no `.envrc`) — it sets `core.hooksPath` for future worktrees.
 
-After `git worktree add`, `.githooks/post-checkout` runs `./fix.sh`
-automatically when the main checkout has already run `./fix.sh` at least
-once. It writes `.ruby-version` (gitignored) and runs `bundle install`,
+After `git worktree add`, `.githooks/post-checkout` runs
+`direnv exec . ./fix.sh` automatically when the main checkout has already
+run bootstrap at least once. It writes `.ruby-version` (gitignored) and
+runs `bundle install`,
 so the worktree's Ruby and bundler match the main checkout. Skipping
 bootstrap can cause overcommit signature mismatches even after
 re-signing — see
