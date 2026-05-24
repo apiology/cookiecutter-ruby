@@ -18,7 +18,8 @@ Cookiecutter templates in this family stack **general → specific** (meta → l
 | `template-hierarchy.mdc` | Yes | Yes (this file) | Yes (project tier) |
 | `fix.sh`, `bin/git-*` hooks, `.githooks/post-checkout`, shared `.overcommit.yml` bootstrap | Yes | Yes | Yes |
 | Boilerplate sync skill + `SYNCING_BOILERPLATE.md` | Baked path only | **Yes** | No |
-| Language hooks (RuboCop, etc.) | No | **Yes** | Framework-only → nested |
+| Language hooks (RuboCop, etc.) | No | Generic only (template `ALL.exclude`) | **Yes** — baked gem hooks |
+| Sorbet / Tapioca / Solargraph (gems, `fix.sh` rugged, `.overcommit.yml` Ruby hooks, `Makefile` typecheck targets, CircleCI `ruby-types` cache) | No | **No** — top level is cookiecutter maintenance (pytest/mypy) | **Yes** — nested `{{cookiecutter.project_slug}}/` only |
 | Pytest bake tips in `DEVELOPMENT.md` | Meta repo | **Yes** if this template uses pytest | No — not every baked project uses Python |
 
 Place each artifact at the **narrowest** tier that still applies to every repo that tier generates.
@@ -62,7 +63,7 @@ When porting config that names directories or tools (`.envrc` `PATH_add`, Makefi
 | `fix.sh` rbenv / `set_ruby_local_version` | **Do not port churn from Ruby app refs** | Ruby toolchain when this is a Ruby template | **`rugged`** (Ruby/undercover), `handlebars`, `mini_racer`, `chromedriver` |
 | `.gitignore` Sorbet / Tapioca / YARD | **Do not port from Ruby app refs** | `tapioca.installed`, `yardoc.installed`, `sorbet/*` | Generated RBI paths |
 | `.git-hooks` `# @sg-ignore` | **Do not port** | Sorbet annotations only in Ruby templates | — |
-| `.circleci` | `no_output_timeout`, shared cache pattern | Same | `method: full`, `pwd`, `*.gemspec` cache keys |
+| `.circleci` | `no_output_timeout`, shared cache pattern; **citest** child-rbenv for bake tests | Same — no `ruby-types` / Sorbet caches at repo root | Custom checkout (undercover), `ruby-types-v3`, typecheck job, RBI artifacts |
 
 When syncing from a **baked** private reference, read [SYNCING_BOILERPLATE.md](../docs/SYNCING_BOILERPLATE.md) § baked Ruby apps — do not paste the reference’s full `.overcommit.yml` or Ruby yamllint/Sorbet blocks into cookiecutter templates, and do not name private reference repos in public text.
 

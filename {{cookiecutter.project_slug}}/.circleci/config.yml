@@ -54,12 +54,11 @@ commands:
       - restore_cache:
           name: Restore ruby-types cache
           keys:
-            - ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}- # yamllint disable-line rule:line-length
-            - ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-
-            - ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
-            - ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
-            - ruby-types-v2-
-            - ruby-types-
+            - ruby-types-v3-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-
+            - ruby-types-v3-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-
+            - ruby-types-v3-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - ruby-types-v3-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
+            - ruby-types-v3-
       - restore_cache:
           name: Restore pyenv cache
           keys:
@@ -243,7 +242,7 @@ jobs:
           path: rbi/{{cookiecutter.project_slug}}.rbi
       - save_cache:
           name: 'Save ruby-types cache'
-          key: ruby-types-v2-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum {% endraw %}"rbi/{{cookiecutter.project_slug}}.rbi" {% raw %}}}{% endraw %}  # yamllint disable-line rule:line-length
+          key: ruby-types-v3-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum {% endraw %}"rbi/{{cookiecutter.project_slug}}.rbi" {% raw %}}}{% endraw %}  # yamllint disable-line rule:line-length
           paths:
             - ".yardoc"
             - 'yarddoc'
@@ -255,6 +254,8 @@ jobs:
             - "tapioca.installed"
             - "sorbet/machine_specific_config"
             - "rbi/{{cookiecutter.project_slug}}.rbi"
+            - ".gem_rbs_collection"
+            - "rbs_collection.lock.yaml"
       - run_with_languages:
           label: Test
           command: |
