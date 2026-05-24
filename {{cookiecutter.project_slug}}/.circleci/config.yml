@@ -33,7 +33,8 @@ commands:
   set_up_environment:
     description: "Install source environment"
     steps:
-      - checkout
+      - checkout:
+          method: full
       - run:
           name: Update timestamps to original commit time
           command: |
