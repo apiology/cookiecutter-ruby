@@ -11,6 +11,7 @@ module Overcommit
       class CircleCi < Base
         # @return [Symbol, Array<Symbol, String>]
         def run
+          # @type [Overcommit::Subprocess::Result]
           result = execute(command)
           return :pass if result.success?
 
