@@ -178,7 +178,7 @@ Gemfile.lock.installed: Gemfile vendor/.keep
 	bundle install
 	touch Gemfile.lock.installed
 
-vendor/.keep: Gemfile.lock
+vendor/.keep: Gemfile.lock .ruby-version
 	make gem_dependencies
 	bundle install
 	touch vendor/.keep
