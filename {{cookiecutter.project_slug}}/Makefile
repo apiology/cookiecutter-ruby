@@ -37,7 +37,7 @@ rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi.bak
 	touch rbi/{{cookiecutter.project_slug}}.rbi
 
-sig/{{cookiecutter.project_slug}}.rbs: yardoc.installed gem_rbs_collection/.keepme ## Generate RBS file
+sig/{{cookiecutter.project_slug}}.rbs: yardoc.installed .gem_rbs_collection/.keepme ## Generate RBS file
 	rm -f rbi/{{cookiecutter.project_slug}}.rbs
 	bin/sord gen $(SORD_GEN_OPTIONS) sig/{{cookiecutter.project_slug}}.rbs # YARD to RBS
 
@@ -80,7 +80,7 @@ rbs_collection.yaml:
 	touch .gem_rbs_collection/.keepme
 
 ci-build-typecheck: build-typecheck  ## Ensure cache is filled for CI to save regardless of actions run
-	bundle exec solargraph gems
+	bin/solargraph gems
 
 # Only create this once, so no dependencies
 sorbet/tapioca/require.rb:
@@ -94,7 +94,7 @@ tapioca.installed: sorbet/tapioca/require.rb Gemfile.lock.installed ## Install T
 #	bin/tapioca dsl
 	touch tapioca.installed
 
-yardoc.installed: $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generate YARD documentation
+yardoc.installed: Makefile $(wildcard config/annotations_*.rb) $(SOURCE_FILES) ## Generate YARD documentation
 	bin/yard doc $(YARD_OPTS)
 	touch yardoc.installed
 
@@ -140,7 +140,10 @@ solargraph-strong: build-typecheck ## Run Solargraph typechecker
 
 typecheck: build-typecheck srb solargraph ## validate types in code and configuration
 
-citypecheck: ci-build-typecheck srb solargraph ## Run type check from CircleCI
+citypecheck: ci-build-typecheck srb ci-solargraph ## Run type check from CircleCI
+
+ci-solargraph: ## Run Solargraph typechecker in CI
+	bin/solargraph typecheck --level strong
 
 typecoverage: typecheck ## Run type checking and then ratchet coverage in metrics/
 
