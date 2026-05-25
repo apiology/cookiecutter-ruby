@@ -45,6 +45,14 @@ See `.solargraph.yml` for include/exclude paths and reporter settings. Mock-heav
 4. Re-run until zero problems.
 5. Run `direnv exec . bin/rubocop` — bulk `@return [void]` or layout fixes often need `rubocop -A`.
 
+If the goal is "get N more files passing" rather than "zero errors everywhere", rank files by failure count and clear the smallest buckets first:
+
+```bash
+ruby -e 'h=Hash.new(0); File.foreach("/tmp/sg-typecheck.txt"){|l| if l =~ %r{^(/[^:]+\.rb):\d+\s-\s}; h[$1]+=1; end}; h.select{|_,c| c<=8}.sort_by{|f,c| [c,f]}.each{|f,c| puts "%3d #{f}" % c }'
+```
+
+Then compare before/after runs to count files that moved from `>0` errors to `0`.
+
 Optional helpers (use after manual triage, not as a blind hammer):
 
 ```bash
@@ -96,6 +104,7 @@ Date.parse('2029-01-04')
 - HTTP response bodies: `@param response [#read_body]`
 - `$LOAD_PATH`: one `# @sg-ignore` on the bootstrap line (special RBS typing)
 - Bundler binstub `ENV['BUNDLE_GEMFILE'] ||= ...`: YARD stubs in `config/annotations_misc.rb` do not override RBS `ENVClass` at strong level — keep `# @sg-ignore` on each binstub line
+- `ENV.fetch(...)` may also resolve as unknown on `ENVClass` at strong level in app code; use a one-line `# @sg-ignore` directly above the call when an annotation-based fix does not stick
 
 ### GLI command blocks
 
@@ -117,6 +126,13 @@ result = execute(...)
 ### Predicate methods returning Boolean
 
 Methods that return `true`/`false` but mutate state may trigger RuboCop `Naming/PredicateMethod` if named `fix_*!`. For maintenance scripts, use a scoped `# rubocop:disable` block rather than renaming call sites.
+
+### Common one-line strong fixes
+
+- `Unresolved constant WARN` in logger wrappers: prefer `Logger::WARN` over bare `WARN`
+- `Wrong argument type for Float#/: ... received Integer` in duration math: prefer `value.fdiv(60)` (or explicit float literal) when dividing numeric durations
+- `Unresolved call to join on Array<String>, nil` for backtraces: use `Array(error.backtrace).join("\n")`
+- Missing test method docs (`Missing @return tag for Test...#test_*`): add `# @return [void]`
 
 ## When to ignore
 
@@ -140,7 +156,7 @@ Scripts under `script/` should be **typed** (`# typed: true`) when typechecked:
 - Document all methods with `@param` / `@return`.
 - Avoid `@sg-ignore` in comments that are not actual directives.
 
-## Sorbet: locals mutated inside blocks
+## Sorbet (gradual typing, lib or test)
 
 When Sorbet reports **Changing the type of a variable is not permitted in loops and blocks** on a local updated inside a block (callback, `yield`, etc.), initialize with an explicit type—e.g. `flag = T.let(false, T::Boolean)` before `flag = true` in the block.
 
