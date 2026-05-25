@@ -32,6 +32,32 @@ bootstrap can cause overcommit signature mismatches even after
 re-signing — see
 [.cursor/rules/overcommit-signing.mdc](.cursor/rules/overcommit-signing.mdc).
 
+## `make update_from_cookiecutter` and worktrees
+
+You can run the full target from a **linked worktree** (for example a Cursor
+feature worktree). Shared git data is one repo; each worktree has its own
+working directory and branch.
+
+1. **`bin/cookiecutter_project_upgrader_with_worktree_shim.sh`** — In a linked
+   worktree, `.git` is a `gitdir:` file, not a directory.
+   `cookiecutter_project_upgrader` expects to write under `.git/cookiecutter/`.
+   The shim temporarily symlinks `.git` to `git rev-parse --git-dir`, runs the
+   upgrader (fails closed on error), then restores the pointer. RuboCop/RBS
+   config under the primary checkout may be hidden during the run.
+
+2. **`bin/update_from_cookiecutter_finish.sh`** — Does not `git checkout main`
+   or `cookiecutter-template` (those branches may be checked out elsewhere).
+   It pushes `cookiecutter-template` by ref, fetches the default branch, creates
+   `update-from-cookiecutter-…` from `origin/<default>`, signs overcommit hooks,
+   and merges `cookiecutter-template`.
+
+Before running in a new worktree, bootstrap once (`direnv exec . ./fix.sh`) so
+overcommit signing works. Do not run two updates in parallel (RuboCop hide uses
+files in the primary checkout). Regression test:
+`bin/test_git_worktree_upgrader_shim.sh`.
+
+Override the default branch with `DEFAULT_BRANCH=my-default make update_from_cookiecutter`.
+
 ## Overcommit
 
 This project uses [overcommit](https://github.com/sds/overcommit) for

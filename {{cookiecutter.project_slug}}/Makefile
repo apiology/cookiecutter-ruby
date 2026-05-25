@@ -241,68 +241,15 @@ update_from_cookiecutter: ## Bring in changes from template project used to crea
 	bin/overcommit --uninstall
 	# cookiecutter_project_upgrader does its work in
 	# .git/cookiecutter/{{cookiecutter.project_slug}}, but RuboCop wants to inherit
-	# config from all directories above it - avoid config
-	# mismatches by moving this out of the way
+	# config from all directories above it - avoid config mismatches by moving this
+	# out of the way
 	mv .rubocop.yml .rubocop-renamed.yml || true
 	cookiecutter_project_upgrader --help >/dev/null
-	@mkdir -p .make
-	@if [ -f docs/cookiecutter_input.json ]; then \
-	  jq 'del(._output_dir, ._repo_dir, ._checkout)' docs/cookiecutter_input.json > .make/cookiecutter_context.json; \
-	fi
-	@MAIN_REPO_ROOT=$$(dirname "$$(git rev-parse --git-common-dir)"); \
-	if [ -f "$$MAIN_REPO_ROOT/rbs_collection.yaml" ]; then \
-	  mv "$$MAIN_REPO_ROOT/rbs_collection.yaml" .make/rbs_collection.yaml.bak; \
-	  touch .make/rbs_collection_yaml_hidden; \
-	fi; \
-	if [ -f "$$MAIN_REPO_ROOT/.rubocop.yml" ]; then \
-	  mv "$$MAIN_REPO_ROOT/.rubocop.yml" .make/rubocop-main.yml.bak; \
-	  touch .make/rubocop_main_hidden; \
-	fi; \
-	if [ -f .git ] && [ ! -L .git ]; then \
-	  cp .git .make/git-worktree-pointer; \
-	  GIT_DIR=$$(git rev-parse --git-dir); \
-	  rm -f .git; \
-	  ln -s "$$GIT_DIR" .git; \
-	fi; \
-	if [ -f .make/cookiecutter_context.json ]; then \
-	  IN_COOKIECUTTER_PROJECT_UPGRADER=1 cookiecutter_project_upgrader -c .make/cookiecutter_context.json -p true || true; \
-	else \
-	  IN_COOKIECUTTER_PROJECT_UPGRADER=1 cookiecutter_project_upgrader || true; \
-	fi; \
-	if [ -f .make/git-worktree-pointer ]; then \
-	  rm -f .git; \
-	  mv .make/git-worktree-pointer .git; \
-	fi; \
-	if [ -f .make/rbs_collection_yaml_hidden ]; then \
-	  mv .make/rbs_collection.yaml.bak "$$MAIN_REPO_ROOT/rbs_collection.yaml"; \
-	  rm -f .make/rbs_collection_yaml_hidden; \
-	fi; \
-	if [ -f .make/rubocop_main_hidden ]; then \
-	  mv .make/rubocop-main.yml.bak "$$MAIN_REPO_ROOT/.rubocop.yml"; \
-	  rm -f .make/rubocop_main_hidden; \
-	fi
+	bin/cookiecutter_project_upgrader_with_worktree_shim.sh
 	mv .rubocop-renamed.yml .rubocop.yml
-	@if ! git diff --quiet -- Makefile 2>/dev/null || ! git diff --cached --quiet -- Makefile 2>/dev/null; then \
-	  git stash push -m 'update_from_cookiecutter Makefile' -- Makefile; \
-	  touch .make/cookiecutter_makefile_stashed; \
-	fi
-	git checkout cookiecutter-template && git push --no-verify
-	git checkout main; overcommit --sign && overcommit --sign pre-commit && overcommit --sign pre-push && git checkout main && git pull && git checkout -b update-from-cookiecutter-$$(date +%Y-%m-%d-%H%M)
-	git merge cookiecutter-template || true
-	git checkout --ours Gemfile.lock || true
-	@if [ -f .make/cookiecutter_makefile_stashed ]; then \
-	  git stash pop; \
-	  rm -f .make/cookiecutter_makefile_stashed; \
-	fi
+	bin/update_from_cookiecutter_finish.sh
 	git checkout --theirs sorbet/rbi/gems || true
 	# update frequently security-flagged gems while we're here
 	bundle update --conservative json nokogiri rack rexml yard brakeman || true
 	( make build && git add Gemfile.lock ) || true
 	bin/spoom srb bump || true
-	bin/overcommit --install || true
-	@echo
-	@echo "Please resolve any merge conflicts below and push up a PR with:"
-	@echo
-	@echo '   gh pr create --title "Update from cookiecutter" --body "Automated PR to update from cookiecutter boilerplate"'
-	@echo
-	@echo
