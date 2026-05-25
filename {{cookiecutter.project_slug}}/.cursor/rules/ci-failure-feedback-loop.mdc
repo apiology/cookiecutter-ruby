@@ -1,0 +1,15 @@
+---
+description: On failed CircleCI checks, fetch logs first and share one concrete error before broad local retries
+globs: .circleci/**,Makefile,**/*.rb,test/**/*.rb
+alwaysApply: false
+---
+
+# CI failure feedback loop
+
+When `gh pr checks` shows a failed CircleCI check:
+
+1. Fetch the failing step logs first (prefer MCP `user-circleci-mcp-server`).
+2. Share one exact failing error line with the user before broad local retries.
+3. Fix from that error message, then push and re-watch checks.
+
+Avoid long local loops (`make citest`, full quality/build) before reading remote failure text.

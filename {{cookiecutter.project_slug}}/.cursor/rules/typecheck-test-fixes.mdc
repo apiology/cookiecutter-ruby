@@ -1,0 +1,14 @@
+---
+description: Typecheck-fix tests should satisfy Sorbet, RuboCop, and coverage/undercover gates together
+globs: lib/**/*.rb,test/**/*.rb,.overcommit.yml,rakelib/**,sorbet/**
+alwaysApply: false
+---
+
+# Typecheck fix tests
+
+When typechecking work adds or edits tests:
+
+- Run the same CI gates locally where possible (`make citypecheck`, tests, coverage/undercover gate).
+- In `# typed: true` tests, use explicit typed locals when blocks mutate values (for example `T.let(false, T::Boolean)`).
+- Run RuboCop on new tests before push (Minitest cops often fail on small formatting details).
+- If a utility method changed in `lib/`, add targeted unit tests so coverage/undercover does not fail on the same diff.
