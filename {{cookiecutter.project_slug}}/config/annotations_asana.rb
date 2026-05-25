@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+
+#
 # rubocop:disable Layout/LineLength
 # @!parse
 #   module Asana
@@ -23,13 +25,14 @@
 #       def users; end
 #       # @return [Asana::ProxiedResourceClasses::CustomField]
 #       def custom_fields; end
-#
-#       # Performs a GET request against an arbitrary Asana URL. Allows for
+#       # @return [Asana::ProxiedResourceClasses::Webhook]
+#       def webhooks; end
+#       # Public: Performs a GET request against an arbitrary Asana URL. Allows for
 #       # the user to interact with the API in ways that haven't been
 #       # reflected/foreseen in this library.
 #       #
+#       # @param url [String] the URL to GET
 #       # @param args [Object] the request I/O options
-#       # @param url [String]
 #       # @return [Asana::HttpClient::Response]
 #       def get(url, **args); end
 #     end
@@ -38,8 +41,6 @@
 #       class Task
 #         # @return [String]
 #         def resource_subtype; end
-#         # @return [Asana::Resources::Section, nil]
-#         def assignee_section; end
 #         # @return [Boolean,nil]
 #         def is_rendered_as_separator; end
 #         # @return [String,nil]
@@ -50,12 +51,13 @@
 #         def name; end
 #         # @return [Hash<String, String>, nil]
 #         def assignee; end
-#         # @return [Hash, Asana::Resources::Section]
-#         def assignee_section; end
 #         # @return [String, nil]
 #         def html_notes; end
 #         # @return [Array<Hash{String => Hash{String => String}}>]
 #         def memberships; end
+#         # @return [Hash{String => String}, Section, nil] if it is asked for as part of the initial task request,
+#         #     you'll get a hash, otherwise you'll get a resource object
+#         def assignee_section; end
 #         class << self
 #           # @param client [Asana::Client]
 #           # @param assignee [String]
@@ -83,6 +85,7 @@
 #     end
 #     module Errors
 #       class NotFound < ::Asana::Errors::APIError; end
+#       class InvalidRequest < ::Asana::Errors::APIError; end
 #     end
 #     module Resources
 #       class Workspace
@@ -273,6 +276,23 @@
 #         #
 #         # @return [Asana::Resources::User]
 #         def me(options: {}); end
+#       end
+#       class Webhook
+#         # Returns the compact representation of all webhooks your app has
+#         # registered for the authenticated user in the given workspace.
+#         #
+#         # @param workspace [String] The workspace to query for webhooks in.
+#         # @param resource [String] Only return webhooks for the given resource.
+#         # @param per_page [Integer] the number of records to fetch per page.
+#         # @param options [Hash] the request I/O options.
+#         # @return [Array<Asana::Resources::Webhook>]
+#         def get_all(workspace: required("workspace"), resource: nil, per_page: 20, options: {})
+#         end
+#         # @param options [Hash] the request I/O options
+#         # @param data [Hash] the attributes to POST
+#         # @return [Asana::Resources::Webhook]
+#         def create_webhook(options: {}, **data)
+#         end
 #       end
 #     end
 #   end

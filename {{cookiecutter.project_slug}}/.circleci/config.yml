@@ -33,7 +33,8 @@ commands:
   set_up_environment:
     description: "Install source environment"
     steps:
-      - checkout
+      - checkout:
+          method: full
       - run:
           name: Update timestamps to original commit time
           command: |
@@ -45,7 +46,7 @@ commands:
       - restore_cache:
           name: Restore rbenv cache
           keys:
-            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile"  }}{% endraw %}-{% raw %} {{ checksum ".circleci/config.yml" }}{% endraw %}- # yamllint disable-line rule:line-length
+            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile"  }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}- # yamllint disable-line rule:line-length
             - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile"  }}{% endraw %}- # yamllint disable-line rule:line-length
             - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
             - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
@@ -67,6 +68,7 @@ commands:
             - pyenv-
       - run:
           name: Initialize packages
+          no_output_timeout: 30m
           command: |
             # measuring slows down the script - only enable when you
             # want to debug where this is spending time
