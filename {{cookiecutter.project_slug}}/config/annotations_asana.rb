@@ -91,6 +91,8 @@
 #       class Workspace
 #         # @return [String, nil]
 #         def html_notes; end
+#         # @return [String]
+#         def gid; end
 #         class << self
 #           # @param client [Asana::Client]
 #           # @param id [String]
