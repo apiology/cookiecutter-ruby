@@ -1,0 +1,45 @@
+---
+description: >-
+  Sorbet gem RBIs via make build-typecheck (never manual git rm); Solargraph
+  @sg-ignore vs CI; when local and CI typecheck disagree, fetch CircleCI logs
+  first and trust CI until green
+alwaysApply: false
+---
+
+# Typecheck, gem RBIs, and CI
+
+## Gem RBIs — `make build-typecheck`, not manual deletes
+
+- **Do not** manually remove or cherry-pick files under `sorbet/rbi/gems/` (e.g. `git rm` duplicate `parlour@*.rbi` files).
+- Those artifacts are produced and refreshed by **`make build-typecheck`** (tapioca, `rbs collection`, and related Makefile targets).
+- If Sorbet reports duplicate or stale gem RBIs, run **`make build-typecheck`** (or **`make ci-build-typecheck`** where defined), fix lockfiles/generators/CI cache as needed, and commit what the Makefile regenerates—not a hand-edited RBI tree.
+
+## Local vs CI typechecking
+
+- **Until local and CI disagree:** local `make citypecheck`, `make quality`, and overcommit are useful for speed.
+- **Once they disagree** (pass locally but fail on CircleCI, or the opposite): **stop trusting local typecheck.** Treat **remote CI as source of truth** until the branch is green.
+- Tooling and environment differences (OS, cached `rbs_collection.lock.yaml` / `.gem_rbs_collection`, `fix.sh` dirtying the tree before verify-deltas) routinely cause this; finishing the branch is usually faster by reading CI logs and fixing for CI, not by iterating only on laptop `make default`.
+
+## Solargraph / overcommit drift
+
+Common after removing “stale” `# @sg-ignore` comments:
+
+| CI (quality / overcommit) | Local pre-commit |
+|---------------------------|------------------|
+| `return type could not be inferred` | — |
+| — | `Unneeded @sg-ignore comment` |
+
+When you see this pair on the **same lines**, you are in **local vs CI disagree** territory:
+
+1. **Fetch CircleCI logs first** (see `circleci-logs-before-local-ci.mdc` in baked repos or global `~/.cursor/rules/`).
+2. **Fix for what CI reports**, not for local overcommit alone.
+3. Prefer real fixes (`T.cast(..., T::Boolean)`, YARD, nil guards) over toggling ignores; use `# @sg-ignore` only when the project skill/docs say inference cannot be satisfied on both sides.
+4. Validate with **`make ci-solargraph`** / **`make citypecheck`** when available before push.
+5. Do **not** bulk-remove `@sg-ignore` because local typecheck passed once—CI overcommit often still fails on modified lines.
+
+Project-specific Solargraph workflow may live in `.cursor/skills/solargraph-typecheck/SKILL.md` after downstream sync.
+
+## Related
+
+- `circleci-logs-before-local-ci.mdc` (baked `.cursor/rules/` or global)
+- `template-hierarchy.mdc` — place typecheck rules in nested `{{cookiecutter.project_slug}}/` for Ruby gems
