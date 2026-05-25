@@ -182,7 +182,7 @@
 #         # @param completed_since [Time]
 #         # @param per_page [Integer]
 #         # @param modified_since [Time]
-#         # @param section [Asana::Resources::Section]
+#         # @param section [String]
 #         # @param options [Hash] the request I/O options.
 #         # @return [Enumerable<Asana::Resources::Task>]
 #         def get_tasks(assignee: nil,
