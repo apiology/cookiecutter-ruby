@@ -153,6 +153,7 @@ commands:
 
             # export FIX_SH_TIMING_LOG=/tmp/child_fix_sh_timing.log
 
+            make test-worktree-upgrader-shim
             make citest cicoverage
       - store_artifacts:
           path: /tmp/child_fix_sh_timing.log

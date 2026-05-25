@@ -267,6 +267,7 @@ jobs:
             export TZ=America/New_York
             date
 
+            make test-worktree-upgrader-shim
             make citest cicoverage
     # This seemed to shave 5ish% of the build time off when added
     resource_class: large
