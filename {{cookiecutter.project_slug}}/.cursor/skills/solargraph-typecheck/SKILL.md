@@ -140,6 +140,10 @@ Scripts under `script/` should be **typed** (`# typed: true`) when typechecked:
 - Document all methods with `@param` / `@return`.
 - Avoid `@sg-ignore` in comments that are not actual directives.
 
+## Sorbet: locals mutated inside blocks
+
+When Sorbet reports **Changing the type of a variable is not permitted in loops and blocks** on a local updated inside a block (callback, `yield`, etc.), initialize with an explicit type—e.g. `flag = T.let(false, T::Boolean)` before `flag = true` in the block.
+
 ## Rubocop fallout
 
 After adding many `# @return [void]` lines in tests (historical) or editing scripts:
