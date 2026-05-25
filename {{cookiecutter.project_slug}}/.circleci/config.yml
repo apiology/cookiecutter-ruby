@@ -33,7 +33,8 @@ commands:
   set_up_environment:
     description: "Install source environment"
     steps:
-      - checkout
+      - checkout:
+          method: full
       - run:
           name: Update timestamps to original commit time
           command: |
@@ -45,20 +46,22 @@ commands:
       - restore_cache:
           name: Restore rbenv cache
           keys:
-            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile"  }}{% endraw %}-{% raw %} {{ checksum ".circleci/config.yml" }}{% endraw %}- # yamllint disable-line rule:line-length
-            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile"  }}{% endraw %}- # yamllint disable-line rule:line-length
-            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
-            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
+            - rbenv-v5-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}- # yamllint disable-line rule:line-length
+            - rbenv-v5-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}- # yamllint disable-line rule:line-length
+            - rbenv-v5-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - rbenv-v5-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
+            - rbenv-v5-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-
             - rbenv-v5-
             - rbenv-
       - restore_cache:
           name: Restore ruby-types cache
           keys:
-            - ruby-types-v3-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-
-            - ruby-types-v3-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-
-            - ruby-types-v3-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
-            - ruby-types-v3-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
-            - ruby-types-v3-
+            - ruby-types-v7-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}- # yamllint disable-line rule:line-length
+            - ruby-types-v7-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}- # yamllint disable-line rule:line-length
+            - ruby-types-v7-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - ruby-types-v7-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
+            - ruby-types-v7-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-
+            - ruby-types-v7-
       - restore_cache:
           name: Restore pyenv cache
           keys:
@@ -67,6 +70,7 @@ commands:
             - pyenv-
       - run:
           name: Initialize packages
+          no_output_timeout: 30m
           command: |
             # measuring slows down the script - only enable when you
             # want to debug where this is spending time
@@ -88,7 +92,7 @@ commands:
             - "/home/circleci/.pyenv"
       - save_cache:
           name: 'Save rbenv cache'
-          key: rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %} # yamllint disable-line rule:line-length
+          key: rbenv-v5-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %} # yamllint disable-line rule:line-length
           paths:
             - "Gemfile.lock.installed"
             - 'vendor/.keep'
@@ -242,7 +246,7 @@ jobs:
           path: rbi/{{cookiecutter.project_slug}}.rbi
       - save_cache:
           name: 'Save ruby-types cache'
-          key: ruby-types-v3-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum {% endraw %}"rbi/{{cookiecutter.project_slug}}.rbi" {% raw %}}}{% endraw %}  # yamllint disable-line rule:line-length
+          key: ruby-types-v7-{% raw %}{{ checksum "{% endraw %}{{cookiecutter.project_slug}}.gemspec{% raw %}" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %}-{% raw %}{{ checksum {% endraw %}"rbi/{{cookiecutter.project_slug}}.rbi" {% raw %}}}{% endraw %}  # yamllint disable-line rule:line-length
           paths:
             - ".yardoc"
             - 'yarddoc'

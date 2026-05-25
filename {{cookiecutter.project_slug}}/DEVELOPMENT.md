@@ -10,9 +10,8 @@ bootstrap hooks apply to this repo and all its worktrees.
 ## Git hooks and worktrees
 
 Bootstrap hooks live in `.githooks/` (plain bash, not Overcommit) so
-`post-checkout` can run `direnv exec . ./fix.sh` on clone or
-`git worktree add` before Ruby and Bundler are ready. `fix.sh` uses
-helpers under `bin/`; direnv (via `.envrc`) puts `bin/` on `PATH`.
+`post-checkout` can run `./fix.sh` on clone or `git worktree add` before
+Ruby and Bundler are ready.
 
 For a fresh clone with automatic bootstrap on checkout:
 
@@ -20,13 +19,12 @@ For a fresh clone with automatic bootstrap on checkout:
 git clone -c core.hooksPath=.githooks <url>
 ```
 
-Otherwise run `direnv exec . ./fix.sh` once after clone (or `./fix.sh` if
-you have no `.envrc`) — it sets `core.hooksPath` for future worktrees.
+Otherwise run `./fix.sh` once after clone — it sets `core.hooksPath` for
+future worktrees.
 
-After `git worktree add`, `.githooks/post-checkout` runs
-`direnv exec . ./fix.sh` automatically when the main checkout has already
-run bootstrap at least once. It writes `.ruby-version` (gitignored) and
-runs `bundle install`,
+After `git worktree add`, `.githooks/post-checkout` runs `./fix.sh`
+automatically when the main checkout has already run `./fix.sh` at least
+once. It writes `.ruby-version` (gitignored) and runs `bundle install`,
 so the worktree's Ruby and bundler match the main checkout. Skipping
 bootstrap can cause overcommit signature mismatches even after
 re-signing — see
@@ -60,9 +58,10 @@ development.  See the `.envrc` file for detail.
 `config/env.1p` in git is the **template**: each variable points at a vault
 item with an `op://` [secret
 reference](https://developer.1password.com/docs/cli/secret-reference), not a
-plaintext value.  Load order and fallbacks are in **`.envrc`**.  Mount
-**resolved** values at **`config/env.local`** (below); use **`config/env.1p`**
-in git when adding or syncing `op://` keys.
+plaintext value.  `.envrc` and `make config/env` prefer **`config/env.local`**
+when that file is readable (1Password Environment mount with resolved
+literals); otherwise they use `op run --env-file=config/env.1p` (always in
+git) to resolve references at load time.
 
 For local development, you can also store **resolved** values in a
 [1Password Environment](https://developer.1password.com/docs/environments/) and mount

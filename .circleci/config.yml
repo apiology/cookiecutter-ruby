@@ -15,6 +15,7 @@ commands:
     steps:
       - run:
           name: <<parameters.label>>
+          no_output_timeout: 30m
           command: |
             export PATH="${HOME}/.pyenv/bin:${PATH}"
             export PATH="${HOME}/.rbenv/bin:${HOME}/.rbenv/shims:${PATH}"
@@ -29,11 +30,11 @@ commands:
             # https://app.circleci.com/pipelines/github/apiology/cookiecutter-pypackage/4/workflows/29074dc8-944c-4600-8aaa-5116575fed90/jobs/4
             "LC_ALL": "C.UTF-8"
             "LANG": "C.UTF-8"
-          no_output_timeout: "30m"
   set_up_environment:
     description: "Install source environment"
     steps:
-      - checkout
+      - checkout:
+          method: full
       - run:
           name: Update timestamps to original commit time
           command: |
@@ -66,6 +67,7 @@ commands:
             - pyenv-
       - run:
           name: Initialize packages
+          no_output_timeout: 30m
           command: |
             # measuring slows down the script - only enable when you
             # want to debug where this is spending time
