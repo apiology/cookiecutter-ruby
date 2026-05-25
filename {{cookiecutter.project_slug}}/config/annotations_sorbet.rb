@@ -7,17 +7,16 @@ require 'sorbet-runtime'
 #     class Struct
 #       extend T::Props::ClassMethods
 #     end
-#
 #     # @param type [T::Types::Base,::Class<Object>]
 #     # @return [T::Types::Base]
-#     def nilable(type); end
-#
-#     # @generic T
-#     # @param o [generic<T>]
-#     # @param type [Class<generic<T>>]
-#     # @return [generic<T>]
-#     def let(o, type); end
-#
+#     def self.nilable(type)
+#     end
+#     # @param obj [BasicObject]
+#     # @param type [T::Types::Base,::Class<Object>]
+#     # @return [BasicObject]
+#     def self.let(obj, type)
+#     end
 #     # @return [T::Types::Base]
-#     def self.untyped; end
+#     def self.untyped
+#     end
 #   end
