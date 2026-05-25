@@ -68,6 +68,30 @@ Quick lookup for strong-level messages seen in Ruby gem repos and the preferred 
 
 **Fix:** Usually ignorable on the `ENV['BUNDLE_GEMFILE']` line; binstubs are often excluded or get a single ignore.
 
+## Unresolved call to fetch on RBS::Unnamed::ENVClass
+
+**Cause:** Strong-level RBS typing for `ENV` may not expose `fetch` in all contexts.
+
+**Fix:** Add a targeted `# @sg-ignore` immediately above `ENV.fetch(...)` when a cleaner type annotation does not resolve it.
+
+## Unresolved constant WARN
+
+**Cause:** Bare severity constants in logger subclasses are not always resolved.
+
+**Fix:** Use `Logger::WARN` (or explicit `Logger::Severity::<LEVEL>`).
+
+## Wrong argument type for Float#/: arg_0 expected BigDecimal, received Integer
+
+**Cause:** Numeric division in duration math can be inferred through strict numeric signatures.
+
+**Fix:** Prefer `fdiv` (`seconds.fdiv(60)`) or make the divisor/value explicit float where appropriate.
+
+## Unresolved call to join on Array<String>, nil
+
+**Cause:** Exception backtrace is nullable (`nil` when missing).
+
+**Fix:** Wrap with `Array(...)`: `Array(error.backtrace).join("\n")`.
+
 ## Wrong argument type … Mocha::Mock
 
 **Cause:** Test mocks in spec/feature/test files.
