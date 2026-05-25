@@ -19,6 +19,7 @@ alwaysApply: false
 - **Do not** manually remove or cherry-pick files under `sorbet/rbi/gems/` (e.g. `git rm` duplicate `parlour@*.rbi` files).
 - Those artifacts are produced and refreshed by **`make build-typecheck`** (tapioca, `rbs collection`, and related Makefile targets).
 - If Sorbet reports duplicate or stale gem RBIs, run **`make build-typecheck`** (or **`make ci-build-typecheck`** where defined), fix lockfiles/generators/CI cache as needed, and commit what the Makefile regenerates—not a hand-edited RBI tree.
+- When **`Gemfile.lock`** is in the commit, Overcommit **`RegenerateTypecheck`** (`.git-hooks/pre_commit/regenerate_typecheck.rb`) runs **`make build-typecheck`** and stages regenerated RBI/RBS paths before push.
 
 ## Local vs CI typechecking
 
