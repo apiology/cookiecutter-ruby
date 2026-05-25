@@ -1,0 +1,40 @@
+---
+description: >-
+  Treat CIRCLECI (or CI) env branching in fix.sh and bootstrap scripts as a smell —
+  fix belongs in CircleCI config, Makefile targets, or hooks, not shell CI detection
+globs:
+  - "fix.sh"
+  - "bin/**"
+  - ".githooks/**"
+alwaysApply: false
+---
+
+# CIRCLECI env checks in fix.sh (smell)
+
+## Rule
+
+Do **not** add or extend `if [ -n "${CIRCLECI:-}" ]` (or similar) in `fix.sh`, `bin/*`, or git hooks to change install behavior, skip steps, or paper over CI-only failures.
+
+That pattern usually means:
+
+- The **wrong layer** is owning the behavior (bootstrap script vs CI job vs Makefile).
+- The **root cause** in CircleCI (cache, image, checkout, env) was not fixed.
+- Local and CI paths **diverge**, so regressions hide until push.
+
+## Do instead
+
+| Need | Put it here |
+|------|-------------|
+| CI-only setup or retries | `.circleci/config.yml` job `steps` |
+| Optional slow work | Makefile target; CI calls that target explicitly |
+| Post-checkout bootstrap | `fix.sh` / `bin/git-post-checkout-fix` for **all** environments equally |
+| Document a one-off CI quirk | Comment linking the **CircleCI job URL** plus the real fix; remove when CI is corrected |
+
+## Allowed exceptions
+
+- Reading `CIRCLECI` only to **print** diagnostics (no behavior change).
+- Upstream boilerplate you are **removing** in the same PR as part of a CI fix.
+
+## Agents
+
+When reviewing bootstrap changes, prefer deleting CI branches and fixing CircleCI or Makefile. Use `circleci-logs-before-local-ci.mdc` when CI failed before editing `fix.sh`.
