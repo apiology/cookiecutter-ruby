@@ -60,10 +60,9 @@ development.  See the `.envrc` file for detail.
 `config/env.1p` in git is the **template**: each variable points at a vault
 item with an `op://` [secret
 reference](https://developer.1password.com/docs/cli/secret-reference), not a
-plaintext value.  `.envrc` and `make config/env` prefer **`config/env.local`**
-when that file is readable (1Password Environment mount with resolved
-literals); otherwise they use `op run --env-file=config/env.1p` (always in
-git) to resolve references at load time.
+plaintext value.  Load order and fallbacks are in **`.envrc`**.  Mount
+**resolved** values at **`config/env.local`** (below); use **`config/env.1p`**
+in git when adding or syncing `op://` keys.
 
 For local development, you can also store **resolved** values in a
 [1Password Environment](https://developer.1password.com/docs/environments/) and mount
@@ -71,7 +70,8 @@ them as a [local `.env`
 file](https://developer.1password.com/docs/environments/local-env-file/) at
 **`config/env.local`** (macOS beta; fifo mount, gitignored).  Do **not**
 mount at `config/env.1p` — that path is the tracked `op://` template and
-conflicts with git.
+conflicts with git.  When vault items change or you add keys to the template,
+refresh the Environment with `op inject` and the 1Password app.
 
 #### Prerequisites (macOS)
 
@@ -100,16 +100,27 @@ Do not commit `config/env.local`.
 
 #### Update the Environment from `config/env.1p` (`op inject`)
 
-```sh
-op inject -i config/env.1p -o /tmp/repo-env.import -f
-grep 'op://' /tmp/repo-env.import && echo 'ERROR: unresolved references' || echo 'OK'
-# Import /tmp/repo-env.import in 1Password → Environments, then:
-rm /tmp/repo-env.import
-```
+Use this when you have changed `config/env.1p` in git (new variables or
+updated `op://` paths) or when secrets in 1Password vaults have changed and
+you want the Environment to match current vault values.
 
-If you use a local mount at `config/env.local`, confirm
-`grep -c op:// config/env.local` is **0**, then `direnv allow`.  Do not
-commit `config/env.local`.
+1. From the repo root, resolve the template to a **temporary** file (never
+   write injected secrets back onto the tracked `config/env.1p`):
+
+   ```sh
+   op inject -i config/env.1p -o /tmp/repo-env.import -f
+   ```
+
+2. Confirm every reference resolved (no `op://` left):
+
+   ```sh
+   grep 'op://' /tmp/repo-env.import && echo 'ERROR: unresolved references' || echo 'OK'
+   ```
+
+3. Import into 1Password, then `rm /tmp/repo-env.import`.
+
+4. If you use a local mount at `config/env.local`, confirm
+   `grep -c op:// config/env.local` is **0**, then `direnv allow`.
 
 #### Avoid duplicate variables
 
