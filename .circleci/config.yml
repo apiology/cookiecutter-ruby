@@ -59,6 +59,7 @@ commands:
             - pyenv-
       - run:
           name: Initialize packages
+          no_output_timeout: 30m
           command: |
             # measuring slows down the script - only enable when you
             # want to debug where this is spending time

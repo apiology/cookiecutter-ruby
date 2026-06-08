@@ -1,0 +1,29 @@
+---
+description: >-
+  Triage GitHub PR review threads — load each inline comment with path and line
+  (and diff hunk) before editing or replying; never reply from issue comments alone
+alwaysApply: false
+---
+
+# PR review inline comments
+
+When addressing **GitHub pull request review** feedback (including babysitting a PR to merge):
+
+## Load thread context first
+
+Before changing code or posting a reply:
+
+1. Fetch **review threads** with **path**, **line** (or `originalLine`), and **body** — e.g. `gh api graphql` on `pullRequest.reviewThreads`, not only `gh pr view --comments` (issue comments lack file/line).
+2. For each thread you will touch, read the **diff hunk** at that path/line (`git diff <base>...HEAD -- <path>` or the PR “Files changed” view).
+3. Do **not** infer what a comment refers to from the comment text alone or from a batch of unrelated issue comments.
+
+## Replies and edits
+
+- Edit the **file and line** the thread anchors (or the nearest still-valid line after reflow).
+- In the reply, cite **`path:line`** and state what you changed or why you disagreed.
+- One thread → one tailored reply. Do not paste the same boilerplate across threads on different files.
+- If the fix belongs in an **upstream cookiecutter** repo, say so **and** still answer what this PR does at that line.
+
+## Resolve threads
+
+Resolve (or ask the reviewer to resolve) only after the reply matches the inline comment and the branch reflects that fix.
