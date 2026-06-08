@@ -156,6 +156,10 @@ PostCheckout:
   BundleInstall:
     enabled: true
 
+PostCheckout:
+  BundleInstall:
+    enabled: true
+
 PostCommit:
   BundleInstall:
     enabled: true
