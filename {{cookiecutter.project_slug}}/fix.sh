@@ -238,7 +238,7 @@ ensure_bundle() {
 }
 
 set_ruby_local_version() {
-  latest_ruby_version="$(cut -d' ' -f1 <<< "${ruby_versions}")"
+  latest_ruby_version="$(echo "${ruby_versions}" | tail -1)"
   if [ "${latest_ruby_version}" != "$(cat .ruby-version 2>/dev/null)" ]
   then
     echo "${latest_ruby_version}" > .ruby-version
