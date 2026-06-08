@@ -86,6 +86,10 @@ PreCommit:
     problem_on_unmodified_line: warn
     quiet: false
 
+PostCheckout:
+  BundleInstall:
+    enabled: true
+
 PostCommit:
   BundleInstall:
     enabled: true
