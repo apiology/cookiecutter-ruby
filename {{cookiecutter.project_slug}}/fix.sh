@@ -191,9 +191,7 @@ ensure_bundle() {
   bundler_version_major=$(cut -d. -f1 <<< "${bundler_version}")
   bundler_version_minor=$(cut -d. -f2 <<< "${bundler_version}")
   bundler_version_patch=$(cut -d. -f3 <<< "${bundler_version}")
-  # Version <2.2.22 of bundler isn't compatible with Ruby 3.3:
-  #
-  # https://stackoverflow.com/questions/70800753/rails-calling-didyoumeanspell-checkers-mergeerror-name-spell-checker-h
+  # Install bundler >=2.6.9 when older versions fail `bundle lock` on git-branch deps (aff6a48).
   need_better_bundler=false
   if [ "${bundler_version_major}" -lt 2 ]
   then
