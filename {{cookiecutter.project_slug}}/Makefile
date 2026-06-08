@@ -33,7 +33,7 @@ rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet
 	bin/sord gen $(SORD_GEN_OPTIONS) rbi/{{cookiecutter.project_slug}}-sord.rbi # YARD to RBI
 	cat rbi/{{cookiecutter.project_slug}}-parlour.rbi rbi/{{cookiecutter.project_slug}}-sord.rbi > rbi/{{cookiecutter.project_slug}}.rbi
 	rm -f rbi/{{cookiecutter.project_slug}}-sord.rbi rbi/{{cookiecutter.project_slug}}-parlour.rbi
-	sed -i.bak -e 's/^# typed: strong/# typed: ignore/' rbi/{{cookiecutter.project_slug}}.rbi
+#	sed -i.bak -e 's/^# typed: strong/# typed: ignore/' rbi/{{cookiecutter.project_slug}}.rbi
 	rm -f rbi/{{cookiecutter.project_slug}}.rbi.bak
 	touch rbi/{{cookiecutter.project_slug}}.rbi
 
@@ -53,7 +53,7 @@ YARD_PLUGIN_OPTS = --plugin yard-sorbet --plugin yard-solargraph
 # checksum, so a Makefile change alone will still restore the old
 # .yardoc.  Bumping the cache prefix forces a clean rebuild and avoids
 # shipping stale types (e.g. test-only TestDate/TestTasks) in sig/rbi.
-YARD_OPTS = $(YARD_PLUGIN_OPTS) -c .yardoc --output-dir yardoc --backtrace --exclude '^config/' --exclude '^test/' '{lib,app}/**/*.rb' 'ext/**/*.{c,rb}'
+YARD_OPTS = $(YARD_PLUGIN_OPTS) -c .yardoc --output-dir yardoc --backtrace --exclude '^config/' --exclude '^spec/' --exclude '^feature/' '{lib,app}/**/*.rb' 'ext/**/*.{c,rb}'
 
 types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Ensure typechecking dependencies are in place
 	bin/solargraph gems
@@ -170,7 +170,7 @@ requirements_dev.txt.installed: requirements_dev.txt
 
 pip_install: requirements_dev.txt.installed ## Install Python dependencies
 
-Gemfile.lock: Gemfile {{cookiecutter.project_slug}}.gemspec .bundle/config
+Gemfile.lock: Gemfile .bundle/config
 	if [ ! -f Gemfile.lock ]; then \
 	  bundle install; \
 	else \
