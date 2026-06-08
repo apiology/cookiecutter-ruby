@@ -38,12 +38,22 @@ rbi/{{cookiecutter.project_slug}}.rbi: tapioca.installed yardoc.installed sorbet
 	touch rbi/{{cookiecutter.project_slug}}.rbi
 
 sig/{{cookiecutter.project_slug}}.rbs: yardoc.installed .gem_rbs_collection/.keepme ## Generate RBS file
-	rm -f rbi/{{cookiecutter.project_slug}}.rbs
+	rm -f sig/{{cookiecutter.project_slug}}.rbs
 	bin/sord gen $(SORD_GEN_OPTIONS) sig/{{cookiecutter.project_slug}}.rbs # YARD to RBS
 
 YARD_PLUGIN_OPTS = --plugin yard-sorbet --plugin yard-solargraph
 
-YARD_OPTS = $(YARD_PLUGIN_OPTS) -c .yardoc --output-dir yardoc --backtrace --exclude '^config/' '{lib,app,spec,feature}/**/*.rb' 'ext/**/*.{c,rb}'
+# IMPORTANT: if you change the source globs/excludes below, bump the
+# ruby-types-vN- cache prefix in .circleci/config.yml.
+#
+# YARD's .yardoc database (cached in CI) is incremental and additive: it
+# never drops objects for files that leave the source set, so a database
+# built under one set of YARD_OPTS stays contaminated for those files
+# forever once restored.  CI fallback cache keys omit the Makefile
+# checksum, so a Makefile change alone will still restore the old
+# .yardoc.  Bumping the cache prefix forces a clean rebuild and avoids
+# shipping stale types (e.g. test-only TestDate/TestTasks) in sig/rbi.
+YARD_OPTS = $(YARD_PLUGIN_OPTS) -c .yardoc --output-dir yardoc --backtrace --exclude '^config/' --exclude '^spec/' --exclude '^feature/' '{lib,app}/**/*.rb' 'ext/**/*.{c,rb}'
 
 types.installed: tapioca.installed Gemfile.lock Gemfile.lock.installed rbi/{{cookiecutter.project_slug}}.rbi sorbet/tapioca/require.rb sorbet/config ## Ensure typechecking dependencies are in place
 	bin/solargraph gems
