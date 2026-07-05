@@ -125,6 +125,13 @@ commands:
   citest:
     description: "Bake cookie and run tests; cache global Ruby from child fix.sh"
     steps:
+      - run_with_languages:
+          label: Sign overcommit (meta repo, before child rbenv cache)
+          command: |
+            git config --global user.email "test@test.test"
+            git config --global user.name "Test Test"
+            bundle exec overcommit --sign
+            bundle exec overcommit --sign pre-commit
       - restore_cache:
           name: Restore child rbenv cache
           keys:
@@ -134,14 +141,6 @@ commands:
       - run_with_languages:
           label: Test
           command: |
-            # These will be used in post_gen_project.py while testing
-            # the cookies, as well as by overcommit
-            git config --global user.email "test@test.test"
-            git config --global user.name "Test Test"
-            # Coax overcommit into working
-            bundle exec overcommit --sign
-            bundle exec overcommit --sign pre-commit
-
             # Set timezone as same on dev box for test consistency
 
             # https://stackoverflow.com/questions/44331836/apt-get-install-tzdata-noninteractive
@@ -156,6 +155,7 @@ commands:
             # export FIX_SH_TIMING_LOG=/tmp/child_fix_sh_timing.log
 
             make citest cicoverage
+            git checkout -- Gemfile.lock
       - store_artifacts:
           path: /tmp/child_fix_sh_timing.log
       - save_cache:
