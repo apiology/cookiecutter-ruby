@@ -467,6 +467,8 @@ set_ruby_local_version
 
 ensure_rugged_packages_installed
 
+ensure_ruby_build_requirements
+
 ensure_bundle
 
 ensure_pyenv
