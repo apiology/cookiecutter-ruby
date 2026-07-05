@@ -4,8 +4,9 @@
 #
 # @!parse
 #   module SimpleCov
-#     class Configuration
-#       # @param criterion [:line, :branch]
+#     module Configuration
+#       # @overload enable_coverage(:line)
+#       # @overload enable_coverage(:branch)
 #       # @return [void]
 #       def enable_coverage(criterion = :line); end
 #     end

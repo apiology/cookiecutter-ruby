@@ -18,6 +18,10 @@ SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
 SimpleCov.start do
   # @!parse
   #   extend SimpleCov::Configuration
+  #   # @overload enable_coverage(:line)
+  #   # @overload enable_coverage(:branch)
+  #   # @return [void]
+  #   def enable_coverage(criterion = :line); end
 
   # this dir used by CircleCI
   add_filter(%r{^/vendor/bundle})
