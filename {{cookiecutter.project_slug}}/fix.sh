@@ -165,7 +165,6 @@ ensure_ruby_versions() {
       hash -r  # ensure we are seeing latest bundler etc
     else
       echo "Found Ruby version $ver already installed"
-      ensure_ruby_build_requirements
     fi
   done
 }
