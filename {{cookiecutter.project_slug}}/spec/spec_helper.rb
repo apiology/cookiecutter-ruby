@@ -23,6 +23,7 @@ SimpleCov.start do
   add_filter(%r{^/vendor/bundle})
   add_filter(%r{^/spec})
   track_files 'lib/**/*.rb'
+  # @sg-ignore
   enable_coverage(:branch) # Report branch coverage to trigger branch-level undercover warnings
 end
 

@@ -16,7 +16,6 @@ include:
 exclude:
   # Cursor skills/scripts are agent tooling, not gem API surface
   - '.cursor/**/*'
-  - 'spec/**/*'
   # vendored
   - 'bin/bundle'
   - 'bin/brakeman'
