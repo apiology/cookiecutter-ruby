@@ -16,17 +16,11 @@ SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
   ]
 )
 SimpleCov.start do
-  # @!parse
-  #   extend SimpleCov::Configuration
-  #   # @overload enable_coverage(:line)
-  #   # @overload enable_coverage(:branch)
-  #   # @return [void]
-  #   def enable_coverage(criterion = :line); end
-
   # this dir used by CircleCI
   add_filter(%r{^/vendor/bundle})
   add_filter(%r{^/spec})
   track_files 'lib/**/*.rb'
+  # @sg-ignore Wrong argument type for SimpleCov::Configuration#enable_coverage: criterion expected :line, :branch, received Symbol
   enable_coverage(:branch) # Report branch coverage to trigger branch-level undercover warnings
 end
 
