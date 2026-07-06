@@ -429,6 +429,34 @@ EOF
   chmod +x .githooks/post-checkout
 }
 
+patch_overcommit_hooks() {
+  # Inject bootstrap so Cursor worktrees inherit .local-overcommit.yml before
+  # Overcommit loads config (gitignored file is absent on fresh worktree checkout).
+  # Do NOT patch overcommit-hook: it must match the gem template or Overcommit
+  # self-update will reinstall all hooks and strip these patches.
+  local hook hooks_dir bootstrap_line
+  hooks_dir="$(git config --get core.hooksPath 2>/dev/null || echo .git/hooks)"
+  bootstrap_line="repo_root = String(\`git rev-parse --show-toplevel 2>/dev/null\`).strip; load File.join(repo_root, '.git-hooks', 'bootstrap_local_overcommit.rb') rescue nil if repo_root != '' # OVERCOMMIT_REPO_BOOTSTRAP"
+
+  for hook in "${hooks_dir}"/*
+  do
+    [ -f "$hook" ] || continue
+    [[ "$(basename "$hook")" == "overcommit-hook" ]] && continue
+    grep -q 'OVERCOMMIT_REPO_BOOTSTRAP' "$hook" && continue
+    grep -q 'Entrypoint for Overcommit hook integration' "$hook" || continue
+    ruby - "$hook" "$bootstrap_line" <<'RUBY'
+hook_path = ARGV[0]
+bootstrap_line = ARGV[1]
+contents = File.read(hook_path)
+marker = "if ENV['OVERCOMMIT_DISABLE'].to_i != 0 || ENV['OVERCOMMIT_DISABLED'].to_i != 0\n  exit\nend\n"
+unless contents.include?('OVERCOMMIT_REPO_BOOTSTRAP')
+  raise "bootstrap insertion point not found in #{hook_path}" unless contents.include?(marker)
+  File.write(hook_path, contents.sub(marker, "#{marker}\n#{bootstrap_line}\n"))
+end
+RUBY
+  done
+}
+
 ensure_overcommit() {
   # don't run if we're in the middle of a cookiecutter child project
   # test, or otherwise don't have a Git repo to install hooks into...
@@ -437,6 +465,7 @@ ensure_overcommit() {
     bundle exec overcommit --install
     bundle exec overcommit --sign
     bundle exec overcommit --sign pre-commit
+    patch_overcommit_hooks
     install_bootstrap_post_checkout_hook
   else
     >&2 echo 'Not in a git repo; not installing git hooks'

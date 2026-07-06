@@ -120,6 +120,9 @@ types.installed
 # 1Password Environment local mount (resolved literals; template is config/env.1p)
 /config/env.local
 
+# Local Overcommit overrides (verify_signatures, etc.)
+.local-overcommit.yml
+
 # Overcommit installs hooks here; only bootstrap post-checkout is tracked
 .githooks/*
 !.githooks/post-checkout
