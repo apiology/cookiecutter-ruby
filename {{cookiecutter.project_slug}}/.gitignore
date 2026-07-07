@@ -84,3 +84,4 @@ sorbet/machine_specific_config
 
 # Ignore 1Password-generated secrets
 /config/env
+.env-local-probe-path
