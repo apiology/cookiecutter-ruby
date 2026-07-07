@@ -132,11 +132,10 @@ variables in the Environment, `op inject` once, import that file, and confirm
 
 ## Syncing boilerplate
 
-See [docs/SYNCING_BOILERPLATE.md](docs/SYNCING_BOILERPLATE.md). Skill: `.cursor/skills/apiology-boilerplate-sync/`. Rules: `boilerplate-sync.mdc`, `template-hierarchy.mdc`, `overcommit-signing.mdc` — interpret hierarchy at **this** tier (`cookiecutter-ruby`, Ruby).
+See [docs/SYNCING_BOILERPLATE.md](docs/SYNCING_BOILERPLATE.md). Interpret hierarchy at **this** tier (`cookiecutter-ruby`, Ruby) using `.cursor/rules/template-hierarchy.mdc` when present.
 
 ## Conventions
 
-* Cursor authoring policy: `~/.cursor/rules/cursor-rule-authoring.mdc` only (global).
 * Repo rules: clear task `description`, `alwaysApply: false`, optional `globs` only when they cover every auto-attach case.
 
 ## Tests

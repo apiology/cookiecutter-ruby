@@ -198,7 +198,7 @@ jobs:
               exit 1
             fi
     # This seemed to shave 5ish% of the build time off when added
-    resource_class: large
+    resource_class: large.gen2
 
 workflows:
   version: 2
