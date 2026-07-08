@@ -66,6 +66,44 @@ def bake_in_temp_dir(cookies, *args, **kwargs):
             rmtree(str(result.project_path))
 
 
+PARENT_HOOK_ENV_VARS = (
+    'GIT_DIR',
+    'GIT_WORK_TREE',
+    'GIT_INDEX_FILE',
+    'BUNDLE_GEMFILE',
+    'BUNDLE_PATH',
+    'BUNDLE_BIN',
+    'BUNDLE_WITHOUT',
+    'BUNDLE_DEPLOYMENT',
+    'BUNDLE_APP_CONFIG',
+    'RUBYOPT',
+)
+
+
+def _parent_hook_env_var(var):
+    return any((
+        var in PARENT_HOOK_ENV_VARS,
+        var.startswith('BUNDLER_ORIG_'),
+        var.startswith('BUNDLE_'),
+        var.startswith('BUNDLER_'),
+        var in ('GEM_HOME', 'GEM_PATH'),
+    ))
+
+
+def _env_without_git_push_vars():
+    """Drop git push/pre-push env so baked-project make targets use local .git."""
+    env = os.environ.copy()
+    for var in list(env):
+        if _parent_hook_env_var(var):
+            env.pop(var, None)
+    if 'PATH' in env:
+        env['PATH'] = os.pathsep.join(
+            part for part in env['PATH'].split(os.pathsep)
+            if part and '/bundle/ruby/' not in part
+        )
+    return env
+
+
 def run_inside_dir(command, dirpath):
     """Run a command inside a directory and return the exit status.
 
@@ -73,7 +111,10 @@ def run_inside_dir(command, dirpath):
     :param dirpath: Working directory for the command.
     """
     with inside_dir(dirpath):
-        return subprocess.check_call(shlex.split(command))
+        return subprocess.check_call(
+            shlex.split(command),
+            env=_env_without_git_push_vars(),
+        )
 
 
 def check_output_inside_dir(command, dirpath):
@@ -83,7 +124,10 @@ def check_output_inside_dir(command, dirpath):
     :param dirpath: Working directory for the command.
     """
     with inside_dir(dirpath):
-        return subprocess.check_output(shlex.split(command))
+        return subprocess.check_output(
+            shlex.split(command),
+            env=_env_without_git_push_vars(),
+        )
 
 
 def project_info(result):

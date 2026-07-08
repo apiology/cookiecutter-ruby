@@ -1,0 +1,31 @@
+---
+description: >-
+  Cursor worktree bootstrap failed or env.local/op run debugging — read
+  file-based probe logs before inferring from missing direnv stderr
+alwaysApply: false
+globs:
+  - .envrc
+  - bin/probe_env_local
+  - config/env.local
+---
+
+# env.local probe logs (worktree bootstrap)
+
+`ls`/`cat` redirected to stderr in `.envrc` do **not** appear in worktree-fix bootstrap logs. Use file probes instead.
+
+## Before diagnosing bootstrap
+
+1. Read the pointer: `.env-local-probe-path` (one line: absolute log path).
+2. Read the log tail: `~/.cache/env-local-probe/<worktree-basename>.log` (e.g. `kaa0.log`).
+3. If missing or stale, run from repo root: `./bin/probe_env_local` (no direnv required).
+
+## Interpret `which_branch`
+
+| Value | Meaning |
+|-------|---------|
+| `env.local` | Symlink or readable mount present; `.envrc` should skip `op run`. |
+| `op_run` | No symlink/readable mount at eval time; falls back to `op run`. |
+
+Also check: `-L`/`-r`, `cat exit=` (124 = FIFO with no writer / Environment not mounted), `op_run_fallback` section.
+
+Every `.envrc` eval appends a block (source=`envrc`). Bootstrap retries produce multiple timestamped blocks — compare hook time to latest block.

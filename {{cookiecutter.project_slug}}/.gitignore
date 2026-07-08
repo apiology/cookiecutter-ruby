@@ -86,3 +86,4 @@ sorbet/machine_specific_config
 /config/env
 
 /.gem_rbs_collection
+.env-local-probe-path
