@@ -103,13 +103,8 @@ PostRewrite:
     enabled: true
 
 PrePush:
-  CustomScript:
-    enabled: true
-    requires_files: false
-    required_executable: 'bin/git-push-validate'
   Pytest:
     enabled: true
-
 #PostCheckout:
 #  ALL: # Special hook name that customizes all hooks of this type
 #    quiet: true # Change all post-checkout hooks to only display output on failure

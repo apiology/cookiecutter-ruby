@@ -59,9 +59,11 @@ types.installed
 /config/env.local
 
 # Overcommit installs hooks here; only bootstrap post-checkout is tracked
+.local-overcommit.yml
 .githooks/*
 !.githooks/post-checkout
 
 # Ignore make target files
 /.make/*
 !/.make/.keep
+.env-local-probe-path
