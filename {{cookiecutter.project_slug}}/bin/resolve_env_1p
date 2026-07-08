@@ -1,0 +1,24 @@
+#!/bin/bash -eu
+
+set -o pipefail
+
+# config/env.1p may be a symlink whose target is only valid from the primary worktree.
+# Resolve via the first worktree listed by git.
+
+if [[ -r config/env.1p ]]; then
+  echo config/env.1p
+  exit 0
+fi
+
+main_wt=$(git worktree list --porcelain 2>/dev/null | awk '/^worktree / { print $2; exit }')
+if [[ -n ${main_wt} && -r ${main_wt}/config/env.1p ]]; then
+  link_dir=${main_wt}/config
+  target=$(readlink "${link_dir}/env.1p")
+  resolved=${link_dir}/${target}
+  if [[ -r ${resolved} ]]; then
+    echo "${resolved}"
+    exit 0
+  fi
+fi
+
+echo config/env.1p

@@ -22,6 +22,23 @@ debug_timing
 
 set -o pipefail
 
+ensure_homebrew_path() {
+  if [ "$(uname)" != "Darwin" ]
+  then
+    return 0
+  fi
+
+  local prefix
+  for prefix in /opt/homebrew /usr/local
+  do
+    if [ -x "${prefix}/bin/brew" ]
+    then
+      export PATH="${prefix}/bin:${prefix}/sbin:${PATH}"
+      return 0
+    fi
+  done
+}
+
 install_rbenv() {
   if [ "$(uname)" == "Darwin" ]
   then
@@ -45,6 +62,7 @@ EOF
 }
 
 set_rbenv_env_variables() {
+  ensure_homebrew_path
   export PATH="${HOME}/.rbenv/bin:$PATH"
   eval "$(rbenv init -)"
 }
@@ -67,6 +85,8 @@ ensure_ruby_build() {
 }
 
 ensure_rbenv() {
+  ensure_homebrew_path
+
   if ! type rbenv >/dev/null 2>&1 && ! [ -f "${HOME}/.rbenv/bin/rbenv" ]
   then
     install_rbenv
@@ -188,6 +208,12 @@ ensure_bundle() {
       bundler_version=$(bundle --version | cut -d ' ' -f 3)
   fi
   echo "Bundler version: ${bundler_version}"
+  active_bundler_version=$(bundle --version 2>/dev/null | cut -d ' ' -f 3)
+  if [ -n "${bundler_version}" ] && [ "${bundler_version}" != "${active_bundler_version}" ]
+  then
+    gem install "bundler:${bundler_version}"
+    hash -r
+  fi
   bundler_version_major=$(cut -d. -f1 <<< "${bundler_version}")
   bundler_version_minor=$(cut -d. -f2 <<< "${bundler_version}")
   bundler_version_patch=$(cut -d. -f3 <<< "${bundler_version}")
@@ -279,23 +305,23 @@ set_pyenv_env_variables() {
   #
   # https://app.circleci.com/pipelines/github/apiology/cookiecutter-pypackage/15/workflows/10506069-7662-46bd-b915-2992db3f795b/jobs/15
   set +u
+  ensure_homebrew_path
   export PYENV_ROOT="${HOME}/.pyenv"
-  export PATH="${PYENV_ROOT}/bin:$PATH"
+  export PATH="${PYENV_ROOT}/bin:${PYENV_ROOT}/shims:${PATH}"
   eval "$(pyenv init --path)"
   eval "$(pyenv virtualenv-init -)"
   set -u
 }
 
 ensure_pyenv() {
+  ensure_homebrew_path
+
   if ! type pyenv >/dev/null 2>&1 && ! [ -f "${HOME}/.pyenv/bin/pyenv" ]
   then
     install_pyenv
   fi
 
-  if ! type pyenv >/dev/null 2>&1
-  then
-    set_pyenv_env_variables
-  fi
+  set_pyenv_env_variables
 }
 
 update_package() {

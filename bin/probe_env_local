@@ -1,0 +1,67 @@
+#!/bin/bash -eu
+
+set -o pipefail
+
+# Append config/env.local readiness evidence. Bootstrap hooks omit .envrc stderr;
+# this log survives direnv/worktree-fix capture gaps.
+
+probe_log_dir="${ENV_LOCAL_PROBE_DIR:-${HOME}/.cache/env-local-probe}"
+mkdir -p "${probe_log_dir}"
+
+probe_id="${ENV_LOCAL_PROBE_ID:-$(basename "${PWD}")}"
+log_file="${probe_log_dir}/${probe_id}.log"
+
+{
+  echo "=== $(date -u +%Y-%m-%dT%H:%M:%SZ) source=${ENV_LOCAL_PROBE_SOURCE:-manual} pwd=${PWD} ==="
+  echo "git_head=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)@$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+  echo "symlink:"; ls -ld config/env.local 2>&1 || true
+  target="$(readlink config/env.local 2>/dev/null || true)"
+  echo "readlink=${target:-<none>}"
+  if [[ -n ${target} ]]; then
+    echo "target:"; ls -ld "${target}" 2>&1 || true
+  fi
+  echo "tests: -L=$([[ -L config/env.local ]] && echo yes || echo no) -r=$([[ -r config/env.local ]] && echo yes || echo no)"
+  echo "file(1):"; file config/env.local 2>&1 || true
+  if [[ -L config/env.local || -r config/env.local ]]; then
+    branch=env.local
+  else
+    branch=op_run
+  fi
+  echo "which_branch=${branch}"
+  echo "cat_sample (2s timeout, keys only):"
+  if command -v timeout >/dev/null 2>&1; then
+    set +e
+    timeout 2 cat config/env.local 2>&1 | head -20 | while IFS= read -r line; do
+      key="${line%%=*}"
+      if [[ ${key} == "${line}" ]]; then
+        echo "  ${line}"
+      else
+        echo "  ${key}=<redacted>"
+      fi
+    done
+    cat_status=${PIPESTATUS[0]}
+    set -e
+    echo "  cat exit=${cat_status} (124=timeout)"
+  else
+    echo "  (timeout command not available)"
+  fi
+  if [[ ${branch} == op_run ]]; then
+    echo "op_run_fallback:"
+    resolved="$(./bin/resolve_env_1p 2>/dev/null || echo config/env.1p)"
+    echo "  resolve_env_1p=${resolved}"
+    echo "  resolved_readable=$([[ -r ${resolved} ]] && echo yes || echo no)"
+    if command -v op >/dev/null 2>&1; then
+      echo "  op_account_list=$(op account list 2>&1 | head -3 | tr '\n' '; ' || true)"
+    else
+      echo "  op_account_list=op not in PATH"
+    fi
+  fi
+  echo
+} >>"${log_file}"
+
+printf '%s\n' "${log_file}" >"${PWD}/.env-local-probe-path" 2>/dev/null || true
+
+if [[ ${ENV_LOCAL_PROBE_QUIET:-} != 1 ]]; then
+  echo "${log_file}"
+  tail -30 "${log_file}"
+fi

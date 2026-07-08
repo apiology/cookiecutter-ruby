@@ -1,0 +1,26 @@
+---
+description: When babysitting PRs — reply to review comments; do not resolve threads unless feedback was straightforward and fully applied
+alwaysApply: false
+---
+
+# PR review threads
+
+When triaging pull request review comments:
+
+- **Reply** to every unresolved thread with what you did, what you could not do, or why you disagree.
+- **Do not resolve** a review thread unless **all** of these are true:
+  1. The feedback was straightforward (not a design question, not "explain why", not "show me").
+  2. You fully agreed with it.
+  3. You applied it exactly as requested — no substitute approach the reviewer rejected.
+  4. You are very confident the author will agree the thread is done without further discussion.
+
+When in doubt, leave the thread **open** for the reviewer to resolve.
+
+Examples — **do not resolve**:
+- "Explain why this changed?" — answer in a reply; thread stays open.
+- "Not acceptable substitution" — even after reverting, wait for reviewer ack.
+- "Show me log of crash" — post the log; thread stays open.
+- You applied a workaround the reviewer might reject (file excludes vs repo-wide disable vs syntax change).
+
+Examples — **ok to resolve** (rare):
+- Typo fix they pointed at, you fixed exactly that typo, no ambiguity.

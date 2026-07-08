@@ -7,7 +7,12 @@ homebrew_package=${1:?homebrew package}
 apt_package=${2:-${homebrew_package}}
 if [ "$(uname)" == "Darwin" ]
 then
-  HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_UPGRADE=1 brew install "${homebrew_package}"
+  # HOMEBREW_NO_INSTALL_UPGRADE makes `brew install` fail when the formula is
+  # already installed at an older version; skip install when it is present.
+  if ! brew list --formula "${homebrew_package}" >/dev/null 2>&1
+  then
+    HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_UPGRADE=1 brew install "${homebrew_package}"
+  fi
 elif type apt-get >/dev/null 2>&1
 then
   if ! dpkg -s "${apt_package}" >/dev/null
