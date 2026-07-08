@@ -75,7 +75,6 @@ sorbet/machine_specific_config
 .local-overcommit.yml
 
 # Overcommit installs hooks here; only bootstrap post-checkout is tracked
-.local-overcommit.yml
 .githooks/*
 !.githooks/post-checkout
 
