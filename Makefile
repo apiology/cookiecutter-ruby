@@ -1,4 +1,4 @@
-.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-build clean-coverage clean-pyc clean-typecheck clean-typecoverage coverage default docs gem_dependencies help overcommit quality repl test typecheck typecoverage update_from_cookiecutter
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-build clean-coverage clean-pyc clean-typecheck clean-typecoverage coverage default docs gem_dependencies help overcommit quality repl test typecheck typecoverage post_cookiecutter_sync update_from_cookiecutter
 
 .DEFAULT_GOAL := default
 
@@ -165,3 +165,8 @@ cicoverage: citest ## check code coverage
 
 update_from_cookiecutter: ## Bring in changes from template project used to create this repo
 	bin/cookiecutter_project_upgrader.sh
+	@$(MAKE) post_cookiecutter_sync
+
+post_cookiecutter_sync: ## Ecosystem-specific steps after template sync (empty by default)
+	@:
+
