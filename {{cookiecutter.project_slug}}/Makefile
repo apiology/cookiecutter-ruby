@@ -1,5 +1,4 @@
-.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default docs feature gem_dependencies help overcommit quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage post_cookiecutter_sync update_from_cookiecutter yard
-
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default docs feature gem_dependencies help overcommit post_cookiecutter_sync quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter yard
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -256,4 +255,3 @@ post_cookiecutter_sync: ## Ecosystem-specific steps after template sync
 	bundle update --conservative json nokogiri rack rexml yard brakeman || true
 	( make build && git add Gemfile.lock ) || true
 	bin/spoom srb bump || true
-
