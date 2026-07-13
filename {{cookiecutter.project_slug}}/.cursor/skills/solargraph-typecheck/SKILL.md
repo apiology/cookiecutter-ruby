@@ -182,7 +182,7 @@ Date.parse('2029-01-04')
 
 - HTTP response bodies: `@param response [#read_body]`
 - `$LOAD_PATH`: one `# @sg-ignore` on the bootstrap line (special RBS typing)
-- `ENV` / `FileUtils` / similar: prefer `config/annotations_*.rb` `@!parse` / `@!override` stubs where they help — see “Prefer config/annotations_*.rb stubs” above. Never add a YARD `class ENV` stub. For ENV `[]` / `[]=` / `fetch` union failures, keep normal `ENV[...]` + `# @sg-ignore`. Never `ENV.send` (unconventional code that Solargraph happens to ignore is not better typing)
+- `ENV` / `FileUtils` / similar: prefer `config/annotations_*.rb` `@!parse` / `@!override` stubs where they help — see “Prefer config/annotations_*.rb stubs” above. Never add a YARD `class ENV` stub. For ENV `[]` / `[]=` / `fetch` union failures that still appear after removing that stub, keep normal `ENV[...]` + `# @sg-ignore`. Never `ENV.send`. Remove **Unneeded @sg-ignore** on binstubs/`FileUtils` once stubs land and strong is clean
 
 ### GLI command blocks
 
