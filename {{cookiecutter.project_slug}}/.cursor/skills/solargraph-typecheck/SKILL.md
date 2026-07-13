@@ -70,6 +70,85 @@ ruby .cursor/skills/solargraph-typecheck/scripts/strip_sg_ignore.rb path/to/file
 
 ## Fix patterns (prefer these over ignores)
 
+### Prefer `config/annotations_*.rb` stubs for opaque stdlib / gem APIs
+
+When Solargraph reports `Unresolved call to …` on a **stdlib or gem** method you do not own (e.g. `FileUtils.ln_sf`), prefer a YARD `@!parse` / `@!override` stub in `config/annotations_*.rb` (loaded via `.solargraph.yml` `include: config/annotations*.rb`) over a per-call-site `@sg-ignore`.
+
+```ruby
+# config/annotations_misc.rb
+# @!override FileUtils.ln_sf
+#   @param src [String]
+#   @param dest [String]
+#   @return [void]
+#
+# @!parse
+#   module FileUtils
+#     class << self
+#       # @param src [String]
+#       # @param dest [String]
+#       # @return [void]
+#       def ln_sf(src, dest, **options); end
+#     end
+#   end
+```
+
+**ENV caveat (Solargraph 0.59+):** do **not** add a YARD `class ENV` stub. Under strong, Solargraph **unions** pins for the `ENV` constant:
+
+1. Stdlib RBS → `RBS::Unnamed::ENVClass` (has `[]` / `[]=` / `fetch`).
+2. Ruby-core / constant pin → still includes a `Class<ENV>` view of the same top-level object.
+
+Method lookup on a union requires the method on **every** member. `[]` exists on `ENVClass` but not on `Class<ENV>`, so strong reports unresolved calls even though RBS is correct. A YARD `class ENV` stub adds another pin and makes the union worse.
+
+Prefer:
+
+1. Remove any local `class ENV` YARD stub.
+2. Keep normal `ENV[key]` / `ENV[key] = value` / `ENV.fetch(...)` call sites.
+3. When strong reports unresolved `[]` / `[]=` / `fetch` on `RBS::Unnamed::ENVClass, Class<ENV>`, use a one-line `# @sg-ignore` with the exact error text (optional two-space continuation noting the union bug for upstream mining).
+4. **Do not** use `ENV.send(:[], …)` / `ENV.send(:[]=, …)`. That only replaces conventional ENV access (which Solargraph rejects) with unconventional code that Solargraph happens not to flag — it does **not** typecheck any better, and reviewers reject it.
+
+For `YAML.load_file`, strong will reject `# @type […]` on the assignment unless the method’s return type is known — stub `Psych.load_file` / `YAML.load_file` in `config/annotations_*.rb` returning `Object, nil`, then annotate the local with `# @type [Object, nil]`.
+
+Only fall back to a one-line `# @sg-ignore` when an annotation stub does not take effect after re-running strong typecheck (some early boot / binstub paths still need ignores).
+
+### Document unresolved parameters (including block params)
+
+When Solargraph cannot resolve a call on a method or block parameter (`Unresolved call to …`), add a YARD `# @param` (or `# @type` on a local) for that parameter **before** reaching for `@sg-ignore`. Do this for **every** parameter on the failing call (including block params and `proc`/`lambda` args).
+
+**Block params:** put `# @param` on the line(s) **immediately above** the iterator/`find_each`/`map` call — **never inside** the `do … end` / `{ … }` body. A tag after `do` is easy to write and usually ignored by Solargraph.
+
+```ruby
+# good — @param above the block
+# @param record [SomeModel]
+stale_records.each do |record|
+  record.refresh
+end
+
+# bad — @param inside the block (do not do this)
+stale_records.each do |record|
+  # @param record [SomeModel]
+  record.refresh
+end
+```
+
+Prefer annotating the real method in-repo (`# @param` / `# @return` on the definition) over a parallel stub in `config/annotations_*.rb` when the method lives in this repository.
+
+### Fix “return type could not be inferred” before `@sg-ignore`
+
+When strong reports `Class#method return type could not be inferred` even with `# @return […]` present, **first** make the body inferable:
+
+1. Assign the result to a local with `# @type […]` matching the `@return`, then return that local.
+2. If the RHS method itself is undefined (e.g. `YAML.load_file`, opaque gem APIs), add a `config/annotations_*.rb` stub for that method’s return type, then retry.
+3. Only then use `# @sg-ignore … return type could not be inferred` — and note in the ignore or a nearby comment if a stub was tried and failed.
+
+```ruby
+# @return [Hash{Symbol => Object}]
+def metric_to_hash(metric)
+  # @type [Hash{Symbol => Object}]
+  result = metric.to_h.symbolize_keys
+  result
+end
+```
+
 ### YARD `@param` widening
 
 CLI and option helpers may accept symbols from [GLI](https://github.com/davydovanton/gli) (Gem Library Interface) defaults. When strong reports `expected String, received String, Symbol`, widen the callee's `@param`:
@@ -103,8 +182,7 @@ Date.parse('2029-01-04')
 
 - HTTP response bodies: `@param response [#read_body]`
 - `$LOAD_PATH`: one `# @sg-ignore` on the bootstrap line (special RBS typing)
-- Bundler binstub `ENV['BUNDLE_GEMFILE'] ||= ...`: YARD stubs in `config/annotations_misc.rb` do not override RBS `ENVClass` at strong level — keep `# @sg-ignore` on each binstub line
-- `ENV.fetch(...)` may also resolve as unknown on `ENVClass` at strong level in app code; use a one-line `# @sg-ignore` directly above the call when an annotation-based fix does not stick
+- `ENV` / `FileUtils` / similar: prefer `config/annotations_*.rb` `@!parse` / `@!override` stubs where they help — see “Prefer config/annotations_*.rb stubs” above. Never add a YARD `class ENV` stub. For ENV `[]` / `[]=` / `fetch` union failures, keep normal `ENV[...]` + `# @sg-ignore`. Never `ENV.send` (unconventional code that Solargraph happens to ignore is not better typing)
 
 ### GLI command blocks
 
