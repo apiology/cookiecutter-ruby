@@ -16,6 +16,7 @@ module Overcommit
           return [:fail, result.stdout + result.stderr] unless result.success?
 
           paths_to_stage = execute(%w[make -s echo-regenerate-typecheck-paths]).stdout.split
+          paths_to_stage.select! { |path| File.exist?(path) }
           return :pass if paths_to_stage.empty?
 
           # @type [Overcommit::Subprocess::Result]

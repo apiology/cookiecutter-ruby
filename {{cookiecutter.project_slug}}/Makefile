@@ -77,7 +77,7 @@ sorbet/rbi/todo.rbi: sorbet/tapioca/require.rb rbi/{{cookiecutter.project_slug}}
 build-typecheck: Gemfile.lock.installed rbs_collection.lock.yaml types.installed sorbet/machine_specific_config sorbet/rbi/todo.rbi ## Fetch information that type checking depends on
 
 # RegenerateTypecheck hook: paths to stage (see .git-hooks/pre_commit/regenerate_typecheck.rb)
-REGENERATE_TYPECHECK_PATHS := sorbet/rbi/gems sorbet/rbi/annotations sorbet/rbi/dsl sorbet/rbi/todo.rbi rbs_collection.lock.yaml rbi
+REGENERATE_TYPECHECK_PATHS := sorbet/rbi/gems sorbet/rbi/annotations sorbet/rbi/todo.rbi rbs_collection.lock.yaml rbi
 
 .PHONY: echo-regenerate-typecheck-paths
 echo-regenerate-typecheck-paths:
