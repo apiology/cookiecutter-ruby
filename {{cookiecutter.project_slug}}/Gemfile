@@ -32,17 +32,16 @@ group :development do
   gem 'fasterer'
   gem 'overcommit', '~>0.69.0'
   gem 'punchlist', ['>=1.3.1']
-  gem 'rubocop', ['~> 1.52']
+  gem 'rubocop', ['~> 1.88']
   gem 'rubocop-performance'
   gem 'rubocop-rake'
-  gem 'rubocop-yard'
+  # >= 1.3.0 guards YARD/CollectionStyle against yard Hash-union parser mismatch
+  gem 'rubocop-yard', ['>= 1.3.0']
   # ensure version with RSpec/VerifiedDoubleReference
   gem 'rubocop-rspec', ['>=3.4.0']
   gem 'solargraph', ['>=0.56']
-  # need https://github.com/lsegal/yard/pull/1604
-  gem 'yard',
-      github: 'lsegal/yard',
-      branch: 'main'
+  # >= 0.9.44 includes https://github.com/lsegal/yard/pull/1604
+  gem 'yard', ['>= 0.9.44']
   gem 'yard-sorbet'
 end
 
