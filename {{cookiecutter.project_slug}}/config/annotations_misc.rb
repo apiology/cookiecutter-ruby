@@ -71,3 +71,9 @@
 #       def today(start=Date::ITALY); end
 #     end
 #   end
+#   module IRB
+#     class << self
+#       # @return [void]
+#       def start; end
+#     end
+#   end
