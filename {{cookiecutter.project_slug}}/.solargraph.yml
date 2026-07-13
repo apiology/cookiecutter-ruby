@@ -24,9 +24,6 @@ exclude:
   - vendor/**/*
   - ".bundle/**/*"
   - ".markdownlint_style.rb"
-  # Test doubles/mocks are not strong-typecheckable
-  - test/**/*
-  - spec/**/*
 require: []
 domains: []
 reporters:
