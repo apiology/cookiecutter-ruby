@@ -9,30 +9,13 @@ module Overcommit
     module PreCommit
       # Regenerates typechecking artifacts when Gemfile.lock is committed.
       class RegenerateTypecheck < Base
-        # Tracked paths updated by `make build-typecheck` (see Makefile).
-        BUILD_TYPECHECK_PATHS = [
-          'sorbet/rbi/gems',
-          'sorbet/rbi/annotations',
-          'sorbet/rbi/dsl',
-          'sorbet/rbi/todo.rbi',
-          'rbs_collection.lock.yaml',
-          'rbi',
-        ].freeze
-
-        STAMP_FILES = %w[
-          tapioca.installed
-          Gemfile.lock.installed
-          types.installed
-        ].freeze
-
         # @return [Symbol, Array<Symbol, String>]
         def run
-          execute(['rm', '-f', *STAMP_FILES])
           # @type [Overcommit::Subprocess::Result]
           result = execute(%w[make build-typecheck])
           return [:fail, result.stdout + result.stderr] unless result.success?
 
-          paths_to_stage = BUILD_TYPECHECK_PATHS.select { |path| File.exist?(path) }
+          paths_to_stage = execute(%w[make -s echo-regenerate-typecheck-paths]).stdout.split
           return :pass if paths_to_stage.empty?
 
           # @type [Overcommit::Subprocess::Result]

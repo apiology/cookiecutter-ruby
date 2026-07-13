@@ -76,6 +76,13 @@ sorbet/rbi/todo.rbi: sorbet/tapioca/require.rb rbi/{{cookiecutter.project_slug}}
 
 build-typecheck: Gemfile.lock.installed rbs_collection.lock.yaml types.installed sorbet/machine_specific_config sorbet/rbi/todo.rbi ## Fetch information that type checking depends on
 
+# RegenerateTypecheck hook: paths to stage (see .git-hooks/pre_commit/regenerate_typecheck.rb)
+REGENERATE_TYPECHECK_PATHS := sorbet/rbi/gems sorbet/rbi/annotations sorbet/rbi/dsl sorbet/rbi/todo.rbi rbs_collection.lock.yaml rbi
+
+.PHONY: echo-regenerate-typecheck-paths
+echo-regenerate-typecheck-paths:
+	@echo $(REGENERATE_TYPECHECK_PATHS)
+
 rbs_collection.lock.yaml: Gemfile.lock rbs_collection.yaml
 	bin/rbs collection update
 	touch rbs_collection.lock.yaml
@@ -96,7 +103,7 @@ sorbet/tapioca/require.rb:
 	make sorbet/machine_specific_config vendor/.keep
 	bin/tapioca init
 
-tapioca.installed: sorbet/tapioca/require.rb Gemfile.lock.installed ## Install Tapioca-generated type information
+tapioca.installed: sorbet/tapioca/require.rb Gemfile.lock Gemfile.lock.installed ## Install Tapioca-generated type information
 	make sorbet/machine_specific_config
 	bin/tapioca gems
 	bin/tapioca annotations
@@ -183,7 +190,7 @@ gem_dependencies: .bundle/config
 
 # Ensure any Gemfile.lock changes, even pulled from git, ensure a
 # bundle is installed.
-Gemfile.lock.installed: Gemfile vendor/.keep
+Gemfile.lock.installed: Gemfile Gemfile.lock vendor/.keep
 	bundle install
 	touch Gemfile.lock.installed
 
