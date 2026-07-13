@@ -24,13 +24,13 @@
 #     def self.fetch(key, default = :none); end
 #     # @param key [String]
 #     #
-#     # @return [Object,nil]
+#     # @return [String,nil]
 #     def self.[](key); end
 #     # @param key [String]
-#     # @param value [Object,nil]
+#     # @param value [String]
 #     #
-#     # @return [Object,nil]
-#     def self.[]=(key,value); end
+#     # @return [String]
+#     def self.[]=(key, value); end
 #   end
 #   module Bundler
 #     class << self
@@ -69,5 +69,11 @@
 #       # @param start [Integer]
 #       # @return [Date]
 #       def today(start=Date::ITALY); end
+#     end
+#   end
+#   module IRB
+#     class << self
+#       # @return [void]
+#       def start; end
 #     end
 #   end

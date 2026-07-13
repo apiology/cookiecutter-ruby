@@ -64,6 +64,9 @@ ruby .cursor/skills/solargraph-typecheck/scripts/strip_sg_ignore.rb path/to/file
 ## `@sg-ignore` rules (Solargraph 0.59+)
 
 - Applies to the **next AST node only** — one ignore per statement (or put ignore immediately before the failing line).
+- Long raw Solargraph messages: start on the `# @sg-ignore` line; when you run out of space,
+  word-wrap the remainder on the next comment line (indented), e.g. `# @sg-ignore Foo#bar` then
+  `#   return type could not be inferred`.
 - **Unneeded @sg-ignore** means remove that comment; Solargraph 0.59 reports stale ignores after upgrades.
 - Do **not** write the literal text `@sg-ignore` in normal comments or file headers — Solargraph treats it as a directive (`Unneeded @sg-ignore` on unrelated lines). Say "ignore comment" in prose instead.
 - Prefer **fixes** over ignores when cheap (YARD `@param`, `String(...)`, `attr_reader`, nil guards).
@@ -103,8 +106,7 @@ Date.parse('2029-01-04')
 
 - HTTP response bodies: `@param response [#read_body]`
 - `$LOAD_PATH`: one `# @sg-ignore` on the bootstrap line (special RBS typing)
-- Bundler binstub `ENV['BUNDLE_GEMFILE'] ||= ...`: YARD stubs in `config/annotations_misc.rb` do not override RBS `ENVClass` at strong level — keep `# @sg-ignore` on each binstub line
-- `ENV.fetch(...)` may also resolve as unknown on `ENVClass` at strong level in app code; use a one-line `# @sg-ignore` directly above the call when an annotation-based fix does not stick
+- `ENV[...]` / `ENV.fetch(...)` on `ENVClass` at strong level: YARD stubs in `config/annotations_misc.rb` often do not override RBS — put `# @sg-ignore` with the raw Solargraph message on the line above the call (binstubs and app code)
 
 ### GLI command blocks
 
