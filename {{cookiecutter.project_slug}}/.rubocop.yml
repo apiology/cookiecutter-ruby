@@ -177,7 +177,3 @@ plugins:
   - rubocop-rake
   - rubocop-rspec
   - rubocop-yard
-
-# rubocop-yard 1.1.0 crashes (NilClass in styled_string) on Hash{K => V} inside unions
-YARD/CollectionStyle:
-  Enabled: false

@@ -24,13 +24,13 @@
 #     def self.fetch(key, default = :none); end
 #     # @param key [String]
 #     #
-#     # @return [String,nil]
+#     # @return [Object,nil]
 #     def self.[](key); end
 #     # @param key [String]
-#     # @param value [String]
+#     # @param value [Object,nil]
 #     #
-#     # @return [String]
-#     def self.[]=(key, value); end
+#     # @return [Object,nil]
+#     def self.[]=(key,value); end
 #   end
 #   module Bundler
 #     class << self

@@ -106,7 +106,8 @@ Date.parse('2029-01-04')
 
 - HTTP response bodies: `@param response [#read_body]`
 - `$LOAD_PATH`: one `# @sg-ignore` on the bootstrap line (special RBS typing)
-- `ENV[...]` / `ENV.fetch(...)` on `ENVClass` at strong level: YARD stubs in `config/annotations_misc.rb` often do not override RBS — put `# @sg-ignore` with the raw Solargraph message on the line above the call (binstubs and app code)
+- Bundler binstub `ENV['BUNDLE_GEMFILE'] ||= ...`: YARD stubs in `config/annotations_misc.rb` do not override RBS `ENVClass` at strong level — keep `# @sg-ignore` on each binstub line
+- `ENV.fetch(...)` may also resolve as unknown on `ENVClass` at strong level in app code; use a one-line `# @sg-ignore` directly above the call when an annotation-based fix does not stick
 
 ### GLI command blocks
 
