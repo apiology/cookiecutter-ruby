@@ -62,17 +62,23 @@ Quick lookup for strong-level messages seen in Ruby gem repos and the preferred 
 
 **Fix:** `# @type [Overcommit::Subprocess::Result]` on the assignment line.
 
-## Unresolved call to [] on RBS::Unnamed::ENVClass (binstubs)
+## Unresolved call to [] / []= / fetch on RBS::Unnamed::ENVClass
 
-**Cause:** `$LOAD_PATH`-style special typing in binstubs.
+**Cause:** Solargraph unions pins for `ENV`: stdlib RBS `RBS::Unnamed::ENVClass` (has `[]` / `[]=` / `fetch`) **and** a Ruby-core `Class<ENV>` view of the same constant. Strong method lookup on a union requires the method on every member, so calls fail even though `ENVClass` defines them. A YARD `class ENV` stub adds another pin and makes the union worse — that is the “widening,” not a missing stub.
 
-**Fix:** Usually ignorable on the `ENV['BUNDLE_GEMFILE']` line; binstubs are often excluded or get a single ignore.
+**Fix:** Remove any `class ENV` YARD stub. Keep normal `ENV[key]` / `ENV[key] = value` / `ENV.fetch(...)` and add a targeted `# @sg-ignore` with the strong error text. **Do not** use `ENV.send(:[], …)` / `ENV.send(:[]=, …)` — that only swaps conventional rejected ENV access for unconventional code Solargraph happens to ignore; it does not typecheck any better. Document in `config/annotations_misc.rb` so agents do not reintroduce a `class ENV` stub or an `ENV.send` workaround.
 
-## Unresolved call to fetch on RBS::Unnamed::ENVClass
+## Unresolved call to FileUtils.ln_sf (or similar stdlib module methods)
 
-**Cause:** Strong-level RBS typing for `ENV` may not expose `fetch` in all contexts.
+**Cause:** Incomplete or overly narrow Solargraph/RBS pins for the method (e.g. `FileUtils::path` rejecting plain `String`).
 
-**Fix:** Add a targeted `# @sg-ignore` immediately above `ENV.fetch(...)` when a cleaner type annotation does not resolve it.
+**Fix:** Add a `@!parse` / `@!override` stub under `module FileUtils` in `config/annotations_*.rb` that accepts `String`, then re-run strong typecheck. Do not default to `@sg-ignore` for methods you can document once.
+
+## Variable type could not be inferred (with `# @type` present)
+
+**Cause:** Strong validates that a declared `@type` matches a probed inferred type. If the RHS method return is undefined (common for `YAML.load_file`), validation fails with this message even though `@type` is present.
+
+**Fix:** Stub the RHS method return in `config/annotations_*.rb` (e.g. `Psych`/`YAML.load_file` → `Object, nil`), then keep `# @type [Object, nil]` on the assignment.
 
 ## Unresolved constant WARN
 
