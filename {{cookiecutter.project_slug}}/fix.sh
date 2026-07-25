@@ -2,6 +2,10 @@
 
 set -o pipefail
 
+# Some tools need UTF-8; Cursor worktree hooks may run with LANG=C (US-ASCII).
+export LANG="${LANG:-en_US.UTF-8}"
+export LC_ALL="${LC_ALL:-en_US.UTF-8}"
+
 if [ -n "${FIX_SH_TIMING_LOG+x}" ]; then
     rm -f "${FIX_SH_TIMING_LOG}"
     if ! type gdate >/dev/null 2>&1; then sudo ln -sf /bin/date /bin/gdate; fi
@@ -147,6 +151,8 @@ ensure_latest_ruby_build_definitions() {
 #  # if not pulled in last 24 hours
 #  if [ $(( $(date +%s) - last_pulled_unix_epoch )) -gt $(( 24 * 60 * 60 )) ]
 #  then
+      # Cached ~/.rbenv can leave untracked definition files that block pull.
+      git -C "$HOME"/.rbenv/plugins/ruby-build clean -fd
       git -C "$HOME"/.rbenv/plugins/ruby-build pull --force
 #  fi
 }
@@ -517,6 +523,9 @@ ensure_types_built() {
 ensure_hooks_path
 
 ensure_ruby_versions
+
+# Cached Rubies skip ensure_ruby_build_requirements; psych (rdoc/solargraph) still needs yaml.h.
+ensure_ruby_build_requirements
 
 set_ruby_local_version
 
