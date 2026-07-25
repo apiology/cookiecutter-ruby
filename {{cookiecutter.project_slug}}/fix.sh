@@ -151,6 +151,8 @@ ensure_latest_ruby_build_definitions() {
 #  # if not pulled in last 24 hours
 #  if [ $(( $(date +%s) - last_pulled_unix_epoch )) -gt $(( 24 * 60 * 60 )) ]
 #  then
+      # Cached ~/.rbenv can leave untracked definition files that block pull.
+      git -C "$HOME"/.rbenv/plugins/ruby-build clean -fd
       git -C "$HOME"/.rbenv/plugins/ruby-build pull --force
 #  fi
 }
