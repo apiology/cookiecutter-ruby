@@ -524,6 +524,9 @@ ensure_hooks_path
 
 ensure_ruby_versions
 
+# Cached Rubies skip ensure_ruby_build_requirements; psych (rdoc/solargraph) still needs yaml.h.
+ensure_ruby_build_requirements
+
 set_ruby_local_version
 
 ensure_rugged_packages_installed
