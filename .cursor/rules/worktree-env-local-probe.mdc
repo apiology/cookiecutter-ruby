@@ -1,7 +1,7 @@
 ---
 description: >-
-  Cursor worktree bootstrap failed or env.local/op run debugging — read
-  file-based probe logs before inferring from missing direnv stderr
+  Worktree bootstrap failed, script/ ops blocked, or op/env.local confusion —
+  read probe + git-sync logs and classify before blaming 1Password
 alwaysApply: false
 globs:
   - .envrc
@@ -13,11 +13,15 @@ globs:
 
 `ls`/`cat` redirected to stderr in `.envrc` do **not** appear in worktree-fix bootstrap logs. Use file probes instead.
 
-## Before diagnosing bootstrap
+## Before diagnosing bootstrap or running `script/` ops
 
-1. Read the pointer: `.env-local-probe-path` (one line: absolute log path).
-2. Read the log tail: `~/.cache/env-local-probe/<worktree-basename>.log` (e.g. `kaa0.log`).
-3. If missing or stale, run from repo root: `./bin/probe_env_local` (no direnv required).
+Read **all three** (Grep/Read only while bootstrap is broken):
+
+1. Worktree-fix log — `~/.cache/cursor-apiology-bootstrap/worktree-fix/` (grep worktree path).
+2. Git-sync log — `~/.cursor/hooks/logs/git-sync-hooks.log` (same path; compare timestamps to worktree-fix).
+3. Probe log — `.env-local-probe-path` or `~/.cache/env-local-probe/<worktree-basename>.log`.
+
+If probe log missing for this worktree, run `./bin/probe_env_local` from repo root (no direnv required) or check git-sync vs worktree-fix timestamps — see stale-HEAD row in `apiology-direnv-bootstrap.mdc`.
 
 ## Interpret `which_branch`
 
@@ -28,4 +32,15 @@ globs:
 
 Also check: `-L`/`-r`, `cat exit=` (124 = FIFO with no writer / Environment not mounted), `op_run_fallback` section.
 
+Compare probe block timestamp to `~/.cursor/hooks/logs/git-sync-hooks.log` and worktree-fix log for the same root.
+
 Every `.envrc` eval appends a block (source=`envrc`). Bootstrap retries produce multiple timestamped blocks — compare hook time to latest block.
+
+## Contradiction patterns (classify, then act)
+
+| Pattern | Meaning |
+|---------|---------|
+| Hook log: `worktree-envlocal verified env.local` + fix log: 1Password/`op run` error + **no** probe run at bootstrap time (run `./bin/probe_env_local` to confirm `-L=yes`) | Stale checkout: `./fix.sh` ran before `git sync` merged `origin/main`. Retry bootstrap after sync; do not assume `.envrc` on disk differs from `git show HEAD:.envrc`. |
+| Probe `-L=yes` + fix log `op run` at same timestamp | Same stale-HEAD race or pre-`-L` `.envrc` at old commit. |
+| Probe `which_branch=env.local`, `cat exit=0` | `.envrc` took env.local path; if bootstrap still failed, debug `./fix.sh` output — not `op`. |
+| `git-sync … sync ok (merged …)` one second **after** `worktree-fix start` | Confirms race; hooks now re-sync inline — retry `./fix.sh`. |

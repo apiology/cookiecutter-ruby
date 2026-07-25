@@ -13,8 +13,20 @@ if [ "${branch_checkout}" != '1' ] || [ "${prev_head}" != "${NULL_REF}" ]; then
   exit 0
 fi
 
-# fix.sh calls bin/* helpers; .envrc (via direnv) adds bin/ to PATH.
-if [ -f .envrc ] && command -v direnv >/dev/null 2>&1; then
+# Git hooks often have a minimal PATH; include common direnv locations.
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:${HOME}/.rbenv/bin:${HOME}/.local/bin:${PATH}"
+
+# fix.sh calls bin/* helpers; .envrc (via direnv) puts bin/ on PATH.
+# Never run bare ./fix.sh when .envrc exists — that skips PATH_add bin.
+if [ -f .envrc ]; then
+  if ! command -v direnv >/dev/null 2>&1; then
+    echo "git-post-checkout-fix: direnv not found; cannot bootstrap with .envrc" >&2
+    exit 1
+  fi
+  if ! direnv allow .; then
+    echo "git-post-checkout-fix: direnv allow failed" >&2
+    exit 1
+  fi
   exec direnv exec . ./fix.sh
 fi
 

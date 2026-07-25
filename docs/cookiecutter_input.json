@@ -1,8 +1,8 @@
 {
     "_checkout": "main",
-    "_output_dir": "/Users/broz/.cursor/worktrees/cookiecutter-ruby/cascade-cookiecutter-ruby-1783739815902/.git/cookiecutter",
-    "_repo_dir": "/Users/broz/.cookiecutters/cookiecutter-cookiecutter",
-    "_template": "https://github.com/apiology/cookiecutter-cookiecutter",
+    "_output_dir": "/Users/broz/.cursor/worktrees/cookiecutter-ruby/cascade-cookiecutter-ruby-1784994874631/.git/cookiecutter",
+    "_repo_dir": "/tmp/cc-parent-for-cookiecutter-ruby-16197",
+    "_template": "/tmp/cc-parent-for-cookiecutter-ruby-16197",
     "email": "vince@broz.cc",
     "full_name": "Vince Broz",
     "github_username": "apiology",
