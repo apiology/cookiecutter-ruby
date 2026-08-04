@@ -30,7 +30,7 @@ runs `bundle install`,
 so the worktree's Ruby and bundler match the main checkout. Skipping
 bootstrap can cause overcommit signature mismatches even after
 re-signing — see
-[.cursor/rules/overcommit-signing.mdc](.cursor/rules/overcommit-signing.mdc).
+the `overcommit-signing` skill (`.claude/skills/overcommit-signing/SKILL.md`).
 
 ## Overcommit
 
@@ -43,7 +43,7 @@ handled by `.githooks/post-checkout`, not Overcommit.
 
 If a commit fails with overcommit **plugin signature** or **security**
 messages, run both sign commands before retrying (see
-`.cursor/rules/overcommit-signing.mdc`):
+the `overcommit-signing` skill):
 
 ```sh
 bin/overcommit --sign

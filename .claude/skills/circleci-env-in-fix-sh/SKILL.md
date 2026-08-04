@@ -1,11 +1,9 @@
 ---
+name: circleci-env-in-fix-sh
 description: >-
-  Treat CIRCLECI (or CI) env branching in fix.sh and bootstrap scripts as a smell —
-  fix belongs in CircleCI config, Makefile targets, or hooks, not shell CI detection
-globs:
-  - "fix.sh"
-  - "bin/**"
-  - ".githooks/**"
+  Treat CIRCLECI (or CI) env branching in fix.sh and bootstrap scripts as a
+  smell — fix belongs in CircleCI config, Makefile targets, or hooks, not
+  shell CI detection
 alwaysApply: false
 ---
 
@@ -37,4 +35,4 @@ That pattern usually means:
 
 ## Agents
 
-When reviewing bootstrap changes, prefer deleting CI branches and fixing CircleCI or Makefile. Use `circleci-logs-before-local-ci.mdc` when CI failed before editing `fix.sh`.
+When reviewing bootstrap changes, prefer deleting CI branches and fixing CircleCI or Makefile. Use the `circleci-logs-before-local-ci` skill when CI failed before editing `fix.sh`.

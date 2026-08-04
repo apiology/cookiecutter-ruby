@@ -1,10 +1,8 @@
 ---
+name: circleci-logs-before-local-ci
 description: >-
   Failed CircleCI check — MUST fetch logs via CircleCI MCP (get_build_failure_logs)
-  or CLI before long local CI; ask user to enable MCP if missing
-globs:
-  - ".circleci/**"
-  - "Makefile"
+  or CLI before local make citest/citypecheck; ask user to enable MCP if missing
 alwaysApply: false
 ---
 
@@ -15,7 +13,7 @@ alwaysApply: false
 When **`gh pr checks`** shows a **failed** check with an **`app.circleci.com`** link:
 
 1. **Fetch logs first** (failing job/step).
-2. **Do not** run long local CI (`make citest`, `make default`, full `make quality`) until you have log text **or** the user pastes logs / declines.
+2. **Do not** run long local CI (`make citest`, `make default`, `make citypecheck`, full `make quality`) until you have log text **or** the user pastes logs / declines.
 3. **Do not** guess fixes from local-only errors after remote CI already failed on the same branch.
 
 ## Preferred: CircleCI MCP (Cursor)
@@ -26,7 +24,7 @@ Server: **`circleci-mcp-server`** in `~/.cursor/mcp.json` ([CircleCI MCP](https:
 |------|-----|
 | `get_build_failure_logs` | Failing step output (pipeline/workflow URL from `gh pr checks`, or project slug + branch) |
 | `get_latest_pipeline_status` | Which workflow/job failed |
-| `list_followed_projects` | Resolve `projectSlug` (e.g. `gh/apiology/cookiecutter-ruby`) |
+| `list_followed_projects` | Resolve `projectSlug` (e.g. `gh/apiology/<repo>`) |
 
 **Setup:** `op run` wrapper + 1Password **cursor** environment or `~/.cursor/cursor.1p.env` — see `~/.cursor/1password-cursor-environment.md`. Reload Cursor after MCP config changes.
 
@@ -39,7 +37,7 @@ If MCP tools are unavailable, ask the user to reload Cursor or fix MCP — do no
 
 ## After logs
 
-Fix from the **CI error message**, push, `gh pr checks --watch`. For baked Ruby gems, read nested **`typecheck-rbi-and-ci.mdc`** when CI and local Solargraph/Sorbet disagree.
+Fix from the **CI error message**, push, `gh pr checks --watch`. Read the **`typecheck-rbi-and-ci`** skill when CI and local Solargraph/Sorbet disagree.
 
 ## Not CircleCI
 

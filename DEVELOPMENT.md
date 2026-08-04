@@ -30,7 +30,7 @@ runs `bundle install`,
 so the worktree's Ruby and bundler match the main checkout. Skipping
 bootstrap can cause overcommit signature mismatches even after
 re-signing — see
-[.cursor/rules/overcommit-signing.mdc](.cursor/rules/overcommit-signing.mdc).
+the `overcommit-signing` skill (`.claude/skills/overcommit-signing/SKILL.md`).
 
 ## Overcommit
 
@@ -43,7 +43,7 @@ handled by `.githooks/post-checkout`, not Overcommit.
 
 If a commit fails with overcommit **plugin signature** or **security**
 messages, run both sign commands before retrying (see
-`.cursor/rules/overcommit-signing.mdc`):
+the `overcommit-signing` skill):
 
 ```sh
 bin/overcommit --sign
@@ -132,11 +132,11 @@ variables in the Environment, `op inject` once, import that file, and confirm
 
 ## Syncing boilerplate
 
-See [docs/SYNCING_BOILERPLATE.md](docs/SYNCING_BOILERPLATE.md). Interpret hierarchy at **this** tier (`cookiecutter-ruby`, Ruby) using `.cursor/rules/template-hierarchy.mdc` when present.
+See [docs/SYNCING_BOILERPLATE.md](docs/SYNCING_BOILERPLATE.md). Interpret hierarchy at **this** tier (`cookiecutter-ruby`, Ruby) using the `template-hierarchy` skill when present.
 
 ## Conventions
 
-* Repo rules: clear task `description`, `alwaysApply: false`, optional `globs` only when they cover every auto-attach case.
+* Agent guidance for this repo lives in `.claude/skills/*/SKILL.md`: clear task `description` (skills activate on description alone, no `globs`).
 
 ## Tests
 
