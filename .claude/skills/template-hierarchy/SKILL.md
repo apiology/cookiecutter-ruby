@@ -1,4 +1,5 @@
 ---
+name: template-hierarchy
 description: >-
   Editing cookiecutter-ruby cookiecutter boilerplate — what to port at
   this hierarchy level (Ruby); never push specificity
@@ -8,16 +9,16 @@ alwaysApply: false
 
 # Template hierarchy (language/tool)
 
-Cookiecutter templates in this family stack **general → specific** (meta → language/tool → project). **This repo** is `cookiecutter-ruby` (Ruby scope). See also the meta rule `template-hierarchy.mdc` at the ancestor repo root.
+Cookiecutter templates in this family stack **general → specific** (meta → language/tool → project). **This repo** is `cookiecutter-ruby` (Ruby scope). See also the meta `template-hierarchy` skill at the ancestor repo root.
 
 ## Where to put changes (this family)
 
 | Kind of change | Meta ancestor | **This repo** | Nested `{{cookiecutter.project_slug}}/` |
 |----------------|---------------|---------------|----------------------------------------------------------------|
-| `overcommit-signing.mdc` | Yes | Yes | Yes |
-| `circleci-logs-before-local-ci.mdc` | No | Yes (cookiecutter maintenance) | **Yes** — baked Ruby gems/apps |
-| `typecheck-rbi-and-ci.mdc` | No | No | **Yes** — baked Ruby gems/apps only |
-| `template-hierarchy.mdc` | Yes | Yes (this file) | No |
+| `overcommit-signing` skill | Yes | Yes | Yes |
+| `circleci-logs-before-local-ci` skill | No | Yes (cookiecutter maintenance) | **Yes** — baked Ruby gems/apps |
+| `typecheck-rbi-and-ci` skill | No | No | **Yes** — baked Ruby gems/apps only |
+| `template-hierarchy` skill | Yes | Yes (this file) | No |
 | `fix.sh`, `bin/git-*` hooks, `.githooks/post-checkout`, shared `.overcommit.yml` bootstrap | Yes | Yes | Yes |
 | Boilerplate sync skill + `SYNCING_BOILERPLATE.md` | Baked path only | **Yes** | No |
 | Language hooks (RuboCop, etc.) | No | Generic only (template `ALL.exclude`) | **Yes** — baked gem hooks |
@@ -28,20 +29,20 @@ Place each artifact at the **narrowest** tier that still applies to every repo t
 
 ## Propagate across tiers (agent checklist)
 
-The meta repo and this tree each maintain parallel copies of cross-language boilerplate (`fix.sh`, `.overcommit.yml`, `bin/git-*`, etc.). When you change one copy, **search for the same basename** under the meta repo and update **every tier** where it exists (meta root, this directory, nested `{{cookiecutter.project_slug}}/`), unless the edit is tier-specific. If unsure, **ask the user** before submitting a PR. See the meta rule `template-hierarchy.mdc` for the full three-tier map.
+The meta repo and this tree each maintain parallel copies of cross-language boilerplate (`fix.sh`, `.overcommit.yml`, `bin/git-*`, etc.). When you change one copy, **search for the same basename** under the meta repo and update **every tier** where it exists (meta root, this directory, nested `{{cookiecutter.project_slug}}/`), unless the edit is tier-specific. If unsure, **ask the user** before submitting a PR. See the meta `template-hierarchy` skill for the full three-tier map.
 
 Interpret every sync or edit against three directions:
 
 | Direction | Rule |
 |-----------|------|
-| **Reference → this template** | Port only what matches **this** level’s scope (Ruby). |
+| **Reference → this template** | Port only what matches **this** level's scope (Ruby). |
 | **Reference → descendant templates** | Do **not** add here — belongs in a **more specific** child cookiecutter. |
 | **Ancestor → this template** | Pull **agnostic** improvements down from upstream templates; never push language/framework specifics **up**. |
 | **This template → descendants** | Push Ruby-appropriate config **down**; reserve narrower framework/app bits for child templates. |
 
 ## At this level
 
-- Shared boilerplate files (`.circleci`, `.envrc`, `.yamllint.yml`, hooks maintenance, etc.) should reflect **this** template’s tier — not everything a reference repo contains.
+- Shared boilerplate files (`.circleci`, `.envrc`, `.yamllint.yml`, hooks maintenance, etc.) should reflect **this** template's tier — not everything a reference repo contains.
 - If a reference repo is more specific than this template (e.g. Rails app vs Ruby repo), treat extra config as **descendant** material.
 - If this template is more specific than an ancestor, you **may** add Ruby-specific rules here that ancestors must not carry.
 
@@ -67,8 +68,8 @@ When porting config that names directories or tools (`.envrc` `PATH_add`, Makefi
 | `.git-hooks` `# @sg-ignore` | **Do not port** | Sorbet annotations only in Ruby templates | — |
 | `.circleci` | `no_output_timeout`, shared cache pattern; **citest** child-rbenv for bake tests | Same — no `ruby-types` / Sorbet caches at repo root | Custom checkout (undercover), `ruby-types-v3`, typecheck job, RBI artifacts |
 
-When syncing from a **baked** private reference, read [SYNCING_BOILERPLATE.md](../docs/SYNCING_BOILERPLATE.md) § baked Ruby apps — do not paste the reference’s full `.overcommit.yml` or Ruby yamllint/Sorbet blocks into cookiecutter templates, and do not name private reference repos in public text.
+When syncing from a **baked** private reference, read [SYNCING_BOILERPLATE.md](../../docs/SYNCING_BOILERPLATE.md) § baked Ruby apps — do not paste the reference's full `.overcommit.yml` or Ruby yamllint/Sorbet blocks into cookiecutter templates, and do not name private reference repos in public text.
 
-When syncing into the **meta** ancestor from a Ruby reference (e.g. `apiology/checkoff`), see the meta rule `template-hierarchy.mdc` — Ruby-only rows above stay out of meta copies.
+When syncing into the **meta** ancestor from a Ruby reference (e.g. a private baked gem), see the meta `template-hierarchy` skill — Ruby-only rows above stay out of meta copies.
 
 When unsure: **too specific for this repo → descendant**; **too general to live only here → ancestor**.

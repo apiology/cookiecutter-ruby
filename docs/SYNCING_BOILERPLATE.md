@@ -25,7 +25,7 @@ Record SHAs in your PR when syncing.
 | **Ancestor** → this template | Pull agnostic fixes down; never push specificity **up**. |
 | **This** → **descendants** | Push tier-appropriate config down; keep narrower bits in children. |
 
-Details: `.cursor/rules/template-hierarchy.mdc`.
+Details: the `template-hierarchy` skill (`.claude/skills/template-hierarchy/SKILL.md`).
 
 ## Reference repos
 
@@ -38,7 +38,7 @@ Adjust for **this** tier — a reference repo may include more than you should p
 - `.circleci/config.yml`
 - `.envrc`, `.yamllint.yml`, `.gitattributes`, `.dockerignore`
 - `.git-hooks/pre_commit/circle_ci.rb`, `.git-hooks/pre_commit/punchlist.rb` (maintenance only)
-- `.cursor/rules/`, this doc
+- `.claude/skills/`, this doc
 - `DEVELOPMENT.md` (agent/conventions sections)
 - `CODE_OF_CONDUCT.md`, `.mdlrc`, `package.json` (usually unchanged)
 
@@ -52,7 +52,7 @@ When the reference is a **Ruby application or gem** (e.g. `apiology/checkoff`) a
 - **`.gitignore`:** `tapioca.installed`, `yardoc.installed`, `sorbet/machine_specific_config`
 - **`.git-hooks/**/*.rb`:** `# @sg-ignore` and other Sorbet-only typing churn from the reference
 
-Those belong in a **Ruby language** cookiecutter (e.g. `cookiecutter-ruby`), not the meta template. See `.cursor/rules/template-hierarchy.mdc` (meta and language tiers).
+Those belong in a **Ruby language** cookiecutter (e.g. `cookiecutter-ruby`), not the meta template. See the `template-hierarchy` skill (meta and language tiers).
 
 ### Baked Ruby apps (private reference repos)
 
@@ -68,15 +68,23 @@ A typical repo generated from `cookiecutter-gem` is a useful reference. When usi
 
 Record the reference repo’s `origin/main` SHA in the PR (omit the private repo name from public text); diff with `git show origin/main:<path>` only.
 
+**Before porting, check this repo’s own history too — not just its current state.** A line missing from the current tree is not evidence it was never tried:
+
+```bash
+git log --all --oneline -S"<distinctive substring>" -- <path>
+```
+
+If a hit turns up, read the commit that *removed or reworded* it, not just the one that added it — the removal message usually explains why (superseded by inline comments, gone stale after a logic change, explicitly rejected). Treat that removal as binding unless the user says otherwise.
+
 ### `.envrc` and `PATH_add`
 
 - Only `PATH_add` directories that **exist in this template** (typically `bin/` when `bin/` is present).
 - If a reference `.envrc` uses `PATH_add script` (or similar) and **this repo has no `script/`**, do not copy it here — add it in the descendant cookiecutter that owns `script/`.
-- Missing referenced path → treat as **descendant** material (see `template-hierarchy.mdc`).
+- Missing referenced path → treat as **descendant** material (see the `template-hierarchy` skill).
 
 ## Nested cookiecutter directory (optional)
 
-If this template still contains a nested `{{cookiecutter.project_slug}}//` tree (generator meta-pattern), propagate shared boilerplate there only when that nested tree is the **same** tier. Do not blindly duplicate `.cursor/` into nested paths when the nested template is a different hierarchy level.
+If this template still contains a nested `{{cookiecutter.project_slug}}//` tree (generator meta-pattern), propagate shared boilerplate there only when that nested tree is the **same** tier. Do not blindly duplicate `.claude/skills/` into nested paths when the nested template is a different hierarchy level.
 
 Propagate doc changes to sibling cookiecutter templates with `make update_from_cookiecutter` (or merge from the ancestor template’s `cookiecutter-template` branch).
 
@@ -85,5 +93,6 @@ Propagate doc changes to sibling cookiecutter templates with `make update_from_c
 1. `git fetch origin main` in every repo involved
 2. List SHAs; diff only `git show origin/main:...`
 3. Classify each change: this tier vs ancestor vs descendant
-4. Run this repo’s tests
-5. Confirm nothing came from unpushed local-only paths
+4. `git log --all -S"<substring>"` this repo’s own history for each candidate port; if it was added and later removed, read the removal commit before re-adding it
+5. Run this repo’s tests
+6. Confirm nothing came from unpushed local-only paths

@@ -1,12 +1,12 @@
 ---
+name: overcommit-signing
 description: >-
   When git commit fails with overcommit plugin signature or security messages,
   run bin/overcommit --sign and bin/overcommit --sign pre-commit, then retry.
   In a fresh worktree, direnv exec . ./fix.sh should run automatically via
   .githooks/post-checkout when core.hooksPath is set; if not, run it manually so
-  .ruby-version pins the same
-  Ruby the git hook will use — overcommit plugin signatures are not stable
-  across Ruby versions.
+  .ruby-version pins the same Ruby the git hook will use — overcommit plugin
+  signatures are not stable across Ruby versions.
 alwaysApply: false
 ---
 
