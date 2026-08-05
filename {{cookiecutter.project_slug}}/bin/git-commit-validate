@@ -1,7 +1,0 @@
-#!/bin/bash
-
-set -euo pipefail
-
-if [ -x "$HOME/bin/git-commit-validate" ]; then
-    exec "$HOME/bin/git-commit-validate" "$@"
-fi
