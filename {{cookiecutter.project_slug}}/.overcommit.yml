@@ -103,8 +103,9 @@ PreCommit:
       - "bin/*"
       - "bin/overcommit_branch"
     exclude:
-      # Cursor skills/scripts are agent tooling, not gem API surface
+      # Cursor/Claude skills and scripts are agent tooling, not gem API surface
       - '.cursor/**/*'
+      - '.claude/**/*'
       # vendored
       - 'bin/bundle'
       - 'bin/brakeman'
