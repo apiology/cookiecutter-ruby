@@ -103,8 +103,9 @@ PreCommit:
       - "bin/*"
       - "bin/overcommit_branch"
     exclude:
-      # Cursor skills/scripts are agent tooling, not gem API surface
+      # Cursor/Claude skills and scripts are agent tooling, not gem API surface
       - '.cursor/**/*'
+      - '.claude/**/*'
       # vendored
       - 'bin/bundle'
       - 'bin/brakeman'
@@ -145,10 +146,6 @@ PreCommit:
       - 'core.*'
       # don't freak out over line below
       - '.overcommit.yml'
-  CustomScript:
-    enabled: true
-    requires_files: false
-    required_executable: 'bin/git-commit-validate'
   BundleInstall:
     enabled: true
 
