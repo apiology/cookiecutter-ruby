@@ -225,7 +225,7 @@ jobs:
       - image: cimg/base:current
     steps:
       - set_up_environment
-{% if cookiecutter.use_checkoff %}      - when:
+{% if cookiecutter.use_checkoff == 'Yes' %}      - when:
           condition:
             equal: [<< pipeline.git.branch >>, "main"]
           steps:

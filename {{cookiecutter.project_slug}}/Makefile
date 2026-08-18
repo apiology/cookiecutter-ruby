@@ -114,7 +114,7 @@ docs: ## Generate YARD documentation
 
 clean-typecheck: ## Refresh the easily-regenerated information that type checking depends on
 	rm -fr .yardoc/ rbi/{{cookiecutter.project_slug}}.rbi types.installed yardoc.installed sig/{{cookiecutter.project_slug}}.rbs || true
-{% if cookiecutter.use_checkoff %}	rm -fr ../checkoff/.yardoc || true
+{% if cookiecutter.use_checkoff == 'Yes' %}	rm -fr ../checkoff/.yardoc || true
 {% endif %}	echo all clear
 
 realclean-typecheck: clean-typecheck ## Remove all type checking artifacts
