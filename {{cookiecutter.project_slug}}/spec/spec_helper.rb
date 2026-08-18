@@ -8,13 +8,11 @@ require 'simplecov-lcov'
 require 'undercover/simplecov_formatter'
 
 SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
-SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
-  [
-    SimpleCov::Formatter::HTMLFormatter,
-    SimpleCov::Formatter::LcovFormatter,
-    SimpleCov::Formatter::Undercover,
-  ]
-)
+SimpleCov.formatters = [
+  SimpleCov::Formatter::HTMLFormatter,
+  SimpleCov::Formatter::LcovFormatter,
+  SimpleCov::Formatter::Undercover,
+]
 SimpleCov.start do
   # this dir used by CircleCI
   add_filter(%r{^/vendor/bundle})
