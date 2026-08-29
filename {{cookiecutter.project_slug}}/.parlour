@@ -7,4 +7,5 @@ parser:
     - lib
     - spec
     - .git-hooks
-  excluded_paths: []
+  excluded_paths:
+    - test
