@@ -15,22 +15,66 @@
 # @!override Hash<[String,Symbol],String>#fetch
 #   @return [String>]
 #
+# Do not add a YARD `class ENV` stub here. What Solargraph does under strong:
+#
+# 1. Stdlib RBS defines `ENV` as the singleton-like `RBS::Unnamed::ENVClass`
+#    with instance methods `[]`, `[]=`, `fetch`, etc.
+# 2. Separately, Solargraph still keeps a Ruby-core / constant pin that treats
+#    `ENV` as related to `::ENV` / `Class<ENV>` (the top-level ENV object's
+#    class-ish view of the same constant).
+# 3. At call sites, those pins are **unioned**. Strong then probes methods on
+#    `RBS::Unnamed::ENVClass, Class<ENV>`. Lookup requires the method to exist
+#    on *every* member of a union; `[]` / `[]=` / `fetch` exist on `ENVClass`
+#    but not on `Class<ENV>`, so the call is reported unresolved even though
+#    the RBS half is correct.
+# 4. Adding a YARD `class ENV` stub adds yet another pin and makes the union
+#    wider / worse — it does not replace the RBS type.
+#
+# Keep normal `ENV[...]` / `ENV[]=` / `ENV.fetch` call sites and use a one-line
+# Solargraph ignore (`sg-ignore`) with the strong error text when the union
+# fails. Do not use `ENV.send` — that only swaps conventional rejected ENV
+# access for unconventional code that Solargraph happens to ignore; it does not
+# typecheck any better.
+#
+# @!override FileUtils.ln_sf
+#   @param src [String]
+#   @param dest [String]
+#   @param options [Hash]
+#   @return [void]
+#
+# @!override YAML.load_file
+#   @param path [String]
+#   @return [Object, nil]
+#
 # @!parse
-#   class ENV
-#     # @param key [String]
-#     # @param default [Object]
-#     #
-#     # @return [String,:none,nil]
-#     def self.fetch(key, default = :none); end
-#     # @param key [String]
-#     #
-#     # @return [Object,nil]
-#     def self.[](key); end
-#     # @param key [String]
-#     # @param value [Object,nil]
-#     #
-#     # @return [Object,nil]
-#     def self.[]=(key,value); end
+#   module Psych
+#     class << self
+#       # @param path [String]
+#       # @return [Object, nil]
+#       def load_file(path); end
+#     end
+#   end
+#   module YAML
+#     class << self
+#       # @param path [String]
+#       # @return [Object, nil]
+#       def load_file(path); end
+#     end
+#   end
+#   module FileUtils
+#     class << self
+#       # Accept String paths — stdlib RBS FileUtils::path is overly narrow under
+#       # Solargraph strong for plain String call sites.
+#       # @param src [String]
+#       # @param dest [String]
+#       # @param options [Hash]
+#       # @return [void]
+#       def ln_sf(src, dest, **options); end
+#     end
+#   end
+#   class StringIO
+#     # @return [String]
+#     def string; end
 #   end
 #   module Bundler
 #     class << self
@@ -55,7 +99,7 @@
 #       # @return [Time]
 #       def parse(time, now=nil); end
 #     end
-#     # https://ruby-doc.org/3.2.2/exts/date/Time.html#method-i-to_date#
+#     # https://ruby-doc.org/3.2.2/exts/date/Time.html#method-i-to-date#
 #     # @return [Date]
 #     def to_date; end
 #   end
