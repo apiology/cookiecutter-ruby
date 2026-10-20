@@ -439,7 +439,7 @@ ensure_shellcheck() {
 }
 
 ensure_hooks_path() {
-  if [ -e .git ] && ! git config --get core.hooksPath >/dev/null
+  if [ -e .git ] && ! git config --local --get core.hooksPath >/dev/null
   then
     git config core.hooksPath .githooks
   fi
