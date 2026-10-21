@@ -8,9 +8,6 @@ require 'simplecov-lcov'
 require 'undercover/simplecov_formatter'
 
 SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
-# MultiFormatter overrides self.new to return a Class, but Solargraph
-# combines that with the implicit instance return of new and reports
-# formatters= as receiving a MultiFormatter. Not yet filed upstream.
 # @sg-ignore tool-limitation:self-new-override-typed-as-instance
 SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
   [
