@@ -8,6 +8,7 @@ require 'simplecov-lcov'
 require 'undercover/simplecov_formatter'
 
 SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
+# @sg-ignore tool-limitation:self-new-override-typed-as-instance
 SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
   [
     SimpleCov::Formatter::HTMLFormatter,
