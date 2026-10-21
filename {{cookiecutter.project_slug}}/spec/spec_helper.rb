@@ -8,11 +8,17 @@ require 'simplecov-lcov'
 require 'undercover/simplecov_formatter'
 
 SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
-SimpleCov.formatters = [
-  SimpleCov::Formatter::HTMLFormatter,
-  SimpleCov::Formatter::LcovFormatter,
-  SimpleCov::Formatter::Undercover,
-]
+# MultiFormatter overrides self.new to return a Class, but Solargraph
+# combines that with the implicit instance return of new and reports
+# formatters= as receiving a MultiFormatter. Not yet filed upstream.
+# @sg-ignore tool-limitation:self-new-override-typed-as-instance
+SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
+  [
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::LcovFormatter,
+    SimpleCov::Formatter::Undercover,
+  ]
+)
 SimpleCov.start do
   # this dir used by CircleCI
   add_filter(%r{^/vendor/bundle})
