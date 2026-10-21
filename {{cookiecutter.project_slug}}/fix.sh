@@ -439,7 +439,7 @@ ensure_shellcheck() {
 }
 
 ensure_hooks_path() {
-  if [ -d .git ]
+  if [ -e .git ] && ! git config --local --get core.hooksPath >/dev/null
   then
     git config core.hooksPath .githooks
   fi
@@ -467,7 +467,7 @@ patch_overcommit_hooks() {
   # Do NOT patch overcommit-hook: it must match the gem template or Overcommit
   # self-update will reinstall all hooks and strip these patches.
   local hook hooks_dir bootstrap_line
-  hooks_dir="$(git config --get core.hooksPath 2>/dev/null || echo .git/hooks)"
+  hooks_dir="$(git config --get core.hooksPath 2>/dev/null || git rev-parse --git-path hooks)"
   bootstrap_line="repo_root = String(\`git rev-parse --show-toplevel 2>/dev/null\`).strip; load File.join(repo_root, '.git-hooks', 'bootstrap_local_overcommit.rb') rescue nil if repo_root != '' # OVERCOMMIT_REPO_BOOTSTRAP"
 
   for hook in "${hooks_dir}"/*
@@ -492,7 +492,7 @@ RUBY
 ensure_overcommit() {
   # don't run if we're in the middle of a cookiecutter child project
   # test, or otherwise don't have a Git repo to install hooks into...
-  if [ -d .git ]
+  if [ -e .git ]
   then
     bundle exec overcommit --install
     bundle exec overcommit --sign
