@@ -45,15 +45,31 @@ commands:
               touchtime=$(date -d @$unixtime +'%Y%m%d%H%M.%S')
               touch -ht ${touchtime} "${filename}"
             done
+      - run:
+          # Gemfile.lock's checksum already changes whenever solargraph's
+          # pinned git revision does, but the fallback keys below drop that
+          # checksum to tolerate unrelated Gemfile.lock churn (other gems'
+          # versions). Isolating solargraph's revision into its own file
+          # keeps it mandatory in every fallback tier, so a solargraph
+          # revision bump alone still forces a fresh install instead of
+          # restoring a vendor/bundle whose bundler/gems/solargraph-*
+          # checkout was resolved under a stale SOLARGRAPH_FORCE_VERSION.
+          name: Compute solargraph revision for cache key
+          command: |
+            awk '
+              /^GIT$/ { remote = ""; revision = ""; ingit = 1; next }
+              ingit && /^  remote:/ { remote = $2 }
+              ingit && /^  revision:/ { revision = $2 }
+              ingit && /^$/ { if (remote ~ /\/solargraph(\.git)?$/) print revision; ingit = 0 }
+            ' Gemfile.lock > /tmp/solargraph_revision
       - restore_cache:
           name: Restore rbenv cache
           keys:
-            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile"  }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}- # yamllint disable-line rule:line-length
-            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile"  }}{% endraw %}- # yamllint disable-line rule:line-length
-            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
-            - rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
-            - rbenv-v5-
-            - rbenv-
+            - rbenv-v5-{% raw %}{{ checksum "/tmp/solargraph_revision" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile"  }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}- # yamllint disable-line rule:line-length
+            - rbenv-v5-{% raw %}{{ checksum "/tmp/solargraph_revision" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile"  }}{% endraw %}- # yamllint disable-line rule:line-length
+            - rbenv-v5-{% raw %}{{ checksum "/tmp/solargraph_revision" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-
+            - rbenv-v5-{% raw %}{{ checksum "/tmp/solargraph_revision" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
+            - rbenv-v5-{% raw %}{{ checksum "/tmp/solargraph_revision" }}{% endraw %}-
       - restore_cache:
           # NOTE: bump the ruby-types-vN- prefix when YARD_OPTS changes in
           # the Makefile (see the comment there for why).
@@ -95,7 +111,7 @@ commands:
             - "/home/circleci/.pyenv"
       - save_cache:
           name: 'Save rbenv cache'
-          key: rbenv-v5-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %} # yamllint disable-line rule:line-length
+          key: rbenv-v5-{% raw %}{{ checksum "/tmp/solargraph_revision" }}{% endraw %}-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-{% raw %}{{ checksum "Gemfile.lock" }}{% endraw %}-{% raw %}{{ checksum "Makefile" }}{% endraw %}-{% raw %}{{ checksum ".circleci/config.yml" }}{% endraw %}-{% raw %}{{ checksum ".ruby-version" }}{% endraw %} # yamllint disable-line rule:line-length
           paths:
             - "Gemfile.lock.installed"
             - 'vendor/.keep'
