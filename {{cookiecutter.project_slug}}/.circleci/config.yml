@@ -66,12 +66,6 @@ commands:
             - ruby-types-v12-{% raw %}{{ checksum "Gemfile" }}{% endraw %}-
             - ruby-types-v12-
       - restore_cache:
-          # Exact key only: a prefix match would restore a collection
-          # that does not match the checked-in rbs_collection.lock.yaml.
-          name: Restore rbs collection cache
-          keys:
-            - rbs-collection-v1-{% raw %}{{ checksum "rbs_collection.lock.yaml" }}{% endraw %}
-      - restore_cache:
           name: Restore pyenv cache
           keys:
             - pyenv-v2-{% raw %}{{ checksum "requirements_dev.txt" }}{% endraw %}-
@@ -267,11 +261,8 @@ jobs:
             - "tapioca.installed"
             - "sorbet/machine_specific_config"
             - "rbi/{{cookiecutter.project_slug}}.rbi"
-      - save_cache:
-          name: 'Save rbs collection cache'
-          key: rbs-collection-v1-{% raw %}{{ checksum "rbs_collection.lock.yaml" }}{% endraw %}
-          paths:
             - ".gem_rbs_collection"
+            - "/home/circleci/.cache/rbs"
       - run_with_languages:
           label: Test
           command: |

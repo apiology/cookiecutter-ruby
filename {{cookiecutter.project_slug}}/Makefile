@@ -1,4 +1,4 @@
-.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default docs feature gem_dependencies help overcommit post_cookiecutter_sync quality repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter yard
+.PHONY: build build-typecheck bundle_install cicoverage citypecheck citest citypecoverage clean clean-coverage clean-typecheck clean-typecoverage coverage default docs feature gem_dependencies help overcommit post_cookiecutter_sync quality rbs_collection_install repl report-coverage rubocop rubocop-ratchet spec test typecheck typecoverage update_from_cookiecutter yard
 .DEFAULT_GOAL := default
 
 define PRINT_HELP_PYSCRIPT
@@ -74,7 +74,7 @@ sorbet/machine_specific_config:
 sorbet/rbi/todo.rbi: sorbet/tapioca/require.rb rbi/{{cookiecutter.project_slug}}.rbi tapioca.installed
 	bin/tapioca todo
 
-build-typecheck: Gemfile.lock.installed rbs_collection.lock.yaml types.installed sorbet/machine_specific_config sorbet/rbi/todo.rbi ## Fetch information that type checking depends on
+build-typecheck: Gemfile.lock.installed rbs_collection.lock.yaml rbs_collection_install types.installed sorbet/machine_specific_config sorbet/rbi/todo.rbi ## Fetch information that type checking depends on
 
 rbs_collection.lock.yaml: Gemfile.lock rbs_collection.yaml
 	bin/rbs collection update
@@ -87,6 +87,9 @@ rbs_collection.yaml:
 	# Ensure that the gem rbs collection is installed
 	bin/rbs collection install
 	touch .gem_rbs_collection/.keepme
+
+rbs_collection_install: rbs_collection.lock.yaml ## Bring .gem_rbs_collection in line with the lock
+	bin/rbs collection install
 
 ci-build-typecheck: build-typecheck  ## Ensure cache is filled for CI to save regardless of actions run
 	bin/solargraph gems
