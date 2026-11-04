@@ -13,7 +13,7 @@ setup(
     author_email='vince@broz.cc',
     url='https://github.com/apiology/cookiecutter-ruby',
     keywords=['cookiecutter', 'template', 'package', ],
-    python_requires='>=3.7',
+    python_requires='>=3.10',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
@@ -22,9 +22,6 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Software Development',
