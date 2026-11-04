@@ -173,7 +173,7 @@ Before you submit a pull request, check that it meets these guidelines:
    new functionality into a function with a docstring, and add the feature to
    the list in README.rst.
 
-3. The pull request should work for Python 3.7, 3.8, 3.9 and 3.10. Check
+3. The pull request should work for Python 3.11, 3.12, 3.13 and 3.14. Check
    https://app.circleci.com/pipelines/github/apiology/cookiecutter-ruby and
    make sure that the tests pass for all supported Python versions.
 
