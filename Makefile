@@ -86,7 +86,11 @@ clean-test: ## remove test and coverage artifacts
 config/env: config/env.1p  ## Create file suitable for docker-compose usage
 	cat config/env.1p | cut -d= -f1 > config/env
 
-requirements_dev.txt.installed: requirements_dev.txt
+# fix.sh writes a new pyvenv.cfg whenever it creates a virtualenv, e.g. for a
+# new Python version, so a marker restored from a CI cache still reinstalls
+PYVENV_CFG := $(wildcard $(shell python -c "import sys; print(sys.prefix)")/pyvenv.cfg)
+
+requirements_dev.txt.installed: requirements_dev.txt $(PYVENV_CFG)
 	pip install -q --disable-pip-version-check -r requirements_dev.txt
 	touch requirements_dev.txt.installed
 
