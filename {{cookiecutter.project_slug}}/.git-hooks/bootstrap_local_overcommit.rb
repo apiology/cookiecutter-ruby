@@ -25,7 +25,6 @@ if !File.exist?(local_file) && repo_root.start_with?("#{worktrees_prefix}/")
   rel = repo_root.delete_prefix("#{worktrees_prefix}/")
   repo_name = rel.split('/').first
   source = File.join(File.expand_path('~/src'), repo_name, '.local-overcommit.yml')
-  # @sg-ignore FileUtils.ln_sf src path typing in bootstrap hook
   FileUtils.ln_sf(source, local_file) if File.exist?(source)
 end
 
