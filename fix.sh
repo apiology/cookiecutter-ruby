@@ -364,13 +364,7 @@ ensure_python_versions() {
   # been release here: https://www.python.org/downloads/
   # newest first: the project virtualenv uses the first one
   minor_versions="3.15 3.14 3.13 3.12 3.11"
-  if [ "$(uname)" == Darwin ]
-  then
-    # PyYAML has no 3.15 wheel and its source build segfaults on macOS;
-    # add 3.15 back once https://pypi.org/project/PyYAML/#files lists cp315
-    # (https://github.com/yaml/pyyaml/issues/951)
-    minor_versions="3.14 3.13 3.12 3.11"
-  elif [ -z "$(latest_python_version 3.15)" ]
+  if [ -z "$(latest_python_version 3.15)" ]
   then
     # pyenv lists only the releases it knew about when it was installed
     pyenv update
