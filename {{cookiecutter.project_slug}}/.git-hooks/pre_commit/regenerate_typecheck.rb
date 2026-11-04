@@ -28,8 +28,10 @@ module Overcommit
         # @return [Symbol, Array<Symbol, String>]
         def run
           execute(['rm', '-f', *STAMP_FILES])
+          # rbs runs git in its gem_rbs_collection clone; the GIT_* variables
+          # git exports to hooks would point it at this repo instead
           # @type [Overcommit::Subprocess::Result]
-          result = execute(%w[make build-typecheck])
+          result = execute(%w[env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_WORK_TREE make build-typecheck])
           return [:fail, result.stdout + result.stderr] unless result.success?
 
           paths_to_stage = BUILD_TYPECHECK_PATHS.select { |path| File.exist?(path) }
