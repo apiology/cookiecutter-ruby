@@ -362,8 +362,25 @@ ensure_python_build_requirements() {
 ensure_python_versions() {
   # You can find out which feature versions are still supported / have
   # been release here: https://www.python.org/downloads/
-  # Python 3.15: add once PyYAML publishes cp315 wheels - https://github.com/yaml/pyyaml/issues/981
-  python_versions="$(latest_python_version 3.14) $(latest_python_version 3.13) $(latest_python_version 3.12) $(latest_python_version 3.11)"
+  # newest first: the project virtualenv uses the first one
+  minor_versions="3.15 3.14 3.13 3.12 3.11"
+  if [ "$(uname)" == Darwin ]
+  then
+    # PyYAML has no 3.15 wheel and its source build segfaults on macOS;
+    # add 3.15 back once https://pypi.org/project/PyYAML/#files lists cp315
+    minor_versions="3.14 3.13 3.12 3.11"
+  elif [ -z "$(latest_python_version 3.15)" ]
+  then
+    # pyenv lists only the releases it knew about when it was installed
+    pyenv update
+  fi
+
+  python_versions=""
+  for minor in ${minor_versions}
+  do
+    python_versions+="$(latest_python_version "${minor}") "
+  done
+  python_versions="${python_versions% }"
 
   echo "Latest Python versions: ${python_versions}"
 
