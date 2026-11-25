@@ -152,6 +152,22 @@ commands:
           label: Update dependencies
           command: |
             set -x
+            # bundler-audit exits 1 both on findings and on errors, so a
+            # failure that names no vulnerable gem fails the step.
+            AUDIT_STATUS=0
+            bundle exec bundle-audit check --update \
+              > /tmp/bundle-audit.txt || AUDIT_STATUS=$?
+            cat /tmp/bundle-audit.txt
+            VULNERABLE_GEMS=$(sed -n 's/^Name: //p' /tmp/bundle-audit.txt | \
+              sort -u | tr '\n' ' ')
+            if [ -n "${VULNERABLE_GEMS}" ]
+            then
+              bundle update --conservative ${VULNERABLE_GEMS}
+            elif [ "${AUDIT_STATUS}" -ne 0 ]
+            then
+              >&2 echo "bundle-audit failed without naming a gem"
+              exit "${AUDIT_STATUS}"
+            fi
             for package in <<parameters.gems>>
             do
               REMOTE_VERSION=$(gem search "${package}" | \
