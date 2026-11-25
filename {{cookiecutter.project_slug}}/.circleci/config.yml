@@ -152,24 +152,21 @@ commands:
           label: Update dependencies
           command: |
             set -x
-            # Update gems with known vulnerabilities. bundle-audit exits 1
-            # both when it finds advisories and when it cannot run, so a
-            # non-zero exit that names no gem is a real failure.
-            bundle exec bundle-audit update
+            # bundler-audit exits 1 both on findings and on errors, so a
+            # failure that names no vulnerable gem fails the step.
             AUDIT_STATUS=0
-            bundle exec bundle-audit check > /tmp/bundle-audit.txt \
-              || AUDIT_STATUS=$?
+            bundle exec bundle-audit check --update \
+              > /tmp/bundle-audit.txt || AUDIT_STATUS=$?
             cat /tmp/bundle-audit.txt
             VULNERABLE_GEMS=$(sed -n 's/^Name: //p' /tmp/bundle-audit.txt | \
-              sort -u)
+              sort -u | tr '\n' ' ')
             if [ -n "${VULNERABLE_GEMS}" ]
             then
-              # unquoted to pass each gem name as its own argument
               bundle update --conservative ${VULNERABLE_GEMS}
-            elif [ "${AUDIT_STATUS}" != 0 ]
+            elif [ "${AUDIT_STATUS}" -ne 0 ]
             then
-              >&2 echo "bundle-audit failed without naming a vulnerable gem"
-              exit 1
+              >&2 echo "bundle-audit failed without naming a gem"
+              exit "${AUDIT_STATUS}"
             fi
             for package in <<parameters.gems>>
             do
